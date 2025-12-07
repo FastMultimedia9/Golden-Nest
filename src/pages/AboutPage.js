@@ -14,14 +14,11 @@ const AboutPage = () => {
           <div className="about-text">
             <h2>Our Story</h2>
             <p>
-              Established in 2010, Golden Nest has been redefining luxury hospitality 
+              Established in 2025, Golden Nest has been redefining luxury hospitality 
               with its exceptional service and world-class amenities. Located in the 
-              heart of the city, we offer a sanctuary of peace and elegance.
+              heart of the Hohoe - Ghana, we offer a sanctuary of peace and elegance.
             </p>
-            <p>
-              Our commitment to excellence has earned us multiple awards, including 
-              "Best Luxury Hotel 2023" and "Top Hospitality Service Award."
-            </p>
+            
           </div>
           <div className="about-image">
             <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Hotel Lobby" />

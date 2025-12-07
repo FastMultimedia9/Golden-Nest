@@ -11,9 +11,10 @@ const Footer = () => {
         </div>
         <div className="footer-section">
           <h4>Contact Info</h4>
-          <p>📍 123 Luxury Street, City</p>
-          <p>📞 +1 (234) 567-8900</p>
-          <p>✉️ info@goldennest.com</p>
+          <p>📍 Hohoe, Ghana</p>
+          <p>📞 (+233) 268-909-126</p>
+          <p>📞 (+233) 546-819-200</p>
+          <p>✉️ goldennesthtl@gmail.com</p>
         </div>
         <div className="footer-section">
           <h4>Quick Links</h4>
