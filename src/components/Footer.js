@@ -16,8 +16,8 @@ const Footer = () => {
                   <span className="logo-icon-text">CS</span>
                 </div>
                 <div className="logo-text">
-                  <span className="logo-primary">Creative</span>
-                  <span className="logo-secondary">Studio</span>
+                  <span className="logo-primary">Fast</span>
+                  <span className="logo-secondary">Multimedia</span>
                 </div>
               </div>
               <p className="footer-about-text">
@@ -78,7 +78,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <i className="fas fa-envelope"></i>
-                  <span>hello@creativestudio.com</span>
+                  <span>fasttech227@gmail.com</span>
                 </li>
               </ul>
             </div>
