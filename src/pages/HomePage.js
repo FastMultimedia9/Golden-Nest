@@ -70,8 +70,11 @@ const HomePage = () => {
             <div className="shape shape-3"></div>
           </div>
           <div className="hero-image-container">
-            <div className="hero-image-placeholder">
-              <i className="fas fa-palette"></i>
+            <div className="hero-image">
+              <img 
+                src="https://images.unsplash.com/photo-1558655146-364adaf1fcc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                alt="Design Studio Workspace" 
+              />
             </div>
           </div>
         </div>
@@ -155,9 +158,10 @@ const HomePage = () => {
         <div className="portfolio-grid">
           <div className="portfolio-item animate-on-scroll">
             <div className="portfolio-image">
-              <div className="image-placeholder">
-                <i className="fas fa-leaf"></i>
-              </div>
+              <img 
+                src="https://images.unsplash.com/photo-1634942537034-2531766767d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                alt="EcoBrand Identity Project"
+              />
               <div className="portfolio-overlay">
                 <div className="overlay-content">
                   <h4>EcoBrand Identity</h4>
@@ -172,9 +176,10 @@ const HomePage = () => {
           
           <div className="portfolio-item animate-on-scroll">
             <div className="portfolio-image">
-              <div className="image-placeholder">
-                <i className="fas fa-mobile-alt"></i>
-              </div>
+              <img 
+                src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w-800&q=80" 
+                alt="Finance Mobile App Design"
+              />
               <div className="portfolio-overlay">
                 <div className="overlay-content">
                   <h4>Finance Mobile App</h4>
@@ -189,9 +194,10 @@ const HomePage = () => {
           
           <div className="portfolio-item animate-on-scroll">
             <div className="portfolio-image">
-              <div className="image-placeholder">
-                <i className="fas fa-shopping-bag"></i>
-              </div>
+              <img 
+                src="https://images.unsplash.com/photo-1580995170656-f0aa5c5c31dd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                alt="Organic Food Packaging Design"
+              />
               <div className="portfolio-overlay">
                 <div className="overlay-content">
                   <h4>Organic Food Packaging</h4>
@@ -232,7 +238,10 @@ const HomePage = () => {
           </div>
           <div className="cta-visual">
             <div className="cta-image">
-              <i className="fas fa-magic"></i>
+              <img 
+                src="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                alt="Design Collaboration"
+              />
             </div>
           </div>
         </div>
