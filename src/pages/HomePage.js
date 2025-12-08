@@ -1,8 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './HomePage.css';
 
 const HomePage = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Hero image carousel images
+  const heroImages = [
+    "https://images.unsplash.com/photo-1558655146-364adaf1fcc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1522542550221-31fd19575a2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+  ];
+
   useEffect(() => {
     const animateOnScroll = () => {
       const elements = document.querySelectorAll('.animate-on-scroll');
@@ -22,6 +32,21 @@ const HomePage = () => {
     
     return () => window.removeEventListener('scroll', animateOnScroll);
   }, []);
+
+  useEffect(() => {
+    // Auto-rotate hero images every 5 seconds
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index);
+  };
 
   return (
     <div className="homepage">
@@ -70,11 +95,28 @@ const HomePage = () => {
             <div className="shape shape-3"></div>
           </div>
           <div className="hero-image-container">
-            <div className="hero-image">
-              <img 
-                src="https://images.unsplash.com/photo-1558655146-364adaf1fcc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                alt="Design Studio Workspace" 
-              />
+            <div className="hero-image-carousel">
+              {heroImages.map((image, index) => (
+                <div 
+                  key={index}
+                  className={`hero-image-slide ${index === currentImageIndex ? 'active' : ''}`}
+                >
+                  <img 
+                    src={image} 
+                    alt={`Design Studio ${index + 1}`}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="carousel-dots">
+              {heroImages.map((_, index) => (
+                <button
+                  key={index}
+                  className={`carousel-dot ${index === currentImageIndex ? 'active' : ''}`}
+                  onClick={() => goToImage(index)}
+                  aria-label={`Go to image ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -91,8 +133,18 @@ const HomePage = () => {
         
         <div className="services-grid">
           <div className="service-card animate-on-scroll">
-            <div className="service-icon">
-              <i className="fas fa-paint-brush"></i>
+            <div className="service-header">
+              <div className="service-icon">
+                <i className="fas fa-paint-brush"></i>
+              </div>
+              <div className="service-profile">
+                <div className="profile-icons">
+                  <i className="fab fa-figma"></i>
+                  <i className="fas fa-palette"></i>
+                  <i className="fas fa-pen-nib"></i>
+                  <i className="fas fa-font"></i>
+                </div>
+              </div>
             </div>
             <h3 className="service-title">Brand Identity</h3>
             <p className="service-description">
@@ -107,8 +159,18 @@ const HomePage = () => {
           </div>
           
           <div className="service-card animate-on-scroll">
-            <div className="service-icon">
-              <i className="fas fa-desktop"></i>
+            <div className="service-header">
+              <div className="service-icon">
+                <i className="fas fa-desktop"></i>
+              </div>
+              <div className="service-profile">
+                <div className="profile-icons">
+                  <i className="fab fa-sketch"></i>
+                  <i className="fas fa-mobile-alt"></i>
+                  <i className="fas fa-tachometer-alt"></i>
+                  <i className="fas fa-laptop"></i>
+                </div>
+              </div>
             </div>
             <h3 className="service-title">UI/UX Design</h3>
             <p className="service-description">
@@ -123,8 +185,18 @@ const HomePage = () => {
           </div>
           
           <div className="service-card animate-on-scroll">
-            <div className="service-icon">
-              <i className="fas fa-bullhorn"></i>
+            <div className="service-header">
+              <div className="service-icon">
+                <i className="fas fa-bullhorn"></i>
+              </div>
+              <div className="service-profile">
+                <div className="profile-icons">
+                  <i className="fab fa-instagram"></i>
+                  <i className="fas fa-ad"></i>
+                  <i className="fas fa-envelope"></i>
+                  <i className="fas fa-print"></i>
+                </div>
+              </div>
             </div>
             <h3 className="service-title">Marketing Design</h3>
             <p className="service-description">
@@ -177,7 +249,7 @@ const HomePage = () => {
           <div className="portfolio-item animate-on-scroll">
             <div className="portfolio-image">
               <img 
-                src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w-800&q=80" 
+                src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
                 alt="Finance Mobile App Design"
               />
               <div className="portfolio-overlay">
