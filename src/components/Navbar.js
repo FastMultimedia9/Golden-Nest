@@ -81,14 +81,7 @@ const Navbar = () => {
         </div>
 
         {/* Call-to-action button */}
-        <div className="nav-cta">
-          <Link to="/contact" className="cta-button">
-            <span className="cta-icon">
-              <i className="fas fa-paper-plane"></i>
-            </span>
-           
-          </Link>
-        </div>
+       
 
         {/* Mobile Menu Toggle */}
         <div 
