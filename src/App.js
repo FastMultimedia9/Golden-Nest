@@ -7,6 +7,9 @@ import AboutPage from './pages/AboutPage';
 import PortfolioPage from './pages/PortfolioPage';
 import ServicesPage from './pages/ServicesPage';
 import ContactPage from './pages/ContactPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
 import './App.css';
 
 // Scroll to top component
@@ -41,6 +44,9 @@ function App() {
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/cookies" element={<CookiePolicy />} />
           </Routes>
         </main>
         <Footer />
