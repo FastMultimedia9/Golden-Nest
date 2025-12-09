@@ -1,4 +1,4 @@
-// Navbar.js
+// Navbar.js - OPTIMIZED FOR SPACE
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -33,13 +33,13 @@ const Navbar = () => {
     { 
       name: 'Resources', 
       icon: 'fas fa-book-open',
+      hasDropdown: true,
       submenu: [
-        { path: '/resources/training', name: 'Training Courses', icon: 'fas fa-graduation-cap' },
-        { path: '/resources/tutorials', name: 'Video Tutorials', icon: 'fas fa-video' },
-        { path: '/resources/templates', name: 'Free Templates', icon: 'fas fa-file-download' },
-        { path: '/resources/tools', name: 'Design Tools', icon: 'fas fa-tools' },
-        { path: '/resources/ebooks', name: 'Free eBooks', icon: 'fas fa-book' },
-        { path: '/resources/affiliates', name: 'Affiliate Products', icon: 'fas fa-star' }
+        { path: '/resources', name: 'All Resources', icon: 'fas fa-th' },
+        { path: '/resources/training', name: 'Training', icon: 'fas fa-graduation-cap' },
+        { path: '/resources/tutorials', name: 'Tutorials', icon: 'fas fa-video' },
+        { path: '/resources/templates', name: 'Templates', icon: 'fas fa-file-download' },
+        { path: '/resources/tools', name: 'Tools', icon: 'fas fa-tools' }
       ]
     },
     { path: '/contact', name: 'Contact', icon: 'fas fa-envelope' },
@@ -72,7 +72,7 @@ const Navbar = () => {
         {/* Navigation Links */}
         <div className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>
           {navLinks.map((link) => (
-            link.submenu ? (
+            link.hasDropdown ? (
               <div 
                 key={link.name} 
                 className={`nav-link dropdown ${isResourcesOpen ? 'open' : ''}`}
@@ -90,7 +90,8 @@ const Navbar = () => {
                   aria-haspopup="true"
                 >
                   <i className={link.icon}></i>
-                  <span>{link.name} <i className="fas fa-chevron-down dropdown-arrow"></i></span>
+                  <span className="link-text">{link.name}</span>
+                  <i className="fas fa-chevron-down dropdown-arrow"></i>
                 </button>
                 
                 <div className={`dropdown-menu ${isResourcesOpen ? 'show' : ''}`}>
@@ -118,7 +119,7 @@ const Navbar = () => {
                 end
               >
                 <i className={link.icon}></i>
-                <span>{link.name}</span>
+                <span className="link-text">{link.name}</span>
               </NavLink>
             )
           ))}
@@ -128,7 +129,7 @@ const Navbar = () => {
         <div className="navbar-cta">
           <Link to="/contact" className="btn btn-primary" onClick={() => handleNavigation('/contact')}>
             <i className="fas fa-rocket"></i>
-            Get Quote
+            <span className="cta-text">Get Quote</span>
           </Link>
         </div>
       </div>
