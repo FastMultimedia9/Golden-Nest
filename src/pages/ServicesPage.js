@@ -221,7 +221,7 @@ const ServicesPage = () => {
   return (
     <div className="services-page">
       {/* Hero Section */}
-      <section className="services-hero section">
+      <section className="services-hero">
         <div className="container">
           <div className="services-hero-content animate-on-scroll">
             <div className="hero-badge">
