@@ -1,7 +1,6 @@
 /* Services.css */
 .services-page {
-  padding-top: 0;
-  margin-top: 0;
+ 
 }
 
 /* Hero Section */
@@ -14,7 +13,6 @@
   padding: 140px 5% 100px;
   position: relative;
   overflow: hidden;
-  margin-top: 0;
 }
 
 .services-hero::before {
@@ -642,7 +640,7 @@
 
 @media (max-width: 768px) {
   .services-hero {
-    padding: 120px 5% 80px;
+    padding: 100px 5% 60px;
   }
   
   .hero-title {
@@ -692,10 +690,6 @@
 }
 
 @media (max-width: 576px) {
-  .services-hero {
-    padding: 100px 5% 60px;
-  }
-  
   .hero-title {
     font-size: 2.2rem;
   }
