@@ -125,57 +125,108 @@ const ServicesPage = () => {
     }
   ];
 
+  // UPDATED: Clear Package Bundles with transparent pricing
   const pricingPlans = [
     {
       id: 1,
-      name: 'Basic',
-      price: '₵299',
-      period: 'per project',
-      description: 'Perfect for small businesses and startups',
+      name: 'Starter Package',
+      price: '₵699',
+      originalPrice: '₵848',
+      savings: 'Save ₵149',
+      period: 'one-time payment',
+      description: 'Perfect for new businesses needing basic brand identity',
       features: [
-        'Logo Design',
-        'Business Cards',
-        'Social Media Kit',
-        'Basic Website Design',
-        '2 Revisions',
+        'Logo Design (Value: ₵299)',
+        'Business Cards (Value: ₵150)',
+        'Social Media Profile Kit (Value: ₵250)',
+        'Basic Brand Guidelines (Value: ₵149)',
+        '2 Revision Rounds',
         '1 Week Delivery'
       ],
-      popular: false
+      whatsIncluded: 'Complete brand starter package - everything listed',
+      note: 'Perfect for startups and small businesses',
+      popular: false,
+      totalValue: '₵848'
     },
     {
       id: 2,
-      name: 'Professional',
-      price: '₵599',
-      period: 'per project',
-      description: 'Ideal for growing businesses',
+      name: 'Professional Package',
+      price: '₵1,499',
+      originalPrice: '₵1,898',
+      savings: 'Save ₵399',
+      period: 'one-time payment',
+      description: 'Complete branding solution for growing businesses',
       features: [
-        'Complete Brand Identity',
-        'Website Design & Development',
-        'Social Media Package',
-        'Print Materials',
-        '5 Revisions',
+        'Logo Design + Variations (Value: ₵499)',
+        'Complete Brand Guidelines (Value: ₵299)',
+        'Business Stationery Set (Value: ₵350)',
+        'Social Media Content Kit (Value: ₵450)',
+        'Email Signature Design (Value: ₵150)',
+        'Brand Presentation (Value: ₵150)',
+        '5 Revision Rounds',
         'Priority Support',
         '2 Weeks Delivery'
       ],
-      popular: true
+      whatsIncluded: 'Full brand identity package - everything listed',
+      note: 'Most popular choice for established businesses',
+      popular: true,
+      totalValue: '₵1,898'
     },
     {
       id: 3,
-      name: 'Enterprise',
+      name: 'Website Package',
       price: '₵1,299',
-      period: 'per month',
-      description: 'For established businesses',
+      originalPrice: '₵1,548',
+      savings: 'Save ₵249',
+      period: 'one-time payment',
+      description: 'Professional website design and development',
       features: [
-        'Full Brand Strategy',
-        'Website + Mobile App',
-        'Complete Marketing Materials',
-        'Unlimited Revisions',
-        '24/7 Support',
-        'Monthly Maintenance',
-        'Dedicated Designer',
-        'Ongoing Support'
+        '5-Page Responsive Website (Value: ₵899)',
+        'Mobile-First Design (Value: ₵299)',
+        'SEO Optimization (Value: ₵150)',
+        'Contact Form Setup (Value: ₵100)',
+        'Social Media Integration (Value: ₵100)',
+        '3 Revision Rounds',
+        'Basic Training',
+        '3-4 Weeks Delivery',
+        '3 Months Support'
       ],
-      popular: false
+      whatsIncluded: 'Complete website design and development package',
+      note: 'Hosting and domain are additional costs',
+      popular: false,
+      totalValue: '₵1,548'
+    }
+  ];
+
+  // UPDATED: Service-based pricing for transparency
+  const servicePrices = [
+    {
+      id: 1,
+      service: 'Logo Design',
+      price: '₵299',
+      description: 'Professional logo design with 2 concepts and 3 revisions',
+      features: ['2 Initial Concepts', '3 Revisions', 'Final Files in Multiple Formats']
+    },
+    {
+      id: 2,
+      service: 'Business Cards',
+      price: '₵150',
+      description: 'Professional business card design (front & back)',
+      features: ['2 Design Concepts', '2 Revisions', 'Print-Ready Files']
+    },
+    {
+      id: 3,
+      service: 'Social Media Kit',
+      price: '₵250-₵450',
+      description: 'Social media branding package',
+      features: ['Profile & Cover Designs', 'Post Templates', 'Brand Consistency']
+    },
+    {
+      id: 4,
+      service: 'Website Design',
+      price: '₵899+',
+      description: 'Responsive website design',
+      features: ['Mobile-Friendly Design', 'Contact Form', 'Basic SEO', 'Revisions']
     }
   ];
 
@@ -373,13 +424,13 @@ const ServicesPage = () => {
         </div>
       </section>
 
-      {/* Pricing Plans */}
+      {/* UPDATED: Pricing Plans with clear bundles */}
       <section className="pricing-section section">
         <div className="container">
           <div className="section-header animate-on-scroll">
-            <h2 className="section-title">Pricing Plans</h2>
+            <h2 className="section-title">Transparent Pricing Plans</h2>
             <p className="section-subtitle">
-              Flexible pricing options for businesses of all sizes
+              Clear package bundles with visible savings - no hidden costs
             </p>
           </div>
           
@@ -393,14 +444,34 @@ const ServicesPage = () => {
                 {plan.popular && (
                   <div className="popular-badge">Most Popular</div>
                 )}
+                
+                {/* Savings Badge */}
+                <div className="savings-badge">
+                  <span>{plan.savings}</span>
+                </div>
+                
                 <div className="pricing-header">
                   <h3 className="plan-name">{plan.name}</h3>
-                  <div className="plan-price">
-                    <span className="price">{plan.price}</span>
-                    <span className="period">{plan.period}</span>
+                  
+                  {/* Price with original comparison */}
+                  <div className="price-comparison">
+                    <div className="original-price">₵{plan.originalPrice.replace('₵', '')}</div>
+                    <div className="plan-price">
+                      <span className="price">{plan.price}</span>
+                      <span className="period">{plan.period}</span>
+                    </div>
+                    <div className="total-value">Total Value: <strong>{plan.totalValue}</strong></div>
                   </div>
+                  
                   <p className="plan-description">{plan.description}</p>
+                  
+                  {/* What's included section */}
+                  <div className="included-note">
+                    <i className="fas fa-check-circle"></i>
+                    <span>{plan.whatsIncluded}</span>
+                  </div>
                 </div>
+                
                 <ul className="plan-features">
                   {plan.features.map((feature, idx) => (
                     <li key={idx}>
@@ -409,18 +480,51 @@ const ServicesPage = () => {
                     </li>
                   ))}
                 </ul>
+                
+                {plan.note && (
+                  <div className="plan-note">
+                    <p><i className="fas fa-exclamation-circle"></i> {plan.note}</p>
+                  </div>
+                )}
+                
                 <Link to="/contact" className="btn btn-primary">
-                  Get Started
+                  Get This Package
                 </Link>
               </div>
             ))}
+          </div>
+          
+          {/* UPDATED: Individual service pricing for transparency */}
+          <div className="individual-services animate-on-scroll">
+            <h3 className="services-title">Individual Service Pricing</h3>
+            <p className="services-subtitle">Need just one service? Here are our individual rates:</p>
+            
+            <div className="services-pricing-grid">
+              {servicePrices.map((service) => (
+                <div key={service.id} className="service-pricing-card">
+                  <h4 className="service-name">{service.service}</h4>
+                  <div className="service-price">{service.price}</div>
+                  <p className="service-desc">{service.description}</p>
+                  <ul className="service-features-list">
+                    {service.features.map((feature, idx) => (
+                      <li key={idx}>{feature}</li>
+                    ))}
+                  </ul>
+                  <Link to="/contact" className="btn btn-outline-small">
+                    Book This Service
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
           
           <div className="pricing-note animate-on-scroll">
             <p>
               <i className="fas fa-info-circle"></i>
               <strong>Note:</strong> Tech support services are billed hourly at ₵50/hour. 
-              Custom quotes available for enterprise projects and ongoing support contracts.
+              All design packages include 3 rounds of revisions. Custom quotes available for complex projects.
+              <br />
+              <span className="highlight-text">No hidden fees - what you see is what you pay!</span>
             </p>
           </div>
         </div>
