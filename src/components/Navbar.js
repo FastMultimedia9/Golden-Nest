@@ -132,6 +132,13 @@ const Navbar = () => {
             <span className="cta-text">Get Quote</span>
           </Link>
         </div>
+
+         <div className="navbar-cta">
+          <Link to="/contact" className="btn btn-primary" onClick={() => handleNavigation('/contact')}>
+            <i className="fas fa-rocket"></i>
+            <span className="cta-text">Get Quote</span>
+          </Link>
+        </div>
       </div>
     </nav>
   );
