@@ -29,7 +29,7 @@ const AboutPage = () => {
       name: 'Teye James',
       role: 'Founder & Creative Director',
       bio: 'With over 8 years in graphic design and tech solutions, Collins leads our vision to provide exceptional design and technical services.',
-      image: '/images/Teye-James.jpg'
+      image: '/images/Teye-James.JPG'
     },
     {
       id: 2,
