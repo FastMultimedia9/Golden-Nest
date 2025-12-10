@@ -26,10 +26,10 @@ const AboutPage = () => {
   const teamMembers = [
     {
       id: 1,
-      name: 'Collins Sakyi',
+      name: 'Teye James',
       role: 'Founder & Creative Director',
       bio: 'With over 8 years in graphic design and tech solutions, Collins leads our vision to provide exceptional design and technical services.',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'
+      image: '/images/team/Teye-James.jpg'
     },
     {
       id: 2,
