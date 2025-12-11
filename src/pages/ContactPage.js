@@ -105,9 +105,9 @@ const ContactPage = () => {
               </div>
               <h3 className="info-title">Our Studio</h3>
               <p className="info-text">
-                123 Design Street<br />
-                Creative District<br />
-                San Francisco, CA 94107
+                Kpong, Tema Akosombo Road<br />
+                Lower Manya Krobo District<br />
+                Kpong
               </p>
             </div>
 
@@ -117,10 +117,10 @@ const ContactPage = () => {
               </div>
               <h3 className="info-title">Call Us</h3>
               <p className="info-text">
-                +1 (555) 123-4567<br />
-                Monday - Friday, 9am - 6pm PST
+                (+233) 054-889-0306<br />
+                Monday - Sunday, 9am - 6pm PST
               </p>
-              <a href="tel:+15551234567" className="info-link">
+              <a href="tel:+233 505159131" className="info-link">
                 Call Now <i className="fas fa-arrow-right"></i>
               </a>
             </div>
@@ -131,7 +131,7 @@ const ContactPage = () => {
               </div>
               <h3 className="info-title">Email Us</h3>
               <p className="info-text">
-                hello@creativestudio.com<br />
+                fasttech227@gmail.com<br />
                 We respond within 24 hours
               </p>
               <a href="mailto:hello@creativestudio.com" className="info-link">
@@ -381,7 +381,7 @@ const ContactPage = () => {
           <div className="map-placeholder">
             <i className="fas fa-map-marked-alt"></i>
             <h3>Find Our Studio</h3>
-            <p>123 Design Street, San Francisco, CA 94107</p>
+            <p>Kpong, Tema Akosombo Road</p>
           </div>
         </div>
       </section>
