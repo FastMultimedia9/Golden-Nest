@@ -1,23 +1,30 @@
+// generate-sitemap.js - UPDATED for your actual routes
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { createWriteStream } = require('fs');
 const { join } = require('path');
 
-// Define your website's base URL
 const baseUrl = 'https://fastmultimedia.site';
 
-// *************************************
-// CRITICAL: UPDATE THIS LIST WITH YOUR ACTUAL PAGE ROUTES
-// *************************************
+// Based on YOUR actual 16+ routes from App.js
 const routes = [
-  { url: '/', changefreq: 'daily', priority: 1.0 }, // Homepage
-  { url: '/about', changefreq: 'monthly', priority: 0.8 },
-  { url: '/services', changefreq: 'monthly', priority: 0.9 },
-  { url: '/services/logo-design', changefreq: 'monthly', priority: 0.7 },
-  { url: '/services/web-design', changefreq: 'monthly', priority: 0.7 },
-  { url: '/services/graphic-design', changefreq: 'monthly', priority: 0.7 },
+  { url: '/', changefreq: 'daily', priority: 1.0 },
+  { url: '/about', changefreq: 'monthly', priority: 0.9 },
   { url: '/portfolio', changefreq: 'weekly', priority: 0.9 },
-  { url: '/contact', changefreq: 'yearly', priority: 0.6 },
-  // Add all other page routes from your website here
+  { url: '/services', changefreq: 'monthly', priority: 0.9 },
+  { url: '/blog', changefreq: 'weekly', priority: 0.8 },
+  { url: '/resources', changefreq: 'weekly', priority: 0.8 },
+  { url: '/resources/training', changefreq: 'monthly', priority: 0.7 },
+  { url: '/resources/tutorials', changefreq: 'weekly', priority: 0.7 },
+  { url: '/resources/templates', changefreq: 'monthly', priority: 0.7 },
+  { url: '/resources/tools', changefreq: 'monthly', priority: 0.7 },
+  { url: '/resources/ebooks', changefreq: 'monthly', priority: 0.7 },
+  { url: '/resources/affiliates', changefreq: 'monthly', priority: 0.7 },
+  { url: '/contact', changefreq: 'yearly', priority: 0.8 },
+  { url: '/privacy-policy', changefreq: 'yearly', priority: 0.3 },
+  { url: '/terms', changefreq: 'yearly', priority: 0.3 },
+  { url: '/cookies', changefreq: 'yearly', priority: 0.3 },
+  // Note: You don't have /services/logo-design etc. in your App.js
+  // Those routes don't exist in your current setup
 ];
 
 // Create the sitemap stream
@@ -30,13 +37,15 @@ routes.forEach(route => {
 
 sitemap.end();
 
-// Generate the XML and write it to the public folder
+// Generate the XML
 streamToPromise(sitemap)
   .then(xml => {
     const filePath = join(__dirname, 'public', 'sitemap.xml');
     createWriteStream(filePath).write(xml);
-    console.log('✅ Sitemap generated successfully at:', filePath);
+    console.log('✅ Sitemap generated with', routes.length, 'URLs');
+    console.log('📋 Routes included:');
+    routes.forEach((route, i) => console.log(`${i+1}. ${route.url}`));
   })
   .catch(err => {
-    console.error('❌ Error generating sitemap:', err);
+    console.error('❌ Error:', err);
   });
