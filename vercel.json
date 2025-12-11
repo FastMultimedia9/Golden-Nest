@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "http://www.fastmultimedia.site/:path*",
+      "destination": "https://fastmultimedia.site/:path*",
+      "permanent": true
+    },
+    {
+      "source": "https://www.fastmultimedia.site/:path*",
+      "destination": "https://fastmultimedia.site/:path*",
+      "permanent": true
+    }
+  ]
+}
