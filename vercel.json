@@ -1,12 +1,29 @@
 {
   "redirects": [
     {
-      "source": "http://www.fastmultimedia.site/:path*",
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.fastmultimedia.site"
+        }
+      ],
       "destination": "https://fastmultimedia.site/:path*",
       "permanent": true
     },
     {
-      "source": "https://www.fastmultimedia.site/:path*",
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "fastmultimedia.site"
+        },
+        {
+          "type": "header",
+          "key": "x-forwarded-proto",
+          "value": "http"
+        }
+      ],
       "destination": "https://fastmultimedia.site/:path*",
       "permanent": true
     }
