@@ -1,0 +1,376 @@
+.case-study-page {
+  padding-top: 80px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Snowfall */
+.snowfall {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.snowflake {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  animation: snowfall linear infinite;
+  width: 8px;
+  height: 8px;
+  opacity: 0.7;
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  padding: 20px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.breadcrumb a {
+  color: var(--christmas-red);
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.breadcrumb span {
+  color: #666;
+  margin-left: 5px;
+}
+
+/* Hero Section */
+.case-study-hero {
+  padding: 80px 0;
+  background: linear-gradient(135deg, var(--christmas-dark), var(--christmas-green));
+  color: white;
+  position: relative;
+  z-index: 2;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.case-study-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 20px;
+  border-radius: 25px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.case-study-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 15px;
+  line-height: 1.2;
+}
+
+.case-study-subtitle {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 40px;
+  max-width: 600px;
+}
+
+.project-meta {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.meta-item i {
+  color: var(--christmas-gold);
+}
+
+/* Project Hero Image */
+.project-hero-image {
+  padding: 60px 0;
+  background: white;
+}
+
+.project-image {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-heavy);
+  height: 500px;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Project Stats */
+.project-stats {
+  padding: 80px 0;
+  background: linear-gradient(135deg, var(--christmas-light), white);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+}
+
+.stat-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-heavy);
+  border-color: var(--christmas-gold);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--christmas-red);
+  margin-bottom: 10px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+/* Project Sections */
+.project-section {
+  padding: 100px 0;
+  background: white;
+}
+
+.project-section:nth-child(even) {
+  background: var(--light-color);
+}
+
+.section-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.project-section.reverse .section-content {
+  direction: rtl;
+}
+
+.project-section.reverse .section-text {
+  direction: ltr;
+}
+
+.section-text h2 {
+  font-size: 2.5rem;
+  color: var(--dark-color);
+  margin-bottom: 30px;
+}
+
+.section-text p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.section-image {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  height: 400px;
+}
+
+.section-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CTA Section */
+.case-study-cta {
+  padding: 100px 0;
+  background: linear-gradient(135deg, var(--christmas-dark), var(--christmas-green));
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.case-study-cta::before {
+  content: '🎄🎁✨';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 100px;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.cta-content h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.cta-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 40px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-christmas {
+  background: linear-gradient(45deg, var(--christmas-red), var(--christmas-green));
+  color: white;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-christmas:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(196, 30, 58, 0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--dark-color);
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: var(--transition);
+  border: 2px solid white;
+}
+
+.btn-secondary:hover {
+  background: transparent;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .case-study-title {
+    font-size: 2.8rem;
+  }
+  
+  .section-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .project-section.reverse .section-content {
+    direction: ltr;
+  }
+  
+  .section-image {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .case-study-hero {
+    padding: 60px 0;
+  }
+  
+  .case-study-title {
+    font-size: 2.5rem;
+  }
+  
+  .project-meta {
+    gap: 20px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-christmas, .btn-secondary {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .case-study-title {
+    font-size: 2rem;
+  }
+  
+  .case-study-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-text h2 {
+    font-size: 2rem;
+  }
+}

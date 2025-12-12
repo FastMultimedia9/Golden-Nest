@@ -1,0 +1,143 @@
+// src/pages/DownloadGuide.jsx
+import React from 'react';
+import './DownloadGuide.css';
+
+const DownloadGuide = () => {
+  const handleDownload = () => {
+    // Create a PDF download
+    const link = document.createElement('a');
+    link.href = '/christmas-design-guide.pdf';
+    link.download = 'Fast-Multimedia-Christmas-Design-Guide.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
+    <div className="download-guide">
+      {/* Christmas Decorations */}
+      <div className="snowfall">
+        {[...Array(30)].map((_, i) => (
+          <div key={i} className="snowflake"></div>
+        ))}
+      </div>
+
+      <section className="download-hero">
+        <div className="container">
+          <div className="hero-content">
+            <div className="hero-badge">
+              <span>🎁 Free Christmas Resource</span>
+            </div>
+            <h1>Christmas Design Guide 2023</h1>
+            <p className="hero-subtitle">
+              Everything you need to create magical holiday designs for your brand
+            </p>
+            
+            <div className="download-card">
+              <div className="card-content">
+                <div className="guide-icon">
+                  <i className="fas fa-book-open"></i>
+                </div>
+                <div>
+                  <h3>Ultimate Christmas Design Guide</h3>
+                  <p>48 pages of festive design inspiration, tips, and templates</p>
+                  
+                  <div className="guide-features">
+                    <div className="feature">
+                      <i className="fas fa-check"></i>
+                      <span>Festive color palettes</span>
+                    </div>
+                    <div className="feature">
+                      <i className="fas fa-check"></i>
+                      <span>Christmas typography guide</span>
+                    </div>
+                    <div className="feature">
+                      <i className="fas fa-check"></i>
+                      <span>Social media templates</span>
+                    </div>
+                    <div className="feature">
+                      <i className="fas fa-check"></i>
+                      <span>Marketing campaign ideas</span>
+                    </div>
+                  </div>
+                  
+                  <button onClick={handleDownload} className="btn btn-primary btn-large">
+                    <i className="fas fa-download"></i> Download Free Guide
+                  </button>
+                  
+                  <p className="download-note">
+                    No email required. Instant download.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What's Inside */}
+      <section className="guide-contents">
+        <div className="container">
+          <h2 className="section-title">What's Inside the Guide</h2>
+          
+          <div className="contents-grid">
+            <div className="content-card">
+              <div className="content-icon">
+                <i className="fas fa-palette"></i>
+              </div>
+              <h3>Festive Color Palettes</h3>
+              <p>Complete Christmas color systems with HEX codes and usage guidelines</p>
+            </div>
+            
+            <div className="content-card">
+              <div className="content-icon">
+                <i className="fas fa-font"></i>
+              </div>
+              <h3>Typography Guide</h3>
+              <p>Best fonts for holiday designs with pairing suggestions</p>
+            </div>
+            
+            <div className="content-card">
+              <div className="content-icon">
+                <i className="fas fa-images"></i>
+              </div>
+              <h3>Design Templates</h3>
+              <p>Ready-to-use templates for social media and marketing</p>
+            </div>
+            
+            <div className="content-card">
+              <div className="content-icon">
+                <i className="fas fa-lightbulb"></i>
+              </div>
+              <h3>Creative Ideas</h3>
+              <p>Inspiration for Christmas campaigns and promotions</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="guide-cta">
+        <div className="container">
+          <div className="cta-content">
+            <h2>Ready for Professional Christmas Designs?</h2>
+            <p>
+              Let our team create custom holiday designs that will make your 
+              brand stand out this Christmas season.
+            </p>
+            <div className="cta-buttons">
+              <a href="/contact?project=christmas" className="btn btn-primary">
+                <i className="fas fa-gift"></i> Get Christmas Quote
+              </a>
+              <a href="/portfolio" className="btn btn-secondary">
+                <i className="fas fa-images"></i> View Portfolio
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default DownloadGuide;

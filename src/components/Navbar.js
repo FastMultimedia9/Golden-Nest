@@ -1,4 +1,3 @@
-// Navbar.js - OPTIMIZED FOR SPACE
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -50,13 +49,11 @@ const Navbar = () => {
       <div className="navbar-container">
         {/* Logo */}
         <Link to="/" className="navbar-logo" onClick={() => handleNavigation('/')}>
-          <div className="logo-icon">
-            <i className="fas fa-palette"></i>
-          </div>
-          <div className="logo-text">
-            <span className="logo-primary">Fast</span>
-            <span className="logo-secondary">Multimedia</span>
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="Fast Multimedia Logo" 
+            className="navbar-logo-image"
+          />
         </Link>
 
         {/* Mobile Menu Toggle */}

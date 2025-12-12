@@ -1,4 +1,4 @@
-// App.js
+// App.js - UPDATED VERSION
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -19,6 +19,8 @@ import ContactPage from './pages/ContactPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
+import PortfolioCaseStudy from './pages/portfolio/PortfolioCaseStudy';
+import DownloadGuide from './pages/DownloadGuide';
 import './App.css';
 
 const ScrollToTop = () => {
@@ -40,6 +42,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/portfolio/:projectId" element={<PortfolioCaseStudy />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/resources" element={<ResourcesPage />} />
@@ -50,6 +53,7 @@ function App() {
             <Route path="/resources/ebooks" element={<EbooksPage />} />
             <Route path="/resources/affiliates" element={<AffiliatesPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/download-guide" element={<DownloadGuide />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/cookies" element={<CookiePolicy />} />

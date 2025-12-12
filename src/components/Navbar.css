@@ -37,43 +37,9 @@
   margin-right: 30px;
 }
 
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 10px;
-  color: white;
-  font-size: 18px;
-  flex-shrink: 0;
-}
 
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-  flex-shrink: 0;
-}
 
-.logo-primary {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--dark-color);
-  letter-spacing: -0.5px;
-  line-height: 1;
-}
 
-.logo-secondary {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--accent-color);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  line-height: 1;
-}
 
 /* Mobile Toggle */
 .navbar-toggle {
@@ -511,4 +477,78 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-color);
+}
+
+.logo-container {
+  position: relative;
+}
+
+.logo-text-fallback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logo-primary {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--dark-color);
+}
+
+.logo-secondary {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--primary-color);
+}
+
+/* Navbar Logo Image */
+.navbar-logo-image {
+  height: 45px; /* Adjust based on your logo */
+  width: auto;
+  transition: var(--transition);
+}
+
+.navbar-logo-image:hover {
+  transform: scale(1.05);
+}
+
+/* For responsive design */
+@media (max-width: 768px) {
+  .navbar-logo-image {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-logo-image {
+    height: 35px;
+  }
+}
+
+/* Remove the old logo styles */
+.logo-icon,
+.logo-text,
+.logo-primary,
+.logo-secondary,
+.logo-container,
+.logo-text-fallback {
+  display: none !important;
 }
