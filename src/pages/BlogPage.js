@@ -1,11 +1,13 @@
-// pages/BlogPage.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getViews, getPopularPosts, formatNumber } from '../utils/blogStorage';
 import './BlogPage.css';
 
 const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [popularPosts, setPopularPosts] = useState([]);
+  const [blogPosts, setBlogPosts] = useState([]);
   const navigate = useNavigate();
 
   const authorInfo = {
@@ -19,18 +21,17 @@ const BlogPage = () => {
     }
   };
 
-  const blogPosts = [
+  // Initial blog posts data
+  const initialPosts = [
     {
       id: 1,
-      title: 'The Future of Web Design: 2024 Trends',
-      excerpt: 'Discover the latest web design trends that are shaping user experiences this year.',
+      title: 'Top Web Design Trends for 2025',
+      excerpt: 'As web design and its best practices are ever-evolving, web designers need to constantly adapt to new challenges and opportunities.',
       category: 'design',
       date: 'Mar 15, 2024',
       readTime: '5 min read',
-      image: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&auto=format&fit=crop',
+      image: 'https://www.hostinger.com/in/tutorials/wp-content/uploads/sites/52/2023/06/Website-Development-alt-1.jpg',
       featured: true,
-      views: '1.2K',
-      comments: 24,
       content: 'Full article content here...'
     },
     {
@@ -41,8 +42,7 @@ const BlogPage = () => {
       date: 'Mar 10, 2024',
       readTime: '8 min read',
       image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop',
-      views: '890',
-      comments: 18,
+      featured: false,
       content: 'Full article content here...'
     },
     {
@@ -53,8 +53,7 @@ const BlogPage = () => {
       date: 'Mar 5, 2024',
       readTime: '6 min read',
       image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&auto=format&fit=crop',
-      views: '1.5K',
-      comments: 32,
+      featured: false,
       content: 'Full article content here...'
     },
     {
@@ -65,8 +64,7 @@ const BlogPage = () => {
       date: 'Feb 28, 2024',
       readTime: '7 min read',
       image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop',
-      views: '980',
-      comments: 21,
+      featured: false,
       content: 'Full article content here...'
     },
     {
@@ -77,8 +75,7 @@ const BlogPage = () => {
       date: 'Feb 20, 2024',
       readTime: '6 min read',
       image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop',
-      views: '1.1K',
-      comments: 27,
+      featured: false,
       content: 'Full article content here...'
     },
     {
@@ -89,62 +86,103 @@ const BlogPage = () => {
       date: 'Feb 15, 2024',
       readTime: '10 min read',
       image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&auto=format&fit=crop',
-      views: '750',
-      comments: 15,
+      featured: false,
+      content: 'Full article content here...'
+    },
+    {
+      id: 7,
+      title: 'JavaScript Frameworks Comparison 2024',
+      excerpt: 'React vs Vue vs Angular: Which framework should you choose?',
+      category: 'development',
+      date: 'Feb 10, 2024',
+      readTime: '9 min read',
+      image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=800&auto=format&fit=crop',
+      featured: false,
+      content: 'Full article content here...'
+    },
+    {
+      id: 8,
+      title: 'Typography Principles for Web Design',
+      excerpt: 'Master the art of typography to enhance readability and user experience.',
+      category: 'design',
+      date: 'Feb 5, 2024',
+      readTime: '7 min read',
+      image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&auto=format&fit=crop',
+      featured: false,
       content: 'Full article content here...'
     }
   ];
 
   const categories = [
-    { id: 'all', name: 'All Articles', count: 6 },
-    { id: 'design', name: 'Design', count: 3 },
-    { id: 'development', name: 'Development', count: 3 },
+    { id: 'all', name: 'All Articles', count: initialPosts.length },
+    { id: 'design', name: 'Design', count: initialPosts.filter(p => p.category === 'design').length },
+    { id: 'development', name: 'Development', count: initialPosts.filter(p => p.category === 'development').length },
     { id: 'business', name: 'Business', count: 0 }
   ];
 
-  const popularPosts = [
-    {
-      id: 1,
-      title: '10 Essential Design Tools for 2024',
-      views: '2.1K',
-      date: '2 weeks ago'
-    },
-    {
-      id: 2,
-      title: 'React vs Vue: Which to Choose?',
-      views: '1.8K',
-      date: '3 weeks ago'
-    },
-    {
-      id: 3,
-      title: 'Freelance Pricing Strategies',
-      views: '1.5K',
-      date: '1 month ago'
-    },
-    {
-      id: 4,
-      title: 'Building a Personal Brand Online',
-      views: '1.3K',
-      date: '1 month ago'
-    }
-  ];
+  useEffect(() => {
+    // Load popular posts
+    const popular = getPopularPosts(initialPosts);
+    setPopularPosts(popular);
+    
+    // Load view counts for all posts
+    const postsWithViews = initialPosts.map(post => ({
+      ...post,
+      views: getViews(post.id) || 0,
+      comments: 0 // This would come from your comments storage
+    }));
+    
+    setBlogPosts(postsWithViews);
+  }, []);
 
   const handleReadMore = (postId) => {
-    // In a real app, this would navigate to a single post page
-    // For now, we'll simulate it with an alert
-    const post = blogPosts.find(p => p.id === postId);
-    if (post) {
-      alert(`Reading: ${post.title}\n\nThis would navigate to a full article page in a real application.`);
-      // Uncomment for actual navigation:
-      // navigate(`/blog/${postId}`, { state: { post } });
-    }
+    navigate(`/blog/${postId}`);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      alert(`Searching for: "${searchQuery}"\n\nSearch functionality would be implemented with backend integration.`);
-      setSearchQuery('');
+      // Filter posts based on search query
+      const filtered = initialPosts.filter(post => 
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      
+      // Update blog posts with search results
+      const postsWithViews = filtered.map(post => ({
+        ...post,
+        views: getViews(post.id) || 0
+      }));
+      
+      setBlogPosts(postsWithViews);
+      setActiveCategory('all');
+    } else {
+      // Reset to all posts
+      const postsWithViews = initialPosts.map(post => ({
+        ...post,
+        views: getViews(post.id) || 0
+      }));
+      setBlogPosts(postsWithViews);
+    }
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    setActiveCategory(categoryId);
+    
+    if (categoryId === 'all') {
+      const postsWithViews = initialPosts.map(post => ({
+        ...post,
+        views: getViews(post.id) || 0
+      }));
+      setBlogPosts(postsWithViews);
+    } else {
+      const filtered = initialPosts.filter(post => post.category === categoryId);
+      const postsWithViews = filtered.map(post => ({
+        ...post,
+        views: getViews(post.id) || 0
+      }));
+      setBlogPosts(postsWithViews);
     }
   };
 
@@ -152,14 +190,24 @@ const BlogPage = () => {
     e.preventDefault();
     const email = e.target.querySelector('input[type="email"]').value;
     if (email) {
-      alert(`Thank you for subscribing with: ${email}\n\nYou'll receive our latest updates.`);
-      e.target.reset();
+      // Save to localStorage
+      const subscriptions = JSON.parse(localStorage.getItem('blog_subscriptions') || '[]');
+      if (!subscriptions.includes(email)) {
+        subscriptions.push(email);
+        localStorage.setItem('blog_subscriptions', JSON.stringify(subscriptions));
+        alert(`Thank you for subscribing with: ${email}\n\nYou'll receive our latest updates.`);
+        e.target.reset();
+      } else {
+        alert('You are already subscribed!');
+      }
     }
   };
 
   const filteredPosts = activeCategory === 'all' 
     ? blogPosts 
     : blogPosts.filter(post => post.category === activeCategory);
+
+  const featuredPost = blogPosts.find(post => post.featured) || blogPosts[0];
 
   return (
     <div className="blog-page">
@@ -191,45 +239,55 @@ const BlogPage = () => {
       <div className="container blog-layout">
         <div className="blog-main">
           {/* Featured Post */}
-          <section className="featured-post">
-            <div className="container">
-              <div className="featured-post-card">
-                <div className="featured-post-image">
-                  <img src={blogPosts[0].image} alt={blogPosts[0].title} />
-                  <div className="featured-badge">Featured</div>
-                </div>
-                <div className="featured-post-content">
-                  <div className="post-meta">
-                    <span className="post-category design">Design</span>
-                    <span className="post-date">{blogPosts[0].date}</span>
+          {featuredPost && (
+            <section className="featured-post">
+              <div className="container">
+                <div className="featured-post-card">
+                  <div className="featured-post-image">
+                    <img src={featuredPost.image} alt={featuredPost.title} />
+                    <div className="featured-badge">Featured</div>
                   </div>
-                  <h2>{blogPosts[0].title}</h2>
-                  <p>{blogPosts[0].excerpt}</p>
-                  
-                  {/* Author Info */}
-                  <div className="post-author">
-                    <img src={authorInfo.avatar} alt={authorInfo.name} />
-                    <div>
-                      <h4>{authorInfo.name}</h4>
-                      <p>{authorInfo.bio}</p>
-                      <div className="author-social">
-                        <a href={authorInfo.social.twitter}><i className="fab fa-twitter"></i></a>
-                        <a href={authorInfo.social.linkedin}><i className="fab fa-linkedin"></i></a>
-                        <a href={authorInfo.social.dribbble}><i className="fab fa-dribbble"></i></a>
+                  <div className="featured-post-content">
+                    <div className="post-meta">
+                      <span className={`post-category ${featuredPost.category}`}>
+                        {featuredPost.category.charAt(0).toUpperCase() + featuredPost.category.slice(1)}
+                      </span>
+                      <span className="post-date">{featuredPost.date}</span>
+                    </div>
+                    <h2>{featuredPost.title}</h2>
+                    <p>{featuredPost.excerpt}</p>
+                    
+                    {/* Post Stats */}
+                    <div className="post-stats">
+                      <span><i className="fas fa-eye"></i> {formatNumber(featuredPost.views)} views</span>
+                      <span><i className="far fa-clock"></i> {featuredPost.readTime}</span>
+                    </div>
+                    
+                    {/* Author Info */}
+                    <div className="post-author">
+                      <img src={authorInfo.avatar} alt={authorInfo.name} />
+                      <div>
+                        <h4>{authorInfo.name}</h4>
+                        <p>{authorInfo.bio}</p>
+                        <div className="author-social">
+                          <a href={authorInfo.social.twitter}><i className="fab fa-twitter"></i></a>
+                          <a href={authorInfo.social.linkedin}><i className="fab fa-linkedin"></i></a>
+                          <a href={authorInfo.social.dribbble}><i className="fab fa-dribbble"></i></a>
+                        </div>
                       </div>
                     </div>
+                    
+                    <button 
+                      className="read-more-btn"
+                      onClick={() => handleReadMore(featuredPost.id)}
+                    >
+                      Read Article <i className="fas fa-arrow-right"></i>
+                    </button>
                   </div>
-                  
-                  <button 
-                    className="read-more-btn"
-                    onClick={() => handleReadMore(blogPosts[0].id)}
-                  >
-                    Read Article <i className="fas fa-arrow-right"></i>
-                  </button>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Blog Content */}
           <section className="blog-content">
@@ -241,7 +299,7 @@ const BlogPage = () => {
                     <button
                       key={category.id}
                       className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
-                      onClick={() => setActiveCategory(category.id)}
+                      onClick={() => handleCategoryClick(category.id)}
                     >
                       {category.name}
                       <span className="category-count">({category.count})</span>
@@ -252,7 +310,21 @@ const BlogPage = () => {
                 {/* Sort Options */}
                 <div className="sort-options">
                   <span>Sort by:</span>
-                  <select className="sort-select" defaultValue="newest">
+                  <select 
+                    className="sort-select" 
+                    defaultValue="newest"
+                    onChange={(e) => {
+                      const sortedPosts = [...blogPosts];
+                      if (e.target.value === 'newest') {
+                        sortedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                      } else if (e.target.value === 'popular') {
+                        sortedPosts.sort((a, b) => b.views - a.views);
+                      } else if (e.target.value === 'oldest') {
+                        sortedPosts.sort((a, b) => new Date(a.date) - new Date(b.date));
+                      }
+                      setBlogPosts(sortedPosts);
+                    }}
+                  >
                     <option value="newest">Newest First</option>
                     <option value="popular">Most Popular</option>
                     <option value="oldest">Oldest First</option>
@@ -261,50 +333,71 @@ const BlogPage = () => {
               </div>
 
               {/* Blog Grid */}
-              <div className="blog-grid">
-                {filteredPosts.slice(1).map(post => (
-                  <div key={post.id} className="blog-card">
-                    <div className="blog-card-image">
-                      <img src={post.image} alt={post.title} />
-                      <div className="category-tag">{post.category}</div>
-                    </div>
-                    <div className="blog-card-content">
-                      <div className="post-meta">
-                        <span className="post-date">{post.date}</span>
-                        <span className="post-read-time">{post.readTime}</span>
+              {filteredPosts.length > 0 ? (
+                <>
+                  <div className="blog-grid">
+                    {filteredPosts
+                      .filter(post => !post.featured)
+                      .map(post => (
+                      <div key={post.id} className="blog-card">
+                        <div className="blog-card-image">
+                          <img src={post.image} alt={post.title} />
+                          <div className="category-tag">{post.category}</div>
+                        </div>
+                        <div className="blog-card-content">
+                          <div className="post-meta">
+                            <span className="post-date">{post.date}</span>
+                            <span className="post-read-time">{post.readTime}</span>
+                          </div>
+                          <h3>{post.title}</h3>
+                          <p>{post.excerpt}</p>
+                          
+                          {/* Post Stats */}
+                          <div className="post-stats">
+                            <span><i className="fas fa-eye"></i> {formatNumber(post.views)} views</span>
+                            <span><i className="far fa-clock"></i> {post.readTime}</span>
+                          </div>
+                          
+                          <button 
+                            className="read-more-link"
+                            onClick={() => handleReadMore(post.id)}
+                          >
+                            Read More <i className="fas fa-arrow-right"></i>
+                          </button>
+                        </div>
                       </div>
-                      <h3>{post.title}</h3>
-                      <p>{post.excerpt}</p>
-                      
-                      {/* Post Stats */}
-                      <div className="post-stats">
-                        <span><i className="fas fa-eye"></i> {post.views}</span>
-                        <span><i className="fas fa-comment"></i> {post.comments}</span>
-                      </div>
-                      
-                      <button 
-                        className="read-more-link"
-                        onClick={() => handleReadMore(post.id)}
-                      >
-                        Read More <i className="fas fa-arrow-right"></i>
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
 
-              {/* Pagination */}
-              <div className="pagination">
-                <button className="pagination-btn disabled">← Previous</button>
-                <div className="page-numbers">
-                  <span className="active">1</span>
-                  <span>2</span>
-                  <span>3</span>
-                  <span className="ellipsis">...</span>
-                  <span>10</span>
+                  {/* Pagination */}
+                  <div className="pagination">
+                    <button className="pagination-btn disabled">← Previous</button>
+                    <div className="page-numbers">
+                      <span className="active">1</span>
+                      <span>2</span>
+                      <span>3</span>
+                      <span className="ellipsis">...</span>
+                      <span>10</span>
+                    </div>
+                    <button className="pagination-btn">Next →</button>
+                  </div>
+                </>
+              ) : (
+                <div className="no-posts">
+                  <i className="far fa-newspaper"></i>
+                  <h3>No articles found</h3>
+                  <p>Try a different search or category</p>
+                  <button 
+                    onClick={() => {
+                      setSearchQuery('');
+                      handleCategoryClick('all');
+                    }}
+                    className="reset-btn"
+                  >
+                    Show All Articles
+                  </button>
                 </div>
-                <button className="pagination-btn">Next →</button>
-              </div>
+              )}
 
               {/* Newsletter */}
               <div className="newsletter-section">
@@ -322,6 +415,7 @@ const BlogPage = () => {
                       Subscribe <i className="fas fa-paper-plane"></i>
                     </button>
                   </form>
+                  <small>Join {formatNumber(JSON.parse(localStorage.getItem('blog_subscriptions') || '[]').length)} subscribers</small>
                 </div>
               </div>
             </div>
@@ -343,20 +437,29 @@ const BlogPage = () => {
             </div>
           </div>
 
-          {/* Popular Posts */}
+          {/* Popular Posts - REAL WORKING */}
           <div className="sidebar-widget">
-            <h3>Popular Posts</h3>
+            <h3>Most Popular</h3>
             <div className="popular-posts">
-              {popularPosts.map(post => (
-                <div key={post.id} className="popular-post">
-                  <h4 onClick={() => alert(`Reading: ${post.title}`)}>{post.title}</h4>
-                  <div className="post-meta">
-                    <span><i className="fas fa-eye"></i> {post.views}</span>
-                    <span>•</span>
-                    <span>{post.date}</span>
+              {popularPosts.length > 0 ? (
+                popularPosts.map((post, index) => (
+                  <div key={post.id} className="popular-post">
+                    <div className="popular-post-rank">{index + 1}</div>
+                    <div className="popular-post-content">
+                      <h4 onClick={() => handleReadMore(post.id)}>{post.title}</h4>
+                      <div className="post-meta">
+                        <span><i className="fas fa-eye"></i> {formatNumber(post.views)}</span>
+                        <span>•</span>
+                        <span>{post.date}</span>
+                      </div>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="no-popular-posts">
+                  <p>No popular posts yet. Be the first to read!</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -368,7 +471,7 @@ const BlogPage = () => {
                 <button 
                   key={category.id} 
                   className={`category-item ${activeCategory === category.id ? 'active' : ''}`}
-                  onClick={() => setActiveCategory(category.id)}
+                  onClick={() => handleCategoryClick(category.id)}
                 >
                   <span>{category.name}</span>
                   <span className="count">{category.count}</span>
@@ -377,27 +480,54 @@ const BlogPage = () => {
             </div>
           </div>
 
-          {/* Resources */}
+          {/* Recent Views */}
           <div className="sidebar-widget">
-            <h3>Free Resources</h3>
-            <div className="resources-list">
-              <button className="resource-link" onClick={() => alert('Downloading UI Kit...')}>
-                <i className="fas fa-download"></i>
-                <span>Free UI Kit</span>
-              </button>
-              <button className="resource-link" onClick={() => alert('Opening Design eBook...')}>
-                <i className="fas fa-book"></i>
-                <span>Design eBook</span>
-              </button>
-              <button className="resource-link" onClick={() => alert('Opening Tutorial Videos...')}>
-                <i className="fas fa-video"></i>
-                <span>Tutorial Videos</span>
-              </button>
-              <button className="resource-link" onClick={() => alert('Downloading Icon Set...')}>
-                <i className="fas fa-icons"></i>
-                <span>Icon Set (500+)</span>
-              </button>
+            <h3>Recently Viewed</h3>
+            <div className="recent-views">
+              {(() => {
+                const allViews = JSON.parse(localStorage.getItem('blog_views') || '{}');
+                const viewedPosts = Object.keys(allViews)
+                  .map(id => {
+                    const post = initialPosts.find(p => p.id === parseInt(id));
+                    if (post) {
+                      return {
+                        ...post,
+                        lastViewed: allViews[id].lastView
+                      };
+                    }
+                    return null;
+                  })
+                  .filter(Boolean)
+                  .sort((a, b) => b.lastViewed - a.lastViewed)
+                  .slice(0, 3);
+
+                return viewedPosts.length > 0 ? (
+                  viewedPosts.map(post => (
+                    <div key={post.id} className="recent-view" onClick={() => handleReadMore(post.id)}>
+                      <img src={post.image} alt={post.title} />
+                      <div>
+                        <h4>{post.title}</h4>
+                        <span className="view-time">Viewed recently</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-recent-views">No recent views</p>
+                );
+              })()}
             </div>
+          </div>
+
+          {/* Newsletter Signup */}
+          <div className="sidebar-widget">
+            <h3>Weekly Digest</h3>
+            <p>Get the top posts delivered weekly:</p>
+            <form className="sidebar-newsletter-form" onSubmit={handleSubscribe}>
+              <input type="email" placeholder="Your email" required />
+              <button type="submit">
+                <i className="fas fa-envelope"></i> Subscribe
+              </button>
+            </form>
           </div>
 
           {/* Social Links */}

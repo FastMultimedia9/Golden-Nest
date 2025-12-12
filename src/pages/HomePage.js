@@ -192,12 +192,16 @@ const HomePage = () => {
             This holiday season, let us help you create stunning designs that capture the Christmas spirit.
             Special holiday rates available!
           </p>
-         <Link to="/contact?project=christmas" className="btn btn-primary christmas-btn">
-  <i className="fas fa-gift"></i> Get Holiday Design Package
-</Link>
-<Link to="/portfolio" className="btn btn-secondary">
-  <i className="fas fa-tree"></i> View Christmas Portfolio
-</Link>
+          
+          <div className="hero-buttons">
+            <Link to="/contact?project=christmas" className="btn btn-primary christmas-btn">
+              <i className="fas fa-gift"></i> Get Holiday Design Package
+            </Link>
+            <Link to="/portfolio" className="btn btn-secondary">
+              <i className="fas fa-tree"></i> View Christmas Portfolio
+            </Link>
+          </div>
+          
           <div className="hero-stats christmas-stats">
             <div className="stat-item">
               <h3 className="stat-number">🎄</h3>
@@ -213,12 +217,14 @@ const HomePage = () => {
             </div>
           </div>
         </div>
+        
         <div className="hero-visual">
           <div className="floating-shapes">
             <div className="shape shape-1 christmas-shape"></div>
             <div className="shape shape-2 christmas-shape"></div>
             <div className="shape shape-3 christmas-shape"></div>
           </div>
+          
           <div className="hero-image-container christmas-frame">
             <div className="hero-image-carousel">
               {heroImages.map((image, index) => (
@@ -374,9 +380,11 @@ const HomePage = () => {
           </div>
         </div>
         
-       <Link to="/contact?type=quote" className="btn btn-outline christmas-cta-btn">
-  <i className="fas fa-snowman"></i> Get Christmas Quote
-</Link>
+        <div className="section-cta">
+          <Link to="/contact?type=quote" className="btn btn-outline christmas-cta-btn">
+            <i className="fas fa-snowman"></i> Get Christmas Quote
+          </Link>
+        </div>
       </section>
 
       {/* Portfolio Preview */}
@@ -515,12 +523,14 @@ const HomePage = () => {
               Limited time holiday offer! Book a Christmas design project and get a 
               free festive social media pack. Let's create something magical together!
             </p>
-            <Link to="/contact?project=christmas" className="btn btn-light christmas-cta-btn">
-  <i className="fas fa-santa"></i> Book Christmas Call
-</Link>
-<Link to="/download-guide" className="btn btn-outline-light">
-  <i className="fas fa-download"></i> Get Holiday Guide
-</Link>
+            <div className="cta-buttons">
+              <Link to="/contact?project=christmas" className="btn btn-light christmas-cta-btn">
+                <i className="fas fa-santa"></i> Book Christmas Call
+              </Link>
+              <Link to="/download-guide" className="btn btn-outline-light">
+                <i className="fas fa-download"></i> Get Holiday Guide
+              </Link>
+            </div>
           </div>
           <div className="cta-visual">
             <div className="cta-image christmas-cta-image">

@@ -1,15 +1,47 @@
-/* src/pages/ContactPage.css */
-/* Updated with WhatsApp/Email Integration */
+/* src/pages/ContactPage.css - CORRECTED */
+:root {
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --accent-color: #ff6584;
+  --dark-color: #2d3748;
+  --light-color: #f8fafc;
+  --light-gray: #e2e8f0;
+  --success-color: #48bb78;
+  --danger-color: #f56565;
+  --warning-color: #ed8936;
+  --info-color: #4299e1;
+  --border-radius: 12px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  
+  /* Christmas Colors */
+  --christmas-red: #c41e3a;
+  --christmas-green: #228b22;
+  --christmas-gold: #ffd700;
+  --christmas-dark: #0a1a0f;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--dark-color);
+  background: #f8fafc;
+}
 
 .contact-page {
-  background: #f8fafc;
   min-height: 100vh;
+  background: #f8fafc;
 }
 
 /* Christmas Mode */
 .christmas-mode {
   background: linear-gradient(135deg, #0a1a0f 0%, #1a0f0a 100%);
-  color: #fff;
 }
 
 .christmas-mode .section-title,
@@ -35,6 +67,7 @@
   background: white;
   border-radius: 50%;
   animation: fall linear infinite;
+  pointer-events: none;
 }
 
 @keyframes fall {
@@ -45,7 +78,7 @@
 
 /* Contact Hero */
 .contact-hero {
-  padding: 80px 0 60px;
+  padding: 120px 0 80px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: relative;
   overflow: hidden;
@@ -55,45 +88,70 @@
   background: linear-gradient(135deg, var(--christmas-dark) 0%, var(--christmas-green) 100%);
 }
 
+.contact-hero .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-content {
+  text-align: center;
+  color: white;
+}
+
 .christmas-badge {
   background: var(--christmas-red);
   color: white;
-  padding: 10px 20px;
+  padding: 10px 25px;
   border-radius: 50px;
   display: inline-block;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   animation: pulse 2s infinite;
+  font-weight: 600;
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 0 0 0 rgba(196, 30, 58, 0.7);
+  }
+  50% { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 0 10px rgba(196, 30, 58, 0);
+  }
 }
 
 .contact-title {
   font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
   color: white;
+  line-height: 1.2;
 }
 
 .contact-subtitle {
   font-size: 1.25rem;
-  opacity: 0.9;
+  opacity: 0.95;
   max-width: 700px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 3rem;
   color: white;
+  line-height: 1.6;
 }
 
 /* Christmas Offer Card */
 .christmas-offer-card {
   background: linear-gradient(135deg, #1a472a 0%, #2e8b57 100%);
   border-radius: 20px;
-  padding: 30px;
+  padding: 35px;
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 30px;
   margin-top: 40px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
   border: 3px solid var(--christmas-gold);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
@@ -111,15 +169,22 @@
   flex-shrink: 0;
 }
 
+.offer-content {
+  flex: 1;
+  text-align: left;
+}
+
 .offer-content h3 {
   color: white;
-  margin-bottom: 10px;
-  font-size: 1.5rem;
+  margin-bottom: 12px;
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
 .offer-content p {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
 
 .offer-features {
@@ -130,13 +195,14 @@
 
 .feature-tag {
   background: rgba(255, 255, 255, 0.15);
-  padding: 8px 15px;
+  padding: 8px 16px;
   border-radius: 50px;
   font-size: 0.9rem;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   color: white;
+  font-weight: 500;
 }
 
 .feature-tag i {
@@ -150,21 +216,35 @@
   z-index: 2;
 }
 
-.container {
+.contact-form-section .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+.contact-form-wrapper {
   display: flex;
   gap: 40px;
 }
 
-.form-container {
-  flex: 2;
+@media (max-width: 992px) {
+  .contact-form-wrapper {
+    flex-direction: column;
+  }
 }
 
-.quick-contact-sidebar {
-  flex: 1;
-  min-width: 300px;
+/* Form Container */
+.form-container {
+  flex: 2;
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow);
+}
+
+.christmas-form {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 3px solid var(--christmas-gold);
 }
 
 .form-header {
@@ -184,6 +264,7 @@
   color: #666;
   max-width: 600px;
   margin: 0 auto 2rem;
+  line-height: 1.6;
 }
 
 /* Christmas Timeline */
@@ -222,19 +303,6 @@
   color: var(--dark-color);
 }
 
-/* Form Container */
-.form-container {
-  background: white;
-  border-radius: var(--border-radius);
-  padding: 40px;
-  box-shadow: var(--shadow);
-}
-
-.christmas-form {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border: 3px solid var(--christmas-gold);
-}
-
 /* Form Elements */
 .contact-form {
   margin-top: 20px;
@@ -252,6 +320,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  font-weight: 600;
 }
 
 .form-section-header h3 i {
@@ -277,21 +346,10 @@
 
 .form-label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-weight: 600;
   color: var(--dark-color);
   font-size: 0.95rem;
-}
-
-.form-label::after {
-  content: " *";
-  color: #dc3545;
-}
-
-.form-label:not(:has(+ .form-input[required]))::after,
-.form-label:not(:has(+ .form-select[required]))::after,
-.form-label:not(:has(+ .form-textarea[required]))::after {
-  content: "";
 }
 
 .form-input,
@@ -299,11 +357,12 @@
 .form-textarea {
   width: 100%;
   padding: 14px 18px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--light-gray);
   border-radius: 8px;
   font-size: 16px;
-  transition: all 0.3s ease;
-  background: #fafafa;
+  transition: var(--transition);
+  background: white;
+  font-family: inherit;
 }
 
 .form-input:focus,
@@ -311,18 +370,18 @@
 .form-textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  background: white;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-textarea {
   min-height: 150px;
   resize: vertical;
+  line-height: 1.5;
 }
 
 .form-hint {
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
   font-size: 12px;
   color: #666;
   font-style: italic;
@@ -343,12 +402,12 @@
 }
 
 .method-option {
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--light-gray);
   border-radius: 12px;
   padding: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: #fafafa;
+  transition: var(--transition);
+  background: white;
 }
 
 .method-option:hover {
@@ -419,11 +478,13 @@
   height: 18px;
   margin-top: 3px;
   accent-color: var(--primary-color);
+  cursor: pointer;
 }
 
 .checkbox-label span {
   flex: 1;
   color: var(--dark-color);
+  line-height: 1.5;
 }
 
 .christmas-newsletter .checkbox-label span {
@@ -456,8 +517,16 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   text-decoration: none;
+  font-family: inherit;
+  text-align: center;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 18px 32px;
+  font-size: 17px;
 }
 
 .btn-primary {
@@ -532,20 +601,21 @@
   border-left: 4px solid var(--primary-color);
 }
 
-.form-instructions strong {
-  display: block;
-  margin-bottom: 10px;
+.instructions-title {
+  margin-bottom: 15px;
   color: var(--dark-color);
+  font-size: 1.1rem;
 }
 
-.form-instructions ol {
+.instructions-list {
   margin: 15px 0 0 20px;
   padding: 0;
 }
 
-.form-instructions li {
+.instructions-list li {
   padding: 6px 0;
   color: #555;
+  line-height: 1.6;
 }
 
 /* Success Message */
@@ -573,6 +643,7 @@
   font-size: 2rem;
   color: var(--christmas-green);
   margin-bottom: 15px;
+  font-weight: 700;
 }
 
 .success-text {
@@ -582,6 +653,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
 .christmas-bonus {
@@ -595,6 +667,7 @@
 .christmas-bonus h4 {
   color: var(--christmas-green);
   margin-bottom: 15px;
+  font-size: 1.3rem;
 }
 
 .christmas-bonus ul {
@@ -608,6 +681,7 @@
   align-items: center;
   gap: 10px;
   color: var(--dark-color);
+  font-weight: 500;
 }
 
 .christmas-bonus li i {
@@ -620,19 +694,29 @@
   border-radius: 10px;
   margin: 25px 0;
   border-left: 4px solid #2196f3;
-  white-space: pre-line;
 }
 
-.backup-instructions p {
-  margin: 10px 0;
+.instructions-text {
+  white-space: pre-line;
+  margin: 15px 0 0;
   color: #1565c0;
+  line-height: 1.6;
 }
 
 /* Quick Contact Sidebar */
 .quick-contact-sidebar {
+  flex: 1;
+  min-width: 300px;
   position: sticky;
   top: 20px;
   align-self: flex-start;
+}
+
+@media (max-width: 992px) {
+  .quick-contact-sidebar {
+    position: static;
+    min-width: auto;
+  }
 }
 
 .contact-card, .christmas-features-card {
@@ -650,6 +734,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  font-weight: 700;
 }
 
 .contact-card p {
@@ -758,6 +843,7 @@
 
 .features-list li span {
   flex: 1;
+  line-height: 1.5;
 }
 
 /* FAQ Section */
@@ -779,6 +865,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 @media (max-width: 992px) {
@@ -792,19 +880,24 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  transition: var(--transition);
+  cursor: pointer;
 }
 
 .faq-item:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.faq-item.active {
+  border: 2px solid var(--primary-color);
 }
 
 .faq-question {
   padding: 25px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
+  align-items: flex-start;
   background: #f8f9ff;
 }
 
@@ -813,14 +906,18 @@
   color: var(--dark-color);
   margin: 0;
   flex: 1;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .faq-question i {
   color: var(--primary-color);
   transition: transform 0.3s ease;
+  margin-left: 15px;
+  flex-shrink: 0;
 }
 
-.faq-question.active i {
+.faq-item.active .faq-question i {
   transform: rotate(180deg);
 }
 
@@ -870,13 +967,14 @@
 .map-placeholder i {
   font-size: 64px;
   margin-bottom: 20px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .map-placeholder h3 {
   font-size: 2rem;
   margin-bottom: 10px;
   color: white;
+  font-weight: 700;
 }
 
 .map-placeholder p {
@@ -904,35 +1002,48 @@
   transform: translateY(0);
 }
 
+/* Loading Spinner */
+.fa-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Responsive Design */
-@media (max-width: 992px) {
-  .container {
-    flex-direction: column;
-  }
-  
-  .quick-contact-sidebar {
-    position: static;
-    order: -1;
-    min-width: auto;
+@media (max-width: 768px) {
+  .contact-hero {
+    padding: 100px 0 60px;
   }
   
   .contact-title {
     font-size: 2.5rem;
   }
   
-  .section-title {
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .contact-hero {
-    padding: 60px 0 40px;
+  .contact-subtitle {
+    font-size: 1.1rem;
+    padding: 0 20px;
   }
   
-  .contact-form-section,
-  .faq-section {
-    padding: 60px 0;
+  .christmas-offer-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 25px 20px;
+    margin: 0 20px;
+  }
+  
+  .offer-content {
+    text-align: center;
+  }
+  
+  .offer-features {
+    justify-content: center;
+  }
+  
+  .section-title {
+    font-size: 2rem;
   }
   
   .form-container {
@@ -943,6 +1054,18 @@
   .christmas-features-card {
     padding: 25px 20px;
   }
+  
+  .timeline-item span {
+    font-size: 0.9rem;
+  }
+  
+  .map-placeholder {
+    padding: 40px 20px;
+  }
+  
+  .map-placeholder h3 {
+    font-size: 1.6rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -950,54 +1073,35 @@
     font-size: 2rem;
   }
   
-  .christmas-offer-card {
+  .christmas-timeline {
     flex-direction: column;
-    text-align: center;
-    padding: 25px 20px;
+    gap: 20px;
   }
   
-  .offer-features {
-    justify-content: center;
+  .option-content i {
+    font-size: 24px;
   }
   
-  .timeline-item span {
-    font-size: 0.9rem;
+  .success-message {
+    padding: 30px 20px;
+  }
+  
+  .success-title {
+    font-size: 1.6rem;
+  }
+  
+  .contact-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .contact-buttons .btn {
+    width: 100%;
+    max-width: 250px;
   }
 }
 
-/* Variables */
-:root {
-  --primary-color: #667eea;
-  --secondary-color: #764ba2;
-  --dark-color: #2d3748;
-  --light-color: #f8fafc;
-  --success-color: #48bb78;
-  --danger-color: #f56565;
-  --warning-color: #ed8936;
-  --info-color: #4299e1;
-  --border-radius: 12px;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  
-  /* Christmas Colors */
-  --christmas-red: #c41e3a;
-  --christmas-green: #228b22;
-  --christmas-gold: #ffd700;
-  --christmas-dark: #0a1a0f;
-}
-
-/* Global Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.6;
-  color: var(--dark-color);
-}
-
+/* Utility Classes */
 .section {
   padding: 80px 0;
 }
@@ -1008,12 +1112,27 @@ body {
   padding: 0 20px;
 }
 
-/* Loading Spinner */
-.fa-spinner {
-  animation: spin 1s linear infinite;
+/* Fix for form validation */
+.form-input:invalid,
+.form-select:invalid,
+.form-textarea:invalid {
+  border-color: var(--danger-color);
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.form-input:valid,
+.form-select:valid,
+.form-textarea:valid {
+  border-color: var(--success-color);
+}
+
+/* Fix for disabled button */
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.submit-btn:disabled:hover {
+  box-shadow: none !important;
+  transform: none !important;
 }

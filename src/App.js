@@ -8,6 +8,7 @@ import AboutPage from './pages/AboutPage';
 import PortfolioPage from './pages/PortfolioPage';
 import ServicesPage from './pages/ServicesPage';
 import BlogPage from './pages/BlogPage';
+import ArticlePage from './pages/ArticlePage'; // Add this import
 import ResourcesPage from './pages/ResourcesPage';
 import TrainingPage from './pages/resources/TrainingPage';
 import TutorialsPage from './pages/resources/TutorialsPage';
@@ -45,6 +46,7 @@ function App() {
             <Route path="/portfolio/:projectId" element={<PortfolioCaseStudy />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:id" element={<ArticlePage />} /> {/* Add this route */}
             <Route path="/resources" element={<ResourcesPage />} />
             <Route path="/resources/training" element={<TrainingPage />} />
             <Route path="/resources/tutorials" element={<TutorialsPage />} />
