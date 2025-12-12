@@ -28,7 +28,7 @@ const AboutPage = () => {
       id: 1,
       name: 'Teye James',
       role: 'Founder & Creative Director',
-      bio: 'With over 8 years in graphic design and tech solutions, James leads our vision to provide exceptional design and technical services.',
+      bio: 'With over 8 years in graphic design and tech solutions, Collins leads our vision to provide exceptional design and technical services.',
       image: '/images/Teye-James.JPG'
     },
     {
@@ -42,7 +42,7 @@ const AboutPage = () => {
       id: 3,
       name: 'Tawiah Nicholas Tetteh',
       role: 'Tech Support Lead',
-      bio: 'With extensive experience in computer systems and networking, Nicholas ensures all tech solutions are reliable and efficient.',
+      bio: 'With extensive experience in computer systems and networking, Kwame ensures all tech solutions are reliable and efficient.',
       image: '/images/Nichola Tetteh.jpg'
     },
     {
