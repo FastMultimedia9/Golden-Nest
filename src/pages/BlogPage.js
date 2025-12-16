@@ -1,6 +1,8 @@
+// src/components/BlogPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getViews, getPopularPosts, formatNumber } from '../utils/blogStorage';
+import { blogAPI, formatNumber } from '../firebase';
+import { getViews as getLocalViews, getPopularPosts as getLocalPopularPosts } from '../utils/blogStorage';
 import './BlogPage.css';
 
 const BlogPage = () => {
@@ -8,6 +10,8 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [popularPosts, setPopularPosts] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
+  const [firebasePosts, setFirebasePosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   const authorInfo = {
@@ -21,168 +25,182 @@ const BlogPage = () => {
     }
   };
 
-  // Initial blog posts data
+  // Fallback posts if Firebase fails
   const initialPosts = [
     {
-      id: 1,
+      id: '1',
       title: 'Top Web Design Trends for 2025',
       excerpt: 'As web design and its best practices are ever-evolving, web designers need to constantly adapt to new challenges and opportunities.',
       category: 'design',
-      date: 'Mar 15, 2024',
+      date: 'Dec 15, 2024',
       readTime: '5 min read',
       image: 'https://www.hostinger.com/in/tutorials/wp-content/uploads/sites/52/2023/06/Website-Development-alt-1.jpg',
       featured: true,
-      content: 'Full article content here...'
+      views: 0,
+      comments: 0
     },
     {
-      id: 2,
+      id: '2',
       title: 'Building Scalable React Applications',
       excerpt: 'Learn best practices for creating maintainable and scalable React applications.',
       category: 'development',
-      date: 'Mar 10, 2024',
+      date: 'Dec 10, 2024',
       readTime: '8 min read',
       image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop',
       featured: false,
-      content: 'Full article content here...'
+      views: 0,
+      comments: 0
     },
     {
-      id: 3,
+      id: '3',
       title: 'Color Psychology in Branding',
       excerpt: 'How colors influence consumer behavior and brand perception.',
       category: 'design',
-      date: 'Mar 5, 2024',
+      date: 'Dec 5, 2024',
       readTime: '6 min read',
       image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&auto=format&fit=crop',
       featured: false,
-      content: 'Full article content here...'
+      views: 0,
+      comments: 0
     },
     {
-      id: 4,
+      id: '4',
       title: 'Optimizing Website Performance',
       excerpt: 'Essential techniques to improve your website loading speed and performance.',
       category: 'development',
-      date: 'Feb 28, 2024',
+      date: 'Nov 28, 2024',
       readTime: '7 min read',
       image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop',
       featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 5,
-      title: 'UI/UX Principles for Mobile Apps',
-      excerpt: 'Key design principles that enhance mobile user experiences.',
-      category: 'design',
-      date: 'Feb 20, 2024',
-      readTime: '6 min read',
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 6,
-      title: 'Introduction to API Integration',
-      excerpt: 'A beginner guide to integrating third-party APIs in your applications.',
-      category: 'development',
-      date: 'Feb 15, 2024',
-      readTime: '10 min read',
-      image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 7,
-      title: 'JavaScript Frameworks Comparison 2024',
-      excerpt: 'React vs Vue vs Angular: Which framework should you choose?',
-      category: 'development',
-      date: 'Feb 10, 2024',
-      readTime: '9 min read',
-      image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 8,
-      title: 'Typography Principles for Web Design',
-      excerpt: 'Master the art of typography to enhance readability and user experience.',
-      category: 'design',
-      date: 'Feb 5, 2024',
-      readTime: '7 min read',
-      image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
+      views: 0,
+      comments: 0
     }
   ];
 
   const categories = [
-    { id: 'all', name: 'All Articles', count: initialPosts.length },
-    { id: 'design', name: 'Design', count: initialPosts.filter(p => p.category === 'design').length },
-    { id: 'development', name: 'Development', count: initialPosts.filter(p => p.category === 'development').length },
+    { id: 'all', name: 'All Articles', count: 0 },
+    { id: 'design', name: 'Design', count: 0 },
+    { id: 'development', name: 'Development', count: 0 },
     { id: 'business', name: 'Business', count: 0 }
   ];
 
   useEffect(() => {
-    // Load popular posts
-    const popular = getPopularPosts(initialPosts);
-    setPopularPosts(popular);
+    const loadData = async () => {
+      setIsLoading(true);
+      
+      try {
+        // Try Firebase first
+        const posts = await blogAPI.getPosts();
+        
+        if (posts && posts.length > 0) {
+          setFirebasePosts(posts);
+          setBlogPosts(posts);
+          
+          // Update category counts
+          categories[0].count = posts.length;
+          categories[1].count = posts.filter(p => p.category === 'design').length;
+          categories[2].count = posts.filter(p => p.category === 'development').length;
+          
+          // Get popular posts from Firebase
+          const popular = await blogAPI.getPopularPosts(5);
+          setPopularPosts(popular);
+        } else {
+          // Use local data
+          const postsWithViews = initialPosts.map(post => ({
+            ...post,
+            views: getLocalViews(post.id) || 0
+          }));
+          
+          setBlogPosts(postsWithViews);
+          setFirebasePosts([]);
+          
+          categories[0].count = initialPosts.length;
+          categories[1].count = initialPosts.filter(p => p.category === 'design').length;
+          categories[2].count = initialPosts.filter(p => p.category === 'development').length;
+          
+          const popular = getLocalPopularPosts(initialPosts, 5);
+          setPopularPosts(popular);
+        }
+      } catch (error) {
+        console.error('Error loading data from Firebase:', error);
+        // Fallback to local data
+        const postsWithViews = initialPosts.map(post => ({
+          ...post,
+          views: getLocalViews(post.id) || 0
+        }));
+        
+        setBlogPosts(postsWithViews);
+        
+        categories[0].count = initialPosts.length;
+        categories[1].count = initialPosts.filter(p => p.category === 'design').length;
+        categories[2].count = initialPosts.filter(p => p.category === 'development').length;
+        
+        const popular = getLocalPopularPosts(initialPosts, 5);
+        setPopularPosts(popular);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Load view counts for all posts
-    const postsWithViews = initialPosts.map(post => ({
-      ...post,
-      views: getViews(post.id) || 0,
-      comments: 0 // This would come from your comments storage
-    }));
+    loadData();
     
-    setBlogPosts(postsWithViews);
+    // Set up real-time listener for Firebase posts
+    const unsubscribe = blogAPI.onPostsUpdate((posts) => {
+      if (posts && posts.length > 0) {
+        setFirebasePosts(posts);
+        setBlogPosts(posts);
+        
+        // Update category counts
+        categories[0].count = posts.length;
+        categories[1].count = posts.filter(p => p.category === 'design').length;
+        categories[2].count = posts.filter(p => p.category === 'development').length;
+        
+        // Update popular posts
+        const sorted = [...posts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+        setPopularPosts(sorted);
+      }
+    });
+    
+    return () => unsubscribe();
   }, []);
 
-  const handleReadMore = (postId) => {
+  const handleReadMore = async (postId) => {
+    try {
+      // Try Firebase first
+      await blogAPI.trackView(postId);
+    } catch (error) {
+      // Fallback to localStorage
+      console.log('Using localStorage fallback for tracking');
+    }
     navigate(`/blog/${postId}`);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Filter posts based on search query
-      const filtered = initialPosts.filter(post => 
+      const postsSource = firebasePosts.length > 0 ? firebasePosts : initialPosts;
+      const filtered = postsSource.filter(post => 
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (post.category && post.category.toLowerCase().includes(searchQuery.toLowerCase()))
       );
-      
-      // Update blog posts with search results
-      const postsWithViews = filtered.map(post => ({
-        ...post,
-        views: getViews(post.id) || 0
-      }));
-      
-      setBlogPosts(postsWithViews);
+      setBlogPosts(filtered);
       setActiveCategory('all');
     } else {
-      // Reset to all posts
-      const postsWithViews = initialPosts.map(post => ({
-        ...post,
-        views: getViews(post.id) || 0
-      }));
-      setBlogPosts(postsWithViews);
+      setBlogPosts(firebasePosts.length > 0 ? firebasePosts : initialPosts);
     }
   };
 
   const handleCategoryClick = (categoryId) => {
     setActiveCategory(categoryId);
     
+    const postsSource = firebasePosts.length > 0 ? firebasePosts : initialPosts;
+    
     if (categoryId === 'all') {
-      const postsWithViews = initialPosts.map(post => ({
-        ...post,
-        views: getViews(post.id) || 0
-      }));
-      setBlogPosts(postsWithViews);
+      setBlogPosts(postsSource);
     } else {
-      const filtered = initialPosts.filter(post => post.category === categoryId);
-      const postsWithViews = filtered.map(post => ({
-        ...post,
-        views: getViews(post.id) || 0
-      }));
-      setBlogPosts(postsWithViews);
+      const filtered = postsSource.filter(post => post.category === categoryId);
+      setBlogPosts(filtered);
     }
   };
 
@@ -190,7 +208,6 @@ const BlogPage = () => {
     e.preventDefault();
     const email = e.target.querySelector('input[type="email"]').value;
     if (email) {
-      // Save to localStorage
       const subscriptions = JSON.parse(localStorage.getItem('blog_subscriptions') || '[]');
       if (!subscriptions.includes(email)) {
         subscriptions.push(email);
@@ -207,7 +224,16 @@ const BlogPage = () => {
     ? blogPosts 
     : blogPosts.filter(post => post.category === activeCategory);
 
-  const featuredPost = blogPosts.find(post => post.featured) || blogPosts[0];
+  const featuredPost = blogPosts.find(post => post.featured) || (blogPosts.length > 0 ? blogPosts[0] : null);
+
+  if (isLoading) {
+    return (
+      <div className="blog-loading">
+        <div className="spinner"></div>
+        <p>Loading articles...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="blog-page">
@@ -259,7 +285,8 @@ const BlogPage = () => {
                     
                     {/* Post Stats */}
                     <div className="post-stats">
-                      <span><i className="fas fa-eye"></i> {formatNumber(featuredPost.views)} views</span>
+                      <span><i className="fas fa-eye"></i> {formatNumber(featuredPost.views || 0)} views</span>
+                      <span><i className="far fa-comment"></i> {formatNumber(featuredPost.comments || 0)} comments</span>
                       <span><i className="far fa-clock"></i> {featuredPost.readTime}</span>
                     </div>
                     
@@ -316,11 +343,11 @@ const BlogPage = () => {
                     onChange={(e) => {
                       const sortedPosts = [...blogPosts];
                       if (e.target.value === 'newest') {
-                        sortedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                        sortedPosts.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
                       } else if (e.target.value === 'popular') {
-                        sortedPosts.sort((a, b) => b.views - a.views);
+                        sortedPosts.sort((a, b) => (b.views || 0) - (a.views || 0));
                       } else if (e.target.value === 'oldest') {
-                        sortedPosts.sort((a, b) => new Date(a.date) - new Date(b.date));
+                        sortedPosts.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
                       }
                       setBlogPosts(sortedPosts);
                     }}
@@ -354,7 +381,8 @@ const BlogPage = () => {
                           
                           {/* Post Stats */}
                           <div className="post-stats">
-                            <span><i className="fas fa-eye"></i> {formatNumber(post.views)} views</span>
+                            <span><i className="fas fa-eye"></i> {formatNumber(post.views || 0)} views</span>
+                            <span><i className="far fa-comment"></i> {formatNumber(post.comments || 0)} comments</span>
                             <span><i className="far fa-clock"></i> {post.readTime}</span>
                           </div>
                           
@@ -437,18 +465,18 @@ const BlogPage = () => {
             </div>
           </div>
 
-          {/* Popular Posts - REAL WORKING */}
+          {/* Popular Posts */}
           <div className="sidebar-widget">
             <h3>Most Popular</h3>
             <div className="popular-posts">
               {popularPosts.length > 0 ? (
                 popularPosts.map((post, index) => (
-                  <div key={post.id} className="popular-post">
+                  <div key={post.id} className="popular-post" onClick={() => handleReadMore(post.id)}>
                     <div className="popular-post-rank">{index + 1}</div>
                     <div className="popular-post-content">
-                      <h4 onClick={() => handleReadMore(post.id)}>{post.title}</h4>
+                      <h4>{post.title}</h4>
                       <div className="post-meta">
-                        <span><i className="fas fa-eye"></i> {formatNumber(post.views)}</span>
+                        <span><i className="fas fa-eye"></i> {formatNumber(post.views || 0)}</span>
                         <span>•</span>
                         <span>{post.date}</span>
                       </div>
@@ -486,9 +514,11 @@ const BlogPage = () => {
             <div className="recent-views">
               {(() => {
                 const allViews = JSON.parse(localStorage.getItem('blog_views') || '{}');
+                const postsSource = firebasePosts.length > 0 ? firebasePosts : initialPosts;
+                
                 const viewedPosts = Object.keys(allViews)
                   .map(id => {
-                    const post = initialPosts.find(p => p.id === parseInt(id));
+                    const post = postsSource.find(p => p.id === id || p.id.toString() === id);
                     if (post) {
                       return {
                         ...post,

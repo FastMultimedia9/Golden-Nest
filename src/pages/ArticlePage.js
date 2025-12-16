@@ -1,17 +1,16 @@
+// src/components/ArticlePage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { blogAPI, formatNumber, formatTimeAgo } from '../firebase';
 import { 
-  trackView, 
-  getViews, 
-  addComment, 
-  getComments, 
-  likeComment, 
-  addReply, 
-  saveArticle, 
+  trackView as trackLocalView, 
+  getViews as getLocalViews,
+  addComment as addLocalComment,
+  getComments as getLocalComments,
+  likeComment as likeLocalComment,
+  saveArticle,
   isArticleSaved,
-  removeSavedArticle,
-  formatNumber,
-  formatTimeAgo
+  removeSavedArticle
 } from '../utils/blogStorage';
 import './ArticlePage.css';
 
@@ -29,6 +28,7 @@ const ArticlePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [useFirebase, setUseFirebase] = useState(true);
 
   const authorInfo = {
     name: "Alex Johnson",
@@ -41,14 +41,14 @@ const ArticlePage = () => {
     }
   };
 
-  // All blog posts data
+  // Fallback posts data
   const allPosts = [
     {
-      id: 1,
+      id: '1',
       title: 'Top Web Design Trends for 2025',
       excerpt: 'As web design and its best practices are ever-evolving, web designers need to constantly adapt to new challenges and opportunities.',
       category: 'design',
-      date: 'Dec. 15, 2025',
+      date: 'Dec 15, 2024',
       readTime: '5 min read',
       image: 'https://www.hostinger.com/in/tutorials/wp-content/uploads/sites/52/2023/06/Website-Development-alt-1.jpg',
       featured: true,
@@ -88,11 +88,11 @@ const ArticlePage = () => {
       `
     },
     {
-      id: 2,
+      id: '2',
       title: 'Building Scalable React Applications',
       excerpt: 'Learn best practices for creating maintainable and scalable React applications.',
       category: 'development',
-      date: 'Mar 10, 2024',
+      date: 'Dec 10, 2024',
       readTime: '8 min read',
       image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop',
       featured: false,
@@ -112,50 +112,6 @@ const ArticlePage = () => {
         <h3>4. Testing Strategy</h3>
         <p>Establish a comprehensive testing strategy including unit tests, integration tests, and end-to-end tests.</p>
       `
-    },
-    {
-      id: 3,
-      title: 'Color Psychology in Branding',
-      excerpt: 'How colors influence consumer behavior and brand perception.',
-      category: 'design',
-      date: 'Mar 5, 2024',
-      readTime: '6 min read',
-      image: 'https://images.unsplash.com/photo-1545235617-9465d2a55698?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 4,
-      title: 'Optimizing Website Performance',
-      excerpt: 'Essential techniques to improve your website loading speed and performance.',
-      category: 'development',
-      date: 'Feb 28, 2024',
-      readTime: '7 min read',
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 5,
-      title: 'UI/UX Principles for Mobile Apps',
-      excerpt: 'Key design principles that enhance mobile user experiences.',
-      category: 'design',
-      date: 'Feb 20, 2024',
-      readTime: '6 min read',
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
-    },
-    {
-      id: 6,
-      title: 'Introduction to API Integration',
-      excerpt: 'A beginner guide to integrating third-party APIs in your applications.',
-      category: 'development',
-      date: 'Feb 15, 2024',
-      readTime: '10 min read',
-      image: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&auto=format&fit=crop',
-      featured: false,
-      content: 'Full article content here...'
     }
   ];
 
@@ -163,45 +119,90 @@ const ArticlePage = () => {
     const loadData = async () => {
       setIsLoading(true);
       
-      // Find the current post
-      const foundPost = allPosts.find(p => p.id === parseInt(id));
-      
-      if (foundPost) {
-        setPost(foundPost);
+      try {
+        // Try Firebase first
+        const firebasePost = await blogAPI.getPost(id);
         
-        // Track view
-        const views = trackView(foundPost.id);
-        setViewCount(views);
+        if (firebasePost) {
+          setPost(firebasePost);
+          setUseFirebase(true);
+          
+          // Track view in Firebase
+          const views = await blogAPI.trackView(id);
+          setViewCount(views);
+          
+          // Load comments from Firebase
+          const postComments = await blogAPI.getComments(id);
+          setComments(postComments);
+          
+          // Set up real-time listener for comments
+          const unsubscribe = blogAPI.onCommentsUpdate(id, (comments) => {
+            setComments(comments);
+          });
+          
+          // Find related posts from allPosts
+          const related = allPosts
+            .filter(p => p.category === firebasePost.category && p.id !== id)
+            .slice(0, 3);
+          setRelatedPosts(related);
+          
+          // Load user data
+          const savedName = localStorage.getItem('blog_user_name');
+          const savedEmail = localStorage.getItem('blog_user_email');
+          if (savedName) setUserName(savedName);
+          if (savedEmail) setUserEmail(savedEmail);
+          
+          // Check if article is saved
+          setIsSaved(isArticleSaved(id));
+          
+          return () => unsubscribe();
+        } else {
+          throw new Error('Post not found in Firebase');
+        }
+      } catch (error) {
+        console.log('Using localStorage fallback:', error.message);
+        setUseFirebase(false);
         
-        // Check if article is saved
-        setIsSaved(isArticleSaved(foundPost.id));
+        // Use local data
+        const foundPost = allPosts.find(p => p.id === id);
         
-        // Find related posts
-        const related = allPosts
-          .filter(p => p.category === foundPost.category && p.id !== foundPost.id)
-          .slice(0, 3);
-        setRelatedPosts(related);
-        
-        // Load comments
-        const postComments = getComments(foundPost.id);
-        setComments(postComments);
-        
-        // Load user data if exists
-        const savedName = localStorage.getItem('blog_user_name');
-        const savedEmail = localStorage.getItem('blog_user_email');
-        if (savedName) setUserName(savedName);
-        if (savedEmail) setUserEmail(savedEmail);
-      } else {
-        navigate('/blog');
+        if (foundPost) {
+          setPost(foundPost);
+          
+          // Track view locally
+          const views = trackLocalView(id);
+          setViewCount(views);
+          
+          // Load comments locally
+          const postComments = getLocalComments(id);
+          setComments(postComments);
+          
+          // Find related posts
+          const related = allPosts
+            .filter(p => p.category === foundPost.category && p.id !== id)
+            .slice(0, 3);
+          setRelatedPosts(related);
+          
+          // Load user data
+          const savedName = localStorage.getItem('blog_user_name');
+          const savedEmail = localStorage.getItem('blog_user_email');
+          if (savedName) setUserName(savedName);
+          if (savedEmail) setUserEmail(savedEmail);
+          
+          // Check if article is saved
+          setIsSaved(isArticleSaved(id));
+        } else {
+          navigate('/blog');
+        }
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
     
     loadData();
   }, [id, navigate]);
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
     
     if (!newComment.trim()) {
@@ -221,56 +222,51 @@ const ArticlePage = () => {
       avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
     };
     
-    const newCommentObj = addComment(parseInt(id), commentData);
-    
-    if (newCommentObj) {
-      // Refresh comments
-      const updatedComments = getComments(parseInt(id));
+    if (useFirebase && post) {
+      try {
+        const newCommentObj = await blogAPI.addComment(post.id, commentData);
+        if (newCommentObj) {
+          setNewComment('');
+          localStorage.setItem('blog_user_name', userName);
+          if (userEmail) localStorage.setItem('blog_user_email', userEmail);
+        }
+      } catch (error) {
+        console.error('Error adding comment to Firebase:', error);
+        // Fallback to localStorage
+        addLocalComment(post.id, commentData);
+        const updatedComments = getLocalComments(post.id);
+        setComments(updatedComments);
+        setNewComment('');
+        localStorage.setItem('blog_user_name', userName);
+        if (userEmail) localStorage.setItem('blog_user_email', userEmail);
+      }
+    } else if (post) {
+      addLocalComment(post.id, commentData);
+      const updatedComments = getLocalComments(post.id);
       setComments(updatedComments);
       setNewComment('');
-      
-      // Save user info
       localStorage.setItem('blog_user_name', userName);
-      if (userEmail) {
-        localStorage.setItem('blog_user_email', userEmail);
+      if (userEmail) localStorage.setItem('blog_user_email', userEmail);
+    }
+  };
+
+  const handleLikeComment = async (commentId) => {
+    if (useFirebase && post) {
+      try {
+        await blogAPI.likeComment(post.id, commentId);
+      } catch (error) {
+        console.error('Error liking comment in Firebase:', error);
+        likeLocalComment(post.id, commentId);
+        const updatedComments = useFirebase 
+          ? await blogAPI.getComments(post.id) 
+          : getLocalComments(post.id);
+        setComments(updatedComments);
       }
-    }
-  };
-
-  const handleReplySubmit = (commentId) => {
-    if (!replyText.trim() || !userName.trim()) {
-      alert('Please enter your reply and name');
-      return;
-    }
-    
-    const replyData = {
-      user: userName,
-      text: replyText,
-      avatar: `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
-    };
-    
-    const newReply = addReply(parseInt(id), commentId, replyData);
-    
-    if (newReply) {
-      // Refresh comments
-      const updatedComments = getComments(parseInt(id));
+    } else if (post) {
+      likeLocalComment(post.id, commentId);
+      const updatedComments = getLocalComments(post.id);
       setComments(updatedComments);
-      setReplyText('');
-      setReplyTo(null);
     }
-  };
-
-  const handleLikeComment = (commentId) => {
-    const newLikeCount = likeComment(parseInt(id), commentId);
-    
-    // Update local state
-    setComments(prevComments => 
-      prevComments.map(comment => 
-        comment.id === commentId 
-          ? { ...comment, likes: newLikeCount }
-          : comment
-      )
-    );
   };
 
   const handleSaveArticle = () => {
@@ -342,7 +338,7 @@ const ArticlePage = () => {
           
           <div className="article-header">
             <span className={`article-category ${post.category}`}>
-              {post.category.charAt(0).toUpperCase() + post.category.slice(1)}
+              {post.category?.charAt(0).toUpperCase() + post.category?.slice(1)}
             </span>
             <h1 className="article-title">{post.title}</h1>
             
@@ -532,55 +528,6 @@ const ArticlePage = () => {
                         {comment.likes > 0 ? ` ${comment.likes}` : ''}
                       </button>
                     </div>
-                    
-                    {/* Reply Form */}
-                    {replyTo === comment.id && (
-                      <div className="reply-form">
-                        <textarea
-                          placeholder="Write your reply..."
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          rows="2"
-                        />
-                        <div className="reply-form-actions">
-                          <button 
-                            type="button" 
-                            onClick={() => handleReplySubmit(comment.id)}
-                            className="submit-reply-btn"
-                          >
-                            Post Reply
-                          </button>
-                          <button 
-                            type="button" 
-                            onClick={() => {
-                              setReplyTo(null);
-                              setReplyText('');
-                            }}
-                            className="cancel-reply-btn"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Replies */}
-                    {comment.replies && comment.replies.length > 0 && (
-                      <div className="replies">
-                        {comment.replies.map(reply => (
-                          <div key={reply.id} className="reply">
-                            <div className="reply-header">
-                              <img src={reply.avatar} alt={reply.user} />
-                              <div>
-                                <h5>{reply.user}</h5>
-                                <span>{formatTimeAgo(reply.timestamp)}</span>
-                              </div>
-                            </div>
-                            <p>{reply.text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 ))
               )}
@@ -611,14 +558,14 @@ const ArticlePage = () => {
               <div className="stat">
                 <i className="far fa-calendar"></i>
                 <div>
-                  <span className="stat-number">{post.date.split(' ')[2]}</span>
+                  <span className="stat-number">{post.date?.split(' ')[2] || '2024'}</span>
                   <span className="stat-label">Published</span>
                 </div>
               </div>
               <div className="stat">
                 <i className="far fa-clock"></i>
                 <div>
-                  <span className="stat-number">{post.readTime.split(' ')[0]}</span>
+                  <span className="stat-number">{post.readTime?.split(' ')[0] || '5'}</span>
                   <span className="stat-label">Min Read</span>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx - UPDATED with Admin Link
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -6,6 +7,11 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isResourcesOpen, setIsResourcesOpen] = useState(false);
   const navigate = useNavigate();
+
+  // Simple function to check if user is logged in as admin
+  const isAuthenticated = () => {
+    return localStorage.getItem('admin_logged_in') === 'true';
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -42,6 +48,8 @@ const Navbar = () => {
       ]
     },
     { path: '/contact', name: 'Contact', icon: 'fas fa-envelope' },
+    // Conditionally add Admin link if authenticated
+    ...(isAuthenticated() ? [{ path: '/admin', name: 'Admin', icon: 'fas fa-cog' }] : [])
   ];
 
   return (
