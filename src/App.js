@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'r
 import { supabase, authAPI } from './supabase';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MetaCacheFix from './components/MetaCacheFix'; // ADD THIS IMPORT
 
 // Main Pages
 import HomePage from './pages/HomePage';
@@ -46,6 +47,9 @@ import TestSupabase from './pages/TestSupabase';
 import AdminView from './pages/AdminView';
 import BlogAdmin from './pages/BlogAdmin';
 import DatabaseViewer from './pages/DatabaseViewer';
+
+// New Post Page
+import NewPostPage from './pages/NewPostPage';
 
 import './App.css';
 
@@ -133,6 +137,7 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <MetaCacheFix /> {/* ADDED THIS COMPONENT */}
         <Navbar />
         <ScrollToTop />
         <main>
@@ -151,7 +156,7 @@ function App() {
             <Route path="/blog/:id" element={<ArticlePage />} />
             
             {/* ===== AUTH PAGES ===== */}
-            <Route path="/login" element={<LoginPage />} /> {/* ADDED THIS LINE */}
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/admin/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             
@@ -195,6 +200,24 @@ function App() {
               element={
                 <ProtectedRoute adminOnly={true}>
                   <DatabaseViewer />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* ===== NEW POST PAGE (ADMIN ONLY) ===== */}
+            <Route 
+              path="/admin/posts/new" 
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <NewPostPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/posts/edit/:id" 
+              element={
+                <ProtectedRoute adminOnly={true}>
+                  <NewPostPage />
                 </ProtectedRoute>
               } 
             />
@@ -245,6 +268,7 @@ function App() {
                       <li><a href="/test">Test Database Connection</a></li>
                       <li><a href="/login">Login</a></li>
                       <li><a href="/admin/login">Admin Login</a></li>
+                      <li><a href="/admin/posts/new">Create New Post</a></li>
                     </ul>
                   </div>
                   <a href="/" className="back-home-btn">Back to Home</a>

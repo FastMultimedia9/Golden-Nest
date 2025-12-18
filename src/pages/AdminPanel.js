@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase, blogAPI, authAPI } from '../supabase';
+import { supabase } from '../supabase';
 import './AdminPanel.css';
 
 const AdminPanel = () => {
@@ -10,142 +10,120 @@ const AdminPanel = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [newPost, setNewPost] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    category: 'design',
-    image_url: '',
-    theme: 'light',
-    featured: false,
-    published: true
-  });
   const [currentUser, setCurrentUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     checkAuthAndLoadData();
   }, [navigate]);
 
   const checkAuthAndLoadData = async () => {
-    const user = await authAPI.getCurrentUserWithProfile();
-    
-    if (!user) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate('/admin/login');
+        return;
+      }
+      
+      const user = session.user;
+      setCurrentUser(user);
+      
+      // Check if user is admin in users table
+      const { data: userData, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      if (error || !userData || userData.role !== 'admin') {
+        navigate('/user/dashboard');
+        return;
+      }
+      
+      fetchData();
+    } catch (error) {
+      console.error('Auth error:', error);
       navigate('/admin/login');
-      return;
     }
-    
-    setCurrentUser(user);
-    
-    // Check if user is admin
-    if (user.profile?.role !== 'admin') {
-      navigate('/user/dashboard');
-      return;
-    }
-    
-    fetchData();
   };
 
   const fetchData = async () => {
     setLoading(true);
     
     try {
-      // Fetch all posts (admin sees everything)
-      const { data: postsData } = await supabase
+      // Fetch all posts with user info
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select(`
           *,
-          users:user_id (name, username, email)
+          users:user_id (
+            id,
+            username,
+            name,
+            email,
+            role
+          )
         `)
         .order('created_at', { ascending: false });
       
-      // Fetch all users (admin only)
-      const { data: usersData } = await supabase
+      if (postsError) throw postsError;
+      
+      // Fetch all users
+      const { data: usersData, error: usersError } = await supabase
         .from('users')
         .select('*')
         .order('created_at', { ascending: false });
       
-      // Fetch all comments with proper joins
-      const { data: commentsData } = await supabase
+      if (usersError) throw usersError;
+      
+      // Fetch all comments with user and post info
+      const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
         .select(`
           *,
-          posts(title),
-          users:user_id (name, email)
+          users:user_id (
+            id,
+            username,
+            name,
+            email
+          ),
+          posts (
+            id,
+            title
+          )
         `)
         .order('created_at', { ascending: false });
+      
+      if (commentsError) throw commentsError;
       
       setPosts(postsData || []);
       setUsers(usersData || []);
       setComments(commentsData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
+      alert('Error loading data. Please refresh the page.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogout = async () => {
-    await authAPI.logout();
+    await supabase.auth.signOut();
     navigate('/');
   };
 
-  const handleCreatePost = async (e) => {
-    e.preventDefault();
-    
-    // Prepare post data according to your schema
-    const postData = {
-      title: newPost.title,
-      excerpt: newPost.excerpt,
-      content: newPost.content,
-      category: newPost.category,
-      image_url: newPost.image_url,
-      theme: newPost.theme,
-      featured: newPost.featured,
-      published: newPost.published,
-      user_id: currentUser.id // Use current user's ID
-    };
-    
-    try {
-      const { data, error } = await supabase
-        .from('posts')
-        .insert([postData])
-        .select()
-        .single();
-      
-      if (error) throw error;
-      
-      if (data) {
-        alert('Post created successfully!');
-        setNewPost({
-          title: '',
-          excerpt: '',
-          content: '',
-          category: 'design',
-          image_url: '',
-          theme: 'light',
-          featured: false,
-          published: true
-        });
-        fetchData();
-        setActiveTab('posts');
-      }
-    } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Error creating post: ' + error.message);
-    }
-  };
-
   const handleDeletePost = async (id) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
+    if (window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
       try {
-        // First delete comments associated with the post
+        // Delete associated comments first
         await supabase
           .from('comments')
           .delete()
           .eq('post_id', id);
         
-        // Then delete the post
+        // Delete the post
         const { error } = await supabase
           .from('posts')
           .delete()
@@ -202,29 +180,49 @@ const AdminPanel = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    // Close sidebar on mobile when a tab is clicked
-    if (window.innerWidth <= 1024) {
+    if (window.innerWidth <= 768) {
       setSidebarOpen(false);
     }
   };
 
+  const navigateToNewPost = () => {
+    navigate('/admin/posts/new');
+  };
+
+  const navigateToEditPost = (postId) => {
+    navigate(`/admin/posts/edit/${postId}`);
+  };
+
+  const filteredPosts = posts.filter(post => 
+    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.users?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.users?.username?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
-    return <div className="admin-loading">Loading admin panel...</div>;
+    return (
+      <div className="admin-panel-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading Admin Panel...</p>
+      </div>
+    );
   }
 
   const userStats = {
     totalUsers: users.length,
     adminUsers: users.filter(u => u.role === 'admin').length,
-    regularUsers: users.filter(u => u.role === 'user').length
+    regularUsers: users.filter(u => u.role === 'user').length,
+    totalPosts: posts.length,
+    totalComments: comments.length
   };
 
   return (
     <div className="admin-panel">
-      {/* Mobile Hamburger Button - Only shows on mobile */}
+      {/* Mobile Hamburger Menu */}
       <button 
-        className="hamburger-menu"
+        className="admin-hamburger"
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        aria-label="Toggle menu"
+        aria-label="Toggle sidebar"
       >
         <i className={`fas ${sidebarOpen ? 'fa-times' : 'fa-bars'}`}></i>
       </button>
@@ -232,130 +230,170 @@ const AdminPanel = () => {
       {/* Sidebar Overlay for Mobile */}
       {sidebarOpen && (
         <div 
-          className="sidebar-overlay"
+          className="admin-sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="admin-header">
-          <div className="admin-profile">
-            <div className="profile-avatar">
+      <aside className={`admin-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="admin-logo">
+            <i className="fas fa-crown"></i>
+            <h1>Admin Panel</h1>
+          </div>
+          <div className="admin-current-user">
+            <div className="current-user-avatar">
               <i className="fas fa-user-shield"></i>
             </div>
-            <div className="profile-info">
-              <h2>Admin Panel</h2>
-              <p className="admin-name">{currentUser?.name || currentUser?.profile?.name || 'Administrator'}</p>
-              <p className="admin-email">{currentUser?.email || 'admin@example.com'}</p>
-              <small className="admin-badge">
-                <i className="fas fa-crown"></i> Administrator
-              </small>
+            <div className="current-user-info">
+              <span className="current-user-name">
+                {currentUser?.email?.split('@')[0]}
+              </span>
+              <span className="current-user-role">Administrator</span>
             </div>
           </div>
         </div>
-        
-        <nav className="admin-nav">
+
+        <nav className="sidebar-nav">
           <button 
-            className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+            className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
             onClick={() => handleTabChange('dashboard')}
           >
-            <i className="fas fa-tachometer-alt"></i> Dashboard
+            <i className="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
           </button>
+
           <button 
-            className={`nav-btn ${activeTab === 'posts' ? 'active' : ''}`}
+            className={`nav-item ${activeTab === 'posts' ? 'active' : ''}`}
             onClick={() => handleTabChange('posts')}
           >
-            <i className="fas fa-newspaper"></i> All Posts <span className="badge-count">{posts.length}</span>
+            <i className="fas fa-newspaper"></i>
+            <span>All Posts</span>
+            <span className="nav-badge">{posts.length}</span>
           </button>
+
           <button 
-            className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}
+            className={`nav-item ${activeTab === 'users' ? 'active' : ''}`}
             onClick={() => handleTabChange('users')}
           >
-            <i className="fas fa-users"></i> Users <span className="badge-count">{users.length}</span>
+            <i className="fas fa-users"></i>
+            <span>Users</span>
+            <span className="nav-badge">{users.length}</span>
           </button>
+
           <button 
-            className={`nav-btn ${activeTab === 'comments' ? 'active' : ''}`}
+            className={`nav-item ${activeTab === 'comments' ? 'active' : ''}`}
             onClick={() => handleTabChange('comments')}
           >
-            <i className="fas fa-comments"></i> Comments <span className="badge-count">{comments.length}</span>
+            <i className="fas fa-comments"></i>
+            <span>Comments</span>
+            <span className="nav-badge">{comments.length}</span>
           </button>
-          <button 
-            className={`nav-btn ${activeTab === 'create' ? 'active' : ''}`}
-            onClick={() => handleTabChange('create')}
-          >
-            <i className="fas fa-plus-circle"></i> Create Post
-          </button>
-          
+
           <div className="nav-divider"></div>
-          
+
           <button 
-            className="nav-btn logout-btn"
+            className="nav-item new-post-btn"
+            onClick={navigateToNewPost}
+          >
+            <i className="fas fa-plus-circle"></i>
+            <span>Create New Post</span>
+          </button>
+
+          <div className="nav-divider"></div>
+
+          <button 
+            className="nav-item logout-btn"
             onClick={handleLogout}
           >
-            <i className="fas fa-sign-out-alt"></i> Logout
+            <i className="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
           </button>
         </nav>
-      </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="admin-content">
+      <main className="admin-main">
+        <header className="admin-header">
+          <div className="header-title">
+            <h2>
+              {activeTab === 'dashboard' && 'Dashboard'}
+              {activeTab === 'posts' && 'Posts Management'}
+              {activeTab === 'users' && 'User Management'}
+              {activeTab === 'comments' && 'Comments Management'}
+            </h2>
+            <p className="header-subtitle">
+              {activeTab === 'dashboard' && 'Overview of your blog statistics'}
+              {activeTab === 'posts' && 'Manage all blog posts'}
+              {activeTab === 'users' && 'Manage user accounts and permissions'}
+              {activeTab === 'comments' && 'Moderate user comments'}
+            </p>
+          </div>
+          <div className="header-actions">
+            <button 
+              className="btn-new-post"
+              onClick={navigateToNewPost}
+            >
+              <i className="fas fa-plus"></i> New Post
+            </button>
+          </div>
+        </header>
+
+        {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
-          <div className="dashboard">
-            <div className="page-header">
-              <h1>Admin Dashboard</h1>
-              <p className="dashboard-subtitle">Welcome back, {currentUser?.name || 'Admin'}! Here's what's happening with your blog.</p>
-            </div>
-            
+          <div className="dashboard-content">
             <div className="stats-grid">
               <div className="stat-card">
-                <div className="stat-card-icon">
-                  <i className="fas fa-eye"></i>
+                <div className="stat-icon total-posts">
+                  <i className="fas fa-file-alt"></i>
                 </div>
-                <div className="stat-card-content">
-                  <h3>{posts.reduce((sum, post) => sum + (post.views || 0), 0)}</h3>
-                  <p>Total Views</p>
-                  <small>Across all posts</small>
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-card-icon">
-                  <i className="fas fa-comment"></i>
-                </div>
-                <div className="stat-card-content">
-                  <h3>{posts.reduce((sum, post) => sum + (post.comments_count || 0), 0)}</h3>
-                  <p>Total Comments</p>
-                  <small>User engagement</small>
+                <div className="stat-content">
+                  <h3>{userStats.totalPosts}</h3>
+                  <p>Total Posts</p>
                 </div>
               </div>
+
               <div className="stat-card">
-                <div className="stat-card-icon">
+                <div className="stat-icon total-users">
                   <i className="fas fa-users"></i>
                 </div>
-                <div className="stat-card-content">
+                <div className="stat-content">
                   <h3>{userStats.totalUsers}</h3>
                   <p>Total Users</p>
-                  <small>{userStats.adminUsers} admin, {userStats.regularUsers} regular</small>
                 </div>
               </div>
+
               <div className="stat-card">
-                <div className="stat-card-icon">
-                  <i className="fas fa-star"></i>
+                <div className="stat-icon total-comments">
+                  <i className="fas fa-comment"></i>
                 </div>
-                <div className="stat-card-content">
-                  <h3>{posts.filter(p => p.featured).length}</h3>
-                  <p>Featured Posts</p>
-                  <small>Highlighted content</small>
+                <div className="stat-content">
+                  <h3>{userStats.totalComments}</h3>
+                  <p>Total Comments</p>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon admin-users">
+                  <i className="fas fa-user-shield"></i>
+                </div>
+                <div className="stat-content">
+                  <h3>{userStats.adminUsers}</h3>
+                  <p>Admin Users</p>
                 </div>
               </div>
             </div>
 
-            <div className="content-grid">
+            <div className="dashboard-tables">
               <div className="recent-posts">
-                <div className="section-header">
-                  <h2>Recent Posts</h2>
-                  <button className="view-all-btn" onClick={() => handleTabChange('posts')}>
-                    View All <i className="fas fa-arrow-right"></i>
+                <div className="table-header">
+                  <h3>Recent Posts</h3>
+                  <button 
+                    className="view-all"
+                    onClick={() => handleTabChange('posts')}
+                  >
+                    View All
                   </button>
                 </div>
                 <div className="table-container">
@@ -365,26 +403,23 @@ const AdminPanel = () => {
                         <th>Title</th>
                         <th>Author</th>
                         <th>Category</th>
-                        <th>Views</th>
                         <th>Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {posts.slice(0, 5).map(post => (
                         <tr key={post.id}>
-                          <td className="title-cell">
-                            <strong>{post.title}</strong>
-                            <small>{post.excerpt?.substring(0, 50)}...</small>
-                          </td>
                           <td>
-                            <div className="author-cell">
-                              <strong>{post.users?.name || 'Unknown'}</strong>
-                              <small>{post.users?.email}</small>
+                            <div className="post-title-cell">
+                              <strong>{post.title}</strong>
+                              <small>{post.excerpt?.substring(0, 60)}...</small>
                             </div>
                           </td>
-                          <td><span className="category-badge">{post.category}</span></td>
-                          <td className="views-cell">{post.views}</td>
-                          <td className="date-cell">{new Date(post.created_at).toLocaleDateString()}</td>
+                          <td>{post.users?.name || post.users?.username || 'Unknown'}</td>
+                          <td>
+                            <span className="category-tag">{post.category}</span>
+                          </td>
+                          <td>{new Date(post.created_at).toLocaleDateString()}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -393,21 +428,23 @@ const AdminPanel = () => {
               </div>
 
               <div className="recent-users">
-                <div className="section-header">
-                  <h2>Recent Users</h2>
-                  <button className="view-all-btn" onClick={() => handleTabChange('users')}>
-                    View All <i className="fas fa-arrow-right"></i>
+                <div className="table-header">
+                  <h3>Recent Users</h3>
+                  <button 
+                    className="view-all"
+                    onClick={() => handleTabChange('users')}
+                  >
+                    View All
                   </button>
                 </div>
                 <div className="table-container">
                   <table>
                     <thead>
                       <tr>
-                        <th>Name</th>
+                        <th>User</th>
                         <th>Email</th>
                         <th>Role</th>
                         <th>Joined</th>
-                        <th>Posts</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -415,18 +452,26 @@ const AdminPanel = () => {
                         <tr key={user.id}>
                           <td>
                             <div className="user-cell">
-                              <strong>{user.name || user.username}</strong>
-                              <small>{user.username}</small>
+                              <div className="user-avatar">
+                                {user.avatar_url ? (
+                                  <img src={user.avatar_url} alt={user.name} />
+                                ) : (
+                                  <i className="fas fa-user"></i>
+                                )}
+                              </div>
+                              <div className="user-info">
+                                <strong>{user.name || user.username}</strong>
+                                <small>@{user.username}</small>
+                              </div>
                             </div>
                           </td>
                           <td>{user.email}</td>
                           <td>
                             <span className={`role-badge ${user.role}`}>
-                              {user.role === 'admin' ? 'Admin' : 'User'}
+                              {user.role}
                             </span>
                           </td>
                           <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                          <td className="posts-count">{posts.filter(p => p.user_id === user.id).length}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -437,396 +482,234 @@ const AdminPanel = () => {
           </div>
         )}
 
+        {/* Posts Tab */}
         {activeTab === 'posts' && (
-          <div className="posts-management">
-            <div className="page-header">
-              <h1>All Posts Management</h1>
-              <p className="section-subtitle">View and manage posts from all users</p>
-            </div>
-            
-            <div className="admin-controls">
-              <div className="search-filter">
-                <div className="search-box">
-                  <i className="fas fa-search"></i>
-                  <input type="text" placeholder="Search posts by title or author..." />
-                </div>
-                <select>
-                  <option value="">All Users</option>
-                  {users.map(user => (
-                    <option key={user.id} value={user.id}>{user.name || user.username}</option>
-                  ))}
-                </select>
-                <select>
-                  <option value="">All Categories</option>
+          <div className="posts-content">
+            <div className="content-header">
+              <div className="search-box">
+                <i className="fas fa-search"></i>
+                <input
+                  type="text"
+                  placeholder="Search posts by title or author..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="filter-controls">
+                <select className="filter-select">
+                  <option value="all">All Categories</option>
                   <option value="design">Design</option>
                   <option value="development">Development</option>
                   <option value="business">Business</option>
                   <option value="general">General</option>
                 </select>
+                <select className="filter-select">
+                  <option value="all">All Status</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                </select>
               </div>
             </div>
-            
-            <div className="posts-table">
-              <div className="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Author</th>
-                      <th>Category</th>
-                      <th>Views</th>
-                      <th>Comments</th>
-                      <th>Status</th>
-                      <th>Created</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {posts.map(post => (
-                      <tr key={post.id}>
-                        <td className="title-cell">
+
+            <div className="table-container">
+              <table className="posts-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredPosts.map(post => (
+                    <tr key={post.id}>
+                      <td>
+                        <div className="post-title-cell">
                           <strong>{post.title}</strong>
-                          <small>{post.excerpt?.substring(0, 50)}...</small>
-                        </td>
-                        <td>
-                          <div className="author-cell">
-                            <strong>{post.users?.name || post.users?.username || 'Unknown'}</strong>
-                            <small>{post.users?.email}</small>
-                          </div>
-                        </td>
-                        <td><span className="category-badge">{post.category}</span></td>
-                        <td className="views-cell">{post.views}</td>
-                        <td className="comments-cell">{post.comments_count}</td>
-                        <td>
-                          <span className={`status-badge ${post.published ? 'published' : 'draft'}`}>
-                            {post.published ? 'Published' : 'Draft'}
-                          </span>
-                          {post.featured && (
-                            <span className="featured-badge">
-                              <i className="fas fa-star"></i> Featured
-                            </span>
-                          )}
-                        </td>
-                        <td className="date-cell">{new Date(post.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-view"
-                              onClick={() => navigate(`/blog/${post.id}`)}
-                              title="View Post"
-                            >
-                              <i className="fas fa-eye"></i>
-                            </button>
-                            <button 
-                              className="btn-edit"
-                              title="Edit Post"
-                            >
-                              <i className="fas fa-edit"></i>
-                            </button>
-                            <button 
-                              className="btn-delete"
-                              onClick={() => handleDeletePost(post.id)}
-                              title="Delete Post"
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          <small>{post.excerpt?.substring(0, 80) || 'No excerpt...'}</small>
+                        </div>
+                      </td>
+                      <td>{post.users?.name || post.users?.username || 'Unknown'}</td>
+                      <td>
+                        <span className="category-tag">{post.category}</span>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${post.published ? 'published' : 'draft'}`}>
+                          {post.published ? 'Published' : 'Draft'}
+                        </span>
+                      </td>
+                      <td>{new Date(post.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button 
+                            className="btn-action btn-view"
+                            onClick={() => navigate(`/blog/${post.id}`)}
+                            title="View Post"
+                          >
+                            <i className="fas fa-eye"></i>
+                          </button>
+                          <button 
+                            className="btn-action btn-edit"
+                            onClick={() => navigateToEditPost(post.id)}
+                            title="Edit Post"
+                          >
+                            <i className="fas fa-edit"></i>
+                          </button>
+                          <button 
+                            className="btn-action btn-delete"
+                            onClick={() => handleDeletePost(post.id)}
+                            title="Delete Post"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
 
+        {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="users-management">
-            <div className="page-header">
-              <h1>User Management</h1>
-              <p className="section-subtitle">Manage all user accounts and permissions</p>
-            </div>
-            
-            <div className="users-table">
-              <div className="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>User</th>
-                      <th>Email</th>
-                      <th>Username</th>
-                      <th>Role</th>
-                      <th>Posts</th>
-                      <th>Joined</th>
-                      <th>Actions</th>
+          <div className="users-content">
+            <div className="table-container">
+              <table className="users-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Posts</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(user => (
+                    <tr key={user.id}>
+                      <td>
+                        <div className="user-cell">
+                          <div className="user-avatar">
+                            {user.avatar_url ? (
+                              <img src={user.avatar_url} alt={user.name} />
+                            ) : (
+                              <i className="fas fa-user"></i>
+                            )}
+                          </div>
+                          <div className="user-info">
+                            <strong>{user.name || user.username}</strong>
+                            {user.id === currentUser?.id && (
+                              <small className="current-user-tag">You</small>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td>{user.email}</td>
+                      <td>@{user.username}</td>
+                      <td>
+                        <select 
+                          value={user.role}
+                          onChange={(e) => handleUserRoleChange(user.id, e.target.value)}
+                          disabled={user.id === currentUser?.id}
+                          className="role-select"
+                        >
+                          <option value="user">User</option>
+                          <option value="admin">Admin</option>
+                          <option value="editor">Editor</option>
+                        </select>
+                      </td>
+                      <td>
+                        <span className="posts-count">
+                          {posts.filter(p => p.user_id === user.id).length}
+                        </span>
+                      </td>
+                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button 
+                            className="btn-action btn-view"
+                            onClick={() => {
+                              const userPosts = posts.filter(p => p.user_id === user.id);
+                              alert(`${user.name || user.username} has ${userPosts.length} posts`);
+                            }}
+                            title="View User Info"
+                          >
+                            <i className="fas fa-info-circle"></i>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {users.map(user => (
-                      <tr key={user.id}>
-                        <td>
-                          <div className="user-cell">
-                            <div className="user-avatar">
-                              {user.avatar_url ? (
-                                <img src={user.avatar_url} alt={user.name || user.username} />
-                              ) : (
-                                <i className="fas fa-user"></i>
-                              )}
-                            </div>
-                            <div className="user-info">
-                              <strong>{user.name || user.username}</strong>
-                              {user.id === currentUser?.id && (
-                                <small className="current-user">You</small>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td>{user.email}</td>
-                        <td>{user.username}</td>
-                        <td>
-                          <div className="role-control">
-                            <select 
-                              value={user.role}
-                              onChange={(e) => handleUserRoleChange(user.id, e.target.value)}
-                              disabled={user.id === currentUser?.id}
-                              className="role-select"
-                            >
-                              <option value="user">User</option>
-                              <option value="admin">Admin</option>
-                            </select>
-                          </div>
-                        </td>
-                        <td className="posts-count">{posts.filter(p => p.user_id === user.id).length}</td>
-                        <td className="date-cell">{new Date(user.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-view"
-                              onClick={() => {
-                                const userPosts = posts.filter(p => p.user_id === user.id);
-                                setPosts(userPosts);
-                                setActiveTab('posts');
-                              }}
-                              title="View User Posts"
-                            >
-                              <i className="fas fa-newspaper"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
 
+        {/* Comments Tab */}
         {activeTab === 'comments' && (
-          <div className="comments-management">
-            <div className="page-header">
-              <h1>Comments Management</h1>
-              <p className="section-subtitle">Moderate comments from all users</p>
-            </div>
-            
-            <div className="comments-table">
-              <div className="table-container">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Post</th>
-                      <th>Author</th>
-                      <th>Comment</th>
-                      <th>Likes</th>
-                      <th>Created</th>
-                      <th>Actions</th>
+          <div className="comments-content">
+            <div className="table-container">
+              <table className="comments-table">
+                <thead>
+                  <tr>
+                    <th>Post</th>
+                    <th>User</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comments.map(comment => (
+                    <tr key={comment.id}>
+                      <td className="post-cell">
+                        <strong>{comment.posts?.title || 'Unknown Post'}</strong>
+                      </td>
+                      <td>
+                        <div className="user-cell">
+                          <div className="user-avatar">
+                            {comment.users?.avatar_url ? (
+                              <img src={comment.users.avatar_url} alt={comment.users.name} />
+                            ) : (
+                              <i className="fas fa-user"></i>
+                            )}
+                          </div>
+                          <div className="user-info">
+                            <strong>{comment.users?.name || comment.users?.username || comment.author_name || 'Anonymous'}</strong>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="comment-cell">
+                        {comment.content}
+                      </td>
+                      <td>{new Date(comment.created_at).toLocaleDateString()}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button 
+                            className="btn-action btn-delete"
+                            onClick={() => handleDeleteComment(comment.id)}
+                            title="Delete Comment"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {comments.map(comment => (
-                      <tr key={comment.id}>
-                        <td className="post-cell">
-                          <strong>{comment.posts?.title || `Post ${comment.post_id}`}</strong>
-                        </td>
-                        <td>
-                          <div className="author-info">
-                            <div className="author-avatar">
-                              {comment.avatar_url ? (
-                                <img src={comment.avatar_url} alt={comment.author_name} />
-                              ) : (
-                                <i className="fas fa-user"></i>
-                              )}
-                            </div>
-                            <div>
-                              <strong>{comment.author_name || comment.users?.name || 'Anonymous'}</strong>
-                              <small>{comment.author_email || comment.users?.email || 'No email'}</small>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="comment-content">{comment.content}</td>
-                        <td className="likes-cell">{comment.likes}</td>
-                        <td className="date-cell">{new Date(comment.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <div className="action-buttons">
-                            <button 
-                              className="btn-delete"
-                              onClick={() => handleDeleteComment(comment.id)}
-                              title="Delete Comment"
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
-
-        {activeTab === 'create' && (
-          <div className="create-post">
-            <div className="page-header">
-              <h1>Create New Post</h1>
-              <p className="section-subtitle">Create a new blog post</p>
-            </div>
-            
-            <form onSubmit={handleCreatePost} className="post-form">
-              <div className="form-group">
-                <label>Title *</label>
-                <input
-                  type="text"
-                  value={newPost.title}
-                  onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                  placeholder="Enter post title"
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Excerpt</label>
-                <textarea
-                  value={newPost.excerpt}
-                  onChange={(e) => setNewPost({...newPost, excerpt: e.target.value})}
-                  placeholder="Enter a brief excerpt for the post"
-                  rows="3"
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Content *</label>
-                <textarea
-                  value={newPost.content}
-                  onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                  placeholder="Enter the full post content"
-                  rows="10"
-                  required
-                />
-              </div>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Category</label>
-                  <select
-                    value={newPost.category}
-                    onChange={(e) => setNewPost({...newPost, category: e.target.value})}
-                  >
-                    <option value="design">Design</option>
-                    <option value="development">Development</option>
-                    <option value="business">Business</option>
-                    <option value="general">General</option>
-                  </select>
-                </div>
-                
-                <div className="form-group">
-                  <label>Theme</label>
-                  <select
-                    value={newPost.theme}
-                    onChange={(e) => setNewPost({...newPost, theme: e.target.value})}
-                  >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div className="form-group">
-                <label>Featured Image URL</label>
-                <input
-                  type="text"
-                  value={newPost.image_url}
-                  onChange={(e) => setNewPost({...newPost, image_url: e.target.value})}
-                  placeholder="https://example.com/image.jpg"
-                />
-                {newPost.image_url && (
-                  <div className="image-preview">
-                    <img src={newPost.image_url} alt="Preview" onError={(e) => e.target.style.display = 'none'} />
-                  </div>
-                )}
-              </div>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <div className="checkbox-group">
-                    <input
-                      type="checkbox"
-                      checked={newPost.featured}
-                      onChange={(e) => setNewPost({...newPost, featured: e.target.checked})}
-                      id="featured"
-                    />
-                    <label htmlFor="featured">
-                      <span className="checkbox-custom"></span>
-                      Mark as featured post
-                    </label>
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <div className="checkbox-group">
-                    <input
-                      type="checkbox"
-                      checked={newPost.published}
-                      onChange={(e) => setNewPost({...newPost, published: e.target.checked})}
-                      id="published"
-                    />
-                    <label htmlFor="published">
-                      <span className="checkbox-custom"></span>
-                      Publish immediately
-                    </label>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="form-actions">
-                <button 
-                  type="button" 
-                  className="cancel-btn"
-                  onClick={() => {
-                    setNewPost({
-                      title: '',
-                      excerpt: '',
-                      content: '',
-                      category: 'design',
-                      image_url: '',
-                      theme: 'light',
-                      featured: false,
-                      published: true
-                    });
-                  }}
-                >
-                  Clear Form
-                </button>
-                <button type="submit" className="submit-btn">
-                  <i className="fas fa-plus-circle"></i> Create Post
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   );
 };

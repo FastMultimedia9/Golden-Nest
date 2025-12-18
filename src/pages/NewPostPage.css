@@ -1,0 +1,144 @@
+/* Error Message Styling */
+.error-message {
+  background: #fce8e6;
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #c0392b;
+  font-size: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-message i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.error-message span {
+  line-height: 1.4;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button loading state */
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-submit:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix for Safari browser cache issue */
+.new-post-page {
+  animation: pageFadeIn 0.5s ease;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Improved form input focus states */
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: #3498db !important;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2) !important;
+  outline: none !important;
+}
+
+/* Better disabled state styling */
+.form-input:disabled,
+.form-select:disabled,
+.form-textarea:disabled,
+.checkbox-input:disabled + .checkbox-label {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+/* Format button disabled state */
+.format-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+.format-btn:disabled:hover {
+  border-color: #ddd;
+  background-color: #f8f9fa;
+  transform: none;
+}
+
+/* Checkbox styling improvements */
+.checkbox-label {
+  user-select: none;
+  transition: opacity 0.3s ease;
+}
+
+.checkbox-input:disabled + .checkbox-label {
+  opacity: 0.6;
+}
+
+/* Loading spinner for form */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+/* Success message */
+.success-message {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #155724;
+  font-size: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+.success-message i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Browser cache workaround */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .new-post-container {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
