@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { blogAPI, formatNumber, formatTimeAgo } from '../supabase';
+import TimeAgo from 'react-timeago';
+import { blogAPI, formatNumber } from '../supabase';
 import './ArticlePage.css';
 
 const ArticlePage = () => {
@@ -442,7 +443,9 @@ const ArticlePage = () => {
                       <img src={comment.avatar_url} alt={comment.author_name} />
                       <div>
                         <h4>{comment.author_name}</h4>
-                        <span>{formatTimeAgo(comment.created_at)}</span>
+                        <span className="comment-time">
+                          <TimeAgo date={comment.created_at} />
+                        </span>
                       </div>
                     </div>
                     <p>{comment.content}</p>
