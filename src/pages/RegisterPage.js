@@ -21,7 +21,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   // Secret admin password - CHANGE THIS IN PRODUCTION!
-  const ADMIN_SECRET_PASSWORD = 'ADMIN2024';
+  const ADMIN_SECRET_PASSWORD = 'yahooamaps';
 
   // Check if user is already logged in
   useEffect(() => {

@@ -12,6 +12,7 @@ const LoginPage = () => {
   const [showResetForm, setShowResetForm] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // New state for password visibility
   const navigate = useNavigate();
 
   // Check if already logged in
@@ -117,6 +118,10 @@ const LoginPage = () => {
     setError('');
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="login-page">
       <div className="login-container">
@@ -140,21 +145,6 @@ const LoginPage = () => {
               <li><i className="fas fa-users"></i> User role management</li>
               <li><i className="fas fa-bell"></i> Real-time updates</li>
             </ul>
-          </div>
-          
-          <div className="login-info">
-            <h3><i className="fas fa-info-circle"></i> Authentication</h3>
-            <div className="auth-tech">
-              <span className="tech-badge">
-                <i className="fas fa-database"></i> Supabase Auth
-              </span>
-              <span className="tech-badge">
-                <i className="fas fa-shield-alt"></i> Secure Login
-              </span>
-              <span className="tech-badge">
-                <i className="fas fa-lock"></i> Password Hashing
-              </span>
-            </div>
           </div>
         </div>
         
@@ -197,9 +187,6 @@ const LoginPage = () => {
                         required
                         disabled={isLoading}
                       />
-                      <div className="input-icon">
-                        <i className="fas fa-envelope"></i>
-                      </div>
                     </div>
                   </div>
                   
@@ -261,9 +248,6 @@ const LoginPage = () => {
                         required
                         disabled={isLoading}
                       />
-                      <div className="input-icon">
-                        <i className="fas fa-envelope"></i>
-                      </div>
                     </div>
                   </div>
                   
@@ -273,7 +257,7 @@ const LoginPage = () => {
                     </label>
                     <div className="input-group">
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -282,9 +266,14 @@ const LoginPage = () => {
                         required
                         disabled={isLoading}
                       />
-                      <div className="input-icon">
-                        <i className="fas fa-lock"></i>
-                      </div>
+                      <button 
+                        type="button"
+                        className="password-toggle"
+                        onClick={togglePasswordVisibility}
+                        disabled={isLoading}
+                      >
+                        <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+                      </button>
                     </div>
                   </div>
                   
@@ -334,32 +323,21 @@ const LoginPage = () => {
                       </button>
                     </p>
                   </div>
+                  {!showResetForm && (
+                    <button 
+                      onClick={() => setShowResetForm(true)}
+                      className="forgot-password"
+                    >
+                      <i className="fas fa-question-circle"></i> Forgot Password?
+                    </button>
+                  )}
                 </form>
               </>
             )}
             
             <div className="login-footer">
               <div className="footer-links">
-                <button 
-                  onClick={() => navigate('/')}
-                  className="back-home"
-                >
-                  <i className="fas fa-arrow-left"></i> Back to Home
-                </button>
-                
-                {!showResetForm && (
-                  <button 
-                    onClick={() => setShowResetForm(true)}
-                    className="forgot-password"
-                  >
-                    <i className="fas fa-question-circle"></i> Forgot Password?
-                  </button>
-                )}
-              </div>
-              
-              <div className="security-notice">
-                <i className="fas fa-shield-alt"></i>
-                <span>Your session will expire after 24 hours of inactivity</span>
+                {/* Empty as requested */}
               </div>
             </div>
           </div>
