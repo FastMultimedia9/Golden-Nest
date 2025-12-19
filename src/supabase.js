@@ -142,9 +142,11 @@ export const blogAPI = {
     }
   },
 
-  async getUserPosts() {
+  // NEW: Get posts by specific user ID
+  async getPostsByUserId(userId) {
     try {
-      // Just get all published posts for simplicity
+      console.log(`📡 Fetching posts for user: ${userId}`);
+      
       const { data, error } = await supabase
         .from('posts')
         .select(`
@@ -158,7 +160,38 @@ export const blogAPI = {
             role
           )
         `)
-        .eq('published', true)
+        .eq('user_id', userId)  // Filter by user_id
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.log('⚠️ Error fetching user posts:', error.message);
+        return [];
+      }
+      
+      console.log(`✅ Found ${data?.length || 0} posts for user ${userId}`);
+      return transformPostsData(data || []);
+    } catch (error) {
+      console.log('❌ Exception in getPostsByUserId:', error.message);
+      return [];
+    }
+  },
+
+  // FIXED: getUserPosts - removed the problematic logic
+  async getUserPosts() {
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          *,
+          users:user_id (
+            id,
+            name,
+            username,
+            email,
+            avatar_url,
+            role
+          )
+        `)
         .order('created_at', { ascending: false });
       
       if (error) {
@@ -224,6 +257,81 @@ export const blogAPI = {
     }
   },
 
+  // NEW: Update post function
+  async updatePost(postId, postData) {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      if (!user?.user) {
+        throw new Error('User must be logged in to update posts');
+      }
+      
+      const postToUpdate = {
+        title: postData.title || 'Untitled Post',
+        excerpt: postData.excerpt || (postData.content ? postData.content.substring(0, 150) + '...' : 'Read more...'),
+        content: postData.content || '',
+        category: (postData.category || 'general').toLowerCase(),
+        image_url: postData.image_url || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000)}?w=800&auto=format&fit=crop`,
+        featured: postData.featured || false,
+        published: postData.published !== false,
+        updated_at: new Date().toISOString()
+      };
+      
+      // Filter out undefined values
+      const cleanPostToUpdate = Object.fromEntries(
+        Object.entries(postToUpdate).filter(([_, v]) => v !== undefined)
+      );
+      
+      const { data, error } = await supabase
+        .from('posts')
+        .update(cleanPostToUpdate)
+        .eq('id', postId)
+        .select();
+      
+      if (error) throw error;
+      
+      return transformPostData(data[0]);
+    } catch (error) {
+      console.log('Error in updatePost:', error.message);
+      return null;
+    }
+  },
+
+  // NEW: Delete post function
+  async deletePost(postId) {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      if (!user?.user) {
+        throw new Error('User must be logged in to delete posts');
+      }
+      
+      // First, delete associated comments (to maintain referential integrity)
+      const { error: commentsError } = await supabase
+        .from('comments')
+        .delete()
+        .eq('post_id', postId);
+      
+      if (commentsError) {
+        console.log('Warning: Could not delete comments:', commentsError.message);
+        // Continue with post deletion even if comments deletion fails
+      }
+      
+      // Then delete the post
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId);
+      
+      if (error) throw error;
+      
+      return true;
+    } catch (error) {
+      console.log('Error in deletePost:', error.message);
+      return false;
+    }
+  },
+
   // Get comments for a post
   async getComments(postId) {
     try {
@@ -280,6 +388,9 @@ export const blogAPI = {
         .select();
       
       if (error) throw error;
+      
+      // Update the post's comments count
+      await supabase.rpc('increment_comments_count', { post_id: postId });
       
       return data[0];
     } catch (error) {
@@ -599,3 +710,16 @@ export const authAPI = {
 if (typeof window !== 'undefined') {
   console.log('🚀 Initializing Supabase (singleton)...');
 }
+
+// Database Function for Incrementing Comments Count
+// Run this SQL in your Supabase SQL editor:
+/*
+CREATE OR REPLACE FUNCTION increment_comments_count(post_id_param bigint)
+RETURNS void AS $$
+BEGIN
+  UPDATE posts 
+  SET comments_count = comments_count + 1
+  WHERE id = post_id_param;
+END;
+$$ LANGUAGE plpgsql;
+*/

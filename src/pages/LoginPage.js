@@ -25,7 +25,7 @@ const LoginPage = () => {
           if (userWithProfile?.profile?.role === 'admin') {
             navigate('/admin');
           } else {
-            navigate('/blog');
+            navigate('/user/dashboard'); // Changed from '/blog' to '/user/dashboard'
           }
         }
       } catch (error) {
@@ -69,7 +69,7 @@ const LoginPage = () => {
           if (result.isAdmin) {
             navigate('/admin');
           } else {
-            navigate('/blog');
+            navigate('/user/dashboard'); // Changed from '/blog' to '/user/dashboard'
           }
         }, 500);
       } else {

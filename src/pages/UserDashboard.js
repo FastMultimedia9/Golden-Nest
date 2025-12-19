@@ -9,15 +9,6 @@ const UserDashboard = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('my-posts');
-  const [newPost, setNewPost] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    category: 'general',
-    image_url: '',
-    published: true,
-    featured: false
-  });
   const [editingPost, setEditingPost] = useState(null);
 
   useEffect(() => {
@@ -28,7 +19,7 @@ const UserDashboard = () => {
     const currentUser = await authAPI.getCurrentUserWithProfile();
     
     if (!currentUser) {
-      navigate('/admin/login');
+      navigate('/login'); // Changed to regular user login
       return;
     }
     
@@ -44,14 +35,18 @@ const UserDashboard = () => {
   };
 
   const fetchUserPosts = async () => {
+    if (!user?.id) return;
+    
     setLoading(true);
     try {
-      const userPosts = await blogAPI.getUserPosts(user?.id);
+      // Use the correct API function that filters by user_id
+      const userPosts = await blogAPI.getPostsByUserId(user.id);
       setPosts(userPosts || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleLogout = async () => {
@@ -59,40 +54,33 @@ const UserDashboard = () => {
     navigate('/');
   };
 
-  const handleCreatePost = async (e) => {
-    e.preventDefault();
-    
-    try {
-      const post = await blogAPI.createPost(newPost);
-      if (post) {
-        alert('Post created successfully!');
-        setNewPost({
-          title: '',
-          excerpt: '',
-          content: '',
-          category: 'general',
-          image_url: '',
-          published: true,
-          featured: false
-        });
-        fetchUserPosts();
-        setActiveTab('my-posts');
-      }
-    } catch (error) {
-      console.error('Error creating post:', error);
-      alert('Error creating post: ' + error.message);
-    }
+  const handleCreateNewPost = () => {
+    // Navigate to the NewPostPage
+    navigate('/user/new-post');
   };
 
   const handleUpdatePost = async (e) => {
     e.preventDefault();
     
+    if (!editingPost || !user?.id) return;
+    
+    // Verify the user owns this post before updating
+    if (editingPost.user_id !== user.id) {
+      alert('You can only edit your own posts');
+      return;
+    }
+    
     try {
-      const post = await blogAPI.updatePost(editingPost.id, editingPost);
+      const updatedData = {
+        ...editingPost,
+        updated_at: new Date().toISOString()
+      };
+      
+      const post = await blogAPI.updatePost(editingPost.id, updatedData);
       if (post) {
         alert('Post updated successfully!');
         setEditingPost(null);
-        fetchUserPosts();
+        fetchUserPosts(); // Refresh the posts list
         setActiveTab('my-posts');
       }
     } catch (error) {
@@ -102,12 +90,21 @@ const UserDashboard = () => {
   };
 
   const handleDeletePost = async (id) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
+    // Find the post to verify ownership
+    const postToDelete = posts.find(p => p.id === id);
+    if (!postToDelete) return;
+    
+    if (postToDelete.user_id !== user?.id) {
+      alert('You can only delete your own posts');
+      return;
+    }
+    
+    if (window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
       try {
         const success = await blogAPI.deletePost(id);
         if (success) {
           alert('Post deleted successfully!');
-          fetchUserPosts();
+          fetchUserPosts(); // Refresh the posts list
         }
       } catch (error) {
         console.error('Error deleting post:', error);
@@ -117,9 +114,41 @@ const UserDashboard = () => {
   };
 
   const startEditing = (post) => {
-    setEditingPost(post);
+    // Verify the user owns this post before allowing edit
+    if (post.user_id !== user?.id) {
+      alert('You can only edit your own posts');
+      return;
+    }
+    setEditingPost({...post});
     setActiveTab('edit-post');
   };
+
+  // Format number for display (e.g., 1000 becomes 1K)
+  const formatNumber = (num) => {
+    if (!num && num !== 0) return '0';
+    const number = parseInt(num);
+    if (isNaN(number)) return '0';
+    if (number >= 1000000) return (number / 1000000).toFixed(1) + 'M';
+    if (number >= 1000) return (number / 1000).toFixed(1) + 'K';
+    return number.toString();
+  };
+
+  // Calculate stats
+  const calculateStats = () => {
+    const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
+    const totalComments = posts.reduce((sum, post) => sum + (post.comments || 0), 0);
+    const totalLikes = posts.reduce((sum, post) => sum + (post.likes || 0), 0);
+    const publishedPosts = posts.filter(p => p.published).length;
+    
+    return {
+      totalViews,
+      totalComments,
+      totalLikes,
+      publishedPosts
+    };
+  };
+
+  const stats = calculateStats();
 
   if (loading) {
     return <div className="user-loading">Loading your dashboard...</div>;
@@ -135,7 +164,7 @@ const UserDashboard = () => {
           </div>
           <div>
             <h1>Welcome, {user?.profile?.name || user?.email}</h1>
-            <p>Regular User Dashboard</p>
+            <p>Your Personal Dashboard</p>
           </div>
         </div>
         <div className="user-actions">
@@ -167,7 +196,7 @@ const UserDashboard = () => {
             </button>
             <button 
               className={`nav-btn ${activeTab === 'create-post' ? 'active' : ''}`}
-              onClick={() => setActiveTab('create-post')}
+              onClick={handleCreateNewPost}  // Changed to navigate to NewPostPage
             >
               <i className="fas fa-plus-circle"></i> Create New Post
             </button>
@@ -193,7 +222,15 @@ const UserDashboard = () => {
               <p>Total Posts</p>
             </div>
             <div className="stat-item">
-              <h3>{posts.filter(p => p.published).length}</h3>
+              <h3>{formatNumber(stats.totalViews)}</h3>
+              <p>Total Views</p>
+            </div>
+            <div className="stat-item">
+              <h3>{formatNumber(stats.totalComments)}</h3>
+              <p>Total Comments</p>
+            </div>
+            <div className="stat-item">
+              <h3>{stats.publishedPosts}</h3>
               <p>Published</p>
             </div>
             <div className="stat-item">
@@ -215,7 +252,7 @@ const UserDashboard = () => {
                   <p>Create your first post to get started!</p>
                   <button 
                     className="btn-create-first"
-                    onClick={() => setActiveTab('create-post')}
+                    onClick={handleCreateNewPost}
                   >
                     <i className="fas fa-plus"></i> Create Your First Post
                   </button>
@@ -240,7 +277,10 @@ const UserDashboard = () => {
                         <div className="post-meta">
                           <span className="post-category">{post.category}</span>
                           <span className="post-views">
-                            <i className="fas fa-eye"></i> {post.views}
+                            <i className="fas fa-eye"></i> {formatNumber(post.views || 0)}
+                          </span>
+                          <span className="post-comments">
+                            <i className="fas fa-comment"></i> {formatNumber(post.comments || 0)}
                           </span>
                           <span className="post-date">
                             {new Date(post.created_at).toLocaleDateString()}
@@ -271,108 +311,6 @@ const UserDashboard = () => {
                   ))}
                 </div>
               )}
-            </div>
-          )}
-
-          {activeTab === 'create-post' && (
-            <div className="create-post">
-              <h2>Create New Post</h2>
-              <form onSubmit={handleCreatePost} className="post-form">
-                <div className="form-group">
-                  <label>Title *</label>
-                  <input
-                    type="text"
-                    value={newPost.title}
-                    onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                    placeholder="Enter post title"
-                    required
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Excerpt</label>
-                  <textarea
-                    value={newPost.excerpt}
-                    onChange={(e) => setNewPost({...newPost, excerpt: e.target.value})}
-                    placeholder="Enter a brief excerpt"
-                    rows="3"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label>Content *</label>
-                  <textarea
-                    value={newPost.content}
-                    onChange={(e) => setNewPost({...newPost, content: e.target.value})}
-                    placeholder="Write your post content here..."
-                    rows="10"
-                    required
-                  />
-                </div>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Category</label>
-                    <select
-                      value={newPost.category}
-                      onChange={(e) => setNewPost({...newPost, category: e.target.value})}
-                    >
-                      <option value="general">General</option>
-                      <option value="design">Design</option>
-                      <option value="development">Development</option>
-                      <option value="business">Business</option>
-                      <option value="personal">Personal</option>
-                    </select>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Image URL (optional)</label>
-                    <input
-                      type="text"
-                      value={newPost.image_url}
-                      onChange={(e) => setNewPost({...newPost, image_url: e.target.value})}
-                      placeholder="https://example.com/image.jpg"
-                    />
-                  </div>
-                </div>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <div className="checkbox-group">
-                      <input
-                        type="checkbox"
-                        checked={newPost.published}
-                        onChange={(e) => setNewPost({...newPost, published: e.target.checked})}
-                      />
-                      <span>Publish immediately</span>
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <div className="checkbox-group">
-                      <input
-                        type="checkbox"
-                        checked={newPost.featured}
-                        onChange={(e) => setNewPost({...newPost, featured: e.target.checked})}
-                      />
-                      <span>Mark as featured</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="form-actions">
-                  <button 
-                    type="button"
-                    onClick={() => setActiveTab('my-posts')}
-                    className="btn-cancel"
-                  >
-                    <i className="fas fa-arrow-left"></i> Cancel
-                  </button>
-                  <button type="submit" className="btn-submit">
-                    <i className="fas fa-plus-circle"></i> Create Post
-                  </button>
-                </div>
-              </form>
             </div>
           )}
 
@@ -504,6 +442,14 @@ const UserDashboard = () => {
                   <div className="detail-item">
                     <label>Posts created:</label>
                     <span>{posts.length}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Total views:</label>
+                    <span>{formatNumber(stats.totalViews)}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label>Total comments:</label>
+                    <span>{formatNumber(stats.totalComments)}</span>
                   </div>
                 </div>
                 

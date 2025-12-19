@@ -170,6 +170,16 @@ function App() {
               } 
             />
             
+            {/* ===== USER NEW POST PAGE ===== */}
+            <Route 
+              path="/user/new-post" 
+              element={
+                <ProtectedRoute>
+                  <NewPostPage />
+                </ProtectedRoute>
+              } 
+            />
+            
             {/* ===== ADMIN PAGES (ADMIN ONLY) ===== */}
             <Route 
               path="/admin" 
