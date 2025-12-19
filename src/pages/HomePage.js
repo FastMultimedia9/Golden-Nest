@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -10,22 +11,14 @@ const HomePage = () => {
   const [showPackageModal, setShowPackageModal] = useState(false);
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('basic');
+  const navigate = useNavigate();
   
   // Christmas-themed hero images
   const heroImages = [
     "https://images.unsplash.com/photo-1547887537-6158d64c35b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1484723091739-30a097e8f929?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1512389142860-9c449e58a543?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/phone-1512389142860-9c449e58a543?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
-  ];
-
-  // Christmas greeting messages
-  const christmasGreetings = [
-    "🎄 Merry Christmas!",
-    "🌟 Happy Holidays!",
-    "✨ Season's Greetings!",
-    "🎁 Wishing You Joy!",
-    "🦌 Ho Ho Ho!"
   ];
 
   // Calculate Christmas countdown
@@ -143,7 +136,12 @@ const HomePage = () => {
   };
 
   const handlePackageOrder = () => {
-    alert(`Thank you for selecting the ${selectedPackage} package! We'll contact you shortly.`);
+    // Get selected package details
+    const selectedPackageDetails = holidayPackages.find(pkg => pkg.id === selectedPackage);
+    
+    // Navigate to contact page with package details in query params
+    navigate(`/contact?package=${selectedPackage}&project=Christmas%20Design&type=${encodeURIComponent(selectedPackageDetails.name)}`);
+    
     closePackageModal();
   };
 
@@ -415,6 +413,64 @@ const HomePage = () => {
         <div className="countdown-message">Book before Christmas for special holiday rates! Offer ends December 25th.</div>
       </div>
 
+      {/* Holiday Design Package Modal - Moved to top when shown */}
+      {showPackageModal && (
+        <div className="holiday-package-modal-top">
+          <div className="modal-overlay" onClick={closePackageModal}></div>
+          <div className="modal-content package-modal-top">
+            <button className="modal-close" onClick={closePackageModal}>
+              <i className="fas fa-times"></i>
+            </button>
+            
+            <div className="modal-header">
+              <h2 className="modal-title">🎁 Christmas Design Packages</h2>
+              <p className="modal-subtitle">Special holiday rates valid until December 25th</p>
+            </div>
+            
+            <div className="packages-grid">
+              {holidayPackages.map((pkg) => (
+                <div 
+                  key={pkg.id} 
+                  className={`package-card ${selectedPackage === pkg.id ? 'selected' : ''}`}
+                  onClick={() => handlePackageSelect(pkg.id)}
+                >
+                  <div className="package-badge">{pkg.discount}</div>
+                  <div className="package-header">
+                    <h3 className="package-name">{pkg.name}</h3>
+                    <div className="package-price">
+                      <span className="current-price">{pkg.price}</span>
+                      <span className="original-price">{pkg.originalPrice}</span>
+                    </div>
+                  </div>
+                  <p className="package-description">{pkg.description}</p>
+                  <ul className="package-features">
+                    {pkg.features.map((feature, index) => (
+                      <li key={index}><i className="fas fa-check"></i> {feature}</li>
+                    ))}
+                  </ul>
+                  <button 
+                    className={`btn ${selectedPackage === pkg.id ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePackageSelect(pkg.id);
+                    }}
+                  >
+                    {selectedPackage === pkg.id ? '✓ Selected' : 'Select Package'}
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            <div className="modal-footer">
+              <button className="btn btn-primary christmas-btn" onClick={handlePackageOrder}>
+                <i className="fas fa-shopping-cart"></i> Order Selected Package
+              </button>
+              <p className="modal-note">* All packages include free consultation and 1 free social media post design</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Services Section */}
       <section id="services" className="services-section section">
         <div className="christmas-header">
@@ -605,61 +661,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* Holiday Design Package Modal */}
-      {showPackageModal && (
-        <div className="holiday-package-modal">
-          <div className="modal-overlay" onClick={closePackageModal}></div>
-          <div className="modal-content package-modal">
-            <button className="modal-close" onClick={closePackageModal}>
-              <i className="fas fa-times"></i>
-            </button>
-            
-            <div className="modal-header">
-              <h2 className="modal-title">🎁 Christmas Design Packages</h2>
-              <p className="modal-subtitle">Special holiday rates valid until December 25th</p>
-            </div>
-            
-            <div className="packages-grid">
-              {holidayPackages.map((pkg) => (
-                <div 
-                  key={pkg.id} 
-                  className={`package-card ${selectedPackage === pkg.id ? 'selected' : ''}`}
-                  onClick={() => handlePackageSelect(pkg.id)}
-                >
-                  <div className="package-badge">{pkg.discount}</div>
-                  <div className="package-header">
-                    <h3 className="package-name">{pkg.name}</h3>
-                    <div className="package-price">
-                      <span className="current-price">{pkg.price}</span>
-                      <span className="original-price">{pkg.originalPrice}</span>
-                    </div>
-                  </div>
-                  <p className="package-description">{pkg.description}</p>
-                  <ul className="package-features">
-                    {pkg.features.map((feature, index) => (
-                      <li key={index}><i className="fas fa-check"></i> {feature}</li>
-                    ))}
-                  </ul>
-                  <button 
-                    className={`btn ${selectedPackage === pkg.id ? 'btn-primary' : 'btn-outline'}`}
-                    onClick={() => handlePackageSelect(pkg.id)}
-                  >
-                    {selectedPackage === pkg.id ? '✓ Selected' : 'Select Package'}
-                  </button>
-                </div>
-              ))}
-            </div>
-            
-            <div className="modal-footer">
-              <button className="btn btn-primary christmas-btn" onClick={handlePackageOrder}>
-                <i className="fas fa-shopping-cart"></i> Order Selected Package
-              </button>
-              <p className="modal-note">* All packages include free consultation and 1 free social media post design</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Christmas Portfolio Modal */}
       {showPortfolioModal && (

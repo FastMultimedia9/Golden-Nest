@@ -2081,3 +2081,84 @@ body.modal-open {
     font-size: 2rem;
   }
 }
+
+/* Top Modal Styles */
+.homepage .holiday-package-modal-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  animation: homepage-modalSlideDown 0.3s ease;
+}
+
+@keyframes homepage-modalSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.homepage .package-modal-top {
+  margin-top: 50px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: homepage-modalSlideDown 0.3s ease;
+}
+
+.homepage .package-modal-top .modal-header {
+  background: linear-gradient(45deg, var(--christmas-red), var(--christmas-green));
+  color: white;
+  padding: 30px 40px;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.homepage .package-modal-top .modal-title {
+  color: white;
+  background: none;
+  -webkit-text-fill-color: white;
+}
+
+.homepage .package-modal-top .modal-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.homepage .package-modal-top .packages-grid {
+  padding: 40px;
+}
+
+.homepage .package-modal-top .modal-footer {
+  padding: 30px 40px;
+  border-top: 1px solid rgba(196, 30, 58, 0.1);
+  background: linear-gradient(45deg, rgba(196, 30, 58, 0.05), rgba(11, 102, 35, 0.05));
+}
+
+/* Responsive adjustments for top modal */
+@media (max-width: 768px) {
+  .homepage .package-modal-top {
+    margin-top: 20px;
+    max-height: 90vh;
+  }
+  
+  .homepage .package-modal-top .modal-header {
+    padding: 25px 20px;
+  }
+  
+  .homepage .package-modal-top .packages-grid {
+    padding: 20px;
+    grid-template-columns: 1fr;
+  }
+  
+  .homepage .package-modal-top .modal-footer {
+    padding: 20px;
+  }
+}

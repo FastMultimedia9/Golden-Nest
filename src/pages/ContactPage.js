@@ -1,4 +1,3 @@
-// src/pages/ContactPage.jsx - CORRECTED
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import './ContactPage.css';
@@ -23,29 +22,77 @@ const ContactPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submissionMethod, setSubmissionMethod] = useState('');
   const [activeFAQ, setActiveFAQ] = useState(null);
+  const [selectedPackage, setSelectedPackage] = useState('');
 
   const location = useLocation();
   
   // Your contact information
-  const whatsappNumber = '233505159131'; // Note: Removed + sign for WhatsApp URL
-  const displayWhatsappNumber = '+233505159131'; // For display
+  const whatsappNumber = '233505159131';
+  const displayWhatsappNumber = '+233505159131';
   const emailAddress = 'fasttech227@gmail.com';
   
-  // Check if coming from Christmas-themed pages
+  // Christmas packages mapping
+  const christmasPackages = {
+    'basic': {
+      name: 'Festive Starter',
+      price: '$499',
+      features: ['Christmas Logo Design', 'Holiday Color Palette', '3 Social Media Templates', 'Email Newsletter Design', '1 Revision']
+    },
+    'pro': {
+      name: 'Merry Marketing',
+      price: '$899',
+      features: ['Complete Social Media Kit', 'Website Holiday Banner', 'Email Campaign Design', 'Product Packaging Mockup', '3 Revisions']
+    },
+    'premium': {
+      name: 'Santa\'s Workshop',
+      price: '$1499',
+      features: ['Complete Brand Guidelines', 'Print Materials', 'Animated Social Posts', 'Gift Card Design', 'Unlimited Revisions']
+    }
+  };
+  
+  // Auto-fill form based on URL parameters
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const projectType = queryParams.get('project');
+    const packageType = queryParams.get('package');
+    const projectType = queryParams.get('project') || '';
+    const packageName = queryParams.get('type') || '';
     
+    // Enable Christmas mode for any Christmas-related project
     const christmasKeywords = ['christmas', 'holiday', 'festive', 'xmas'];
     const shouldEnableChristmasMode = christmasKeywords.some(keyword => 
-      projectType?.toLowerCase().includes(keyword)
+      projectType.toLowerCase().includes(keyword) || packageName.toLowerCase().includes(keyword)
     );
     
     if (shouldEnableChristmasMode) {
       setIsChristmasMode(true);
+      
+      // Set selected package if provided
+      if (packageType && christmasPackages[packageType]) {
+        setSelectedPackage(packageType);
+        const pkg = christmasPackages[packageType];
+        
+        // Auto-fill message with package details
+        const packageMessage = `I'm interested in the ${pkg.name} Christmas Package (${pkg.price}).\n\nPackage includes:\n${pkg.features.map(f => `• ${f}`).join('\n')}\n\n`;
+        
+        setFormData(prev => ({
+          ...prev,
+          projectType: 'Christmas/Holiday Design',
+          message: packageMessage + (prev.message || 'Please provide more details about my project requirements...')
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          projectType: 'Christmas/Holiday Design',
+          message: prev.message || 'I\'m interested in Christmas design services. Please contact me to discuss my holiday project requirements...'
+        }));
+      }
+    }
+    
+    // Fill project type from URL
+    if (projectType && projectType !== 'undefined') {
       setFormData(prev => ({
         ...prev,
-        projectType: 'Christmas/Holiday Design'
+        projectType: decodeURIComponent(projectType)
       }));
     }
   }, [location.search]);
@@ -78,18 +125,25 @@ const ContactPage = () => {
     }));
   };
 
-  // Format message for WhatsApp/Email
+  // Format message for WhatsApp/Email with package info
   const formatMessage = () => {
-    const christmasBonus = isChristmasMode ? 
-      '\n🎅 *CHRISTMAS SPECIAL REQUEST:* Yes, include 25% discount + free social media pack!' : '';
+    const packageInfo = selectedPackage ? 
+      `\n🎁 *SELECTED CHRISTMAS PACKAGE:* ${christmasPackages[selectedPackage]?.name} (${christmasPackages[selectedPackage]?.price})` : '';
     
-    return `📋 *NEW PROJECT REQUEST* 📋
+    const packageFeatures = selectedPackage ? 
+      `\n✨ *Package Includes:*\n${christmasPackages[selectedPackage]?.features.map(f => `• ${f}`).join('\n')}` : '';
+    
+    const christmasBonus = isChristmasMode ? 
+      '\n🎅 *CHRISTMAS SPECIAL:* 25% holiday discount + free social media pack included!' : '';
+    
+    return `📋 *NEW CHRISTMAS PROJECT REQUEST* 📋
 
 👤 *Client Information:*
 • Name: ${formData.name}
 • Email: ${formData.email}
 • Phone: ${formData.phone}
 • Company: ${formData.company || 'Not provided'}
+${packageInfo}${packageFeatures}
 
 🎯 *Project Details:*
 • Project Type: ${formData.projectType}
@@ -101,8 +155,8 @@ ${christmasBonus}
 📝 *Project Description:*
 ${formData.message}
 
-📧 *This message was sent via Fast Multimedia Website*
-${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
+📧 *This message was sent via Fast Multimedia Christmas Design Page*
+🎄 *Christmas Special Offer Activated* 🎁`;
   };
 
   // Send via WhatsApp
@@ -115,9 +169,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
 
   // Send via Email
   const sendViaEmail = () => {
-    const subject = isChristmasMode ? 
-      '🎄 Christmas Project Request - Fast Multimedia' : 
-      'New Project Request - Fast Multimedia';
+    const subject = '🎄 Christmas Design Package Request - Fast Multimedia';
     const body = formatMessage();
     const mailtoUrl = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
@@ -206,19 +258,19 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
   const faqs = [
     {
       question: 'How soon will you contact me after I submit my project request?',
-      answer: 'We respond to all project requests within 24 hours. For urgent projects, we typically respond within 2-4 hours during business hours (9 AM - 6 PM GMT).'
+      answer: 'We respond to all project requests within 24 hours. For Christmas projects, we provide priority response within 2-4 hours during business hours (9 AM - 6 PM GMT).'
     },
     {
-      question: 'What information should I include in my project description?',
-      answer: 'Please include: Your project goals, target audience, any specific requirements, preferred colors/styles, examples of designs you like, timeline expectations, and budget if known. The more details you provide, the better we can understand your needs.'
+      question: 'What information should I include in my Christmas project description?',
+      answer: 'For Christmas projects, include: Your holiday campaign goals, target audience, specific Christmas themes or colors, examples of festive designs you like, timeline expectations (important for holiday deadlines), and any special requirements for Christmas promotions.'
     },
     {
       question: 'How does the 25% Christmas discount work?',
-      answer: 'The 25% discount is automatically applied to all Christmas projects. After you submit your request, we\'ll send you a detailed quote with the discount already applied. The discount is valid for projects starting before December 20th.'
+      answer: 'The 25% discount is automatically applied to all Christmas projects. When you select a Christmas package, the discounted price is shown. After you submit your request, we\'ll send you a detailed quote with the discount already applied. Valid for projects starting before December 20th.'
     },
     {
-      question: 'Can I discuss my project before submitting a formal request?',
-      answer: 'Absolutely! You can chat with us directly on WhatsApp or send us an email. Use the quick contact buttons on the right. We\'re happy to discuss your project ideas before you submit a formal request.'
+      question: 'Can I customize my Christmas package?',
+      answer: 'Absolutely! All our Christmas packages are customizable. After you select a package, we can adjust it to fit your specific needs. Just mention your requirements in the project description, and we\'ll create a custom quote for you.'
     }
   ];
 
@@ -249,7 +301,13 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
           <div className="hero-content animate-on-scroll">
             {isChristmasMode && (
               <div className="christmas-badge">
-                <span>🎄 Start Your Christmas Project 🎁</span>
+                <span>🎄 Christmas Design Package Request 🎁</span>
+                {selectedPackage && (
+                  <div className="selected-package-badge">
+                    <i className="fas fa-gift"></i>
+                    <span>{christmasPackages[selectedPackage]?.name} Package Selected</span>
+                  </div>
+                )}
               </div>
             )}
             <h1 className="contact-title">
@@ -260,6 +318,26 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                 ? 'Get 25% off Christmas projects! Fill the form and send your project request via WhatsApp or Email.'
                 : 'Ready to start your project? Fill the form and send your request via WhatsApp or Email.'}
             </p>
+            
+            {isChristmasMode && selectedPackage && (
+              <div className="selected-package-card">
+                <div className="package-header">
+                  <h3><i className="fas fa-gift"></i> Selected Package: {christmasPackages[selectedPackage]?.name}</h3>
+                  <div className="package-price">{christmasPackages[selectedPackage]?.price}</div>
+                </div>
+                <div className="package-features">
+                  <h4>Package Includes:</h4>
+                  <ul>
+                    {christmasPackages[selectedPackage]?.features.slice(0, 3).map((feature, index) => (
+                      <li key={index}><i className="fas fa-check"></i> {feature}</li>
+                    ))}
+                    {christmasPackages[selectedPackage]?.features.length > 3 && (
+                      <li><i className="fas fa-ellipsis-h"></i> ...and more!</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            )}
             
             {isChristmasMode && (
               <div className="christmas-offer-card">
@@ -290,25 +368,27 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
             <div className={`form-container ${isChristmasMode ? 'christmas-form' : ''}`}>
               <div className="form-header animate-on-scroll">
                 <h2 className="section-title">
-                  {isChristmasMode ? '🎄 Project Request Form' : 'Project Request Form'}
+                  {isChristmasMode ? '🎄 Christmas Project Request Form' : 'Project Request Form'}
                 </h2>
                 <p className="section-subtitle">
-                  Fill out your project details and choose how to send it to us
+                  {isChristmasMode 
+                    ? 'Your Christmas package details are pre-filled. Complete the form and send it to us!'
+                    : 'Fill out your project details and choose how to send it to us'}
                 </p>
                 
                 {isChristmasMode && (
                   <div className="christmas-timeline">
                     <div className="timeline-item">
                       <i className="fas fa-bell"></i>
-                      <span>Quick Response</span>
+                      <span>Priority Response</span>
                     </div>
                     <div className="timeline-item">
                       <i className="fas fa-percentage"></i>
-                      <span>25% Discount</span>
+                      <span>25% Discount Applied</span>
                     </div>
                     <div className="timeline-item">
                       <i className="fas fa-gift"></i>
-                      <span>Free Bonus</span>
+                      <span>Free Christmas Bonus</span>
                     </div>
                   </div>
                 )}
@@ -324,17 +404,20 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                   </h3>
                   <p className="success-text">
                     {submissionMethod === 'whatsapp' 
-                      ? 'Your project request has been prepared! WhatsApp should open with your message ready to send. Please review and send it to us.'
-                      : 'Your project request has been prepared! Your email client should open with your message ready to send. Please review and send it to us.'}
+                      ? 'Your Christmas project request has been prepared! WhatsApp should open with your message ready to send. Please review and send it to us.'
+                      : 'Your Christmas project request has been prepared! Your email client should open with your message ready to send. Please review and send it to us.'}
                   </p>
                   
                   {isChristmasMode && (
                     <div className="christmas-bonus">
-                      <h4>Your Christmas Bonus is Included:</h4>
+                      <h4>Your Christmas Package Includes:</h4>
                       <ul>
-                        <li><i className="fas fa-check"></i> 25% holiday discount</li>
-                        <li><i className="fas fa-check"></i> Free social media pack</li>
-                        <li><i className="fas fa-check"></i> Priority scheduling</li>
+                        <li><i className="fas fa-check"></i> 25% holiday discount automatically applied</li>
+                        <li><i className="fas fa-check"></i> Free social media pack worth $500</li>
+                        <li><i className="fas fa-check"></i> Priority holiday scheduling</li>
+                        {selectedPackage && (
+                          <li><i className="fas fa-check"></i> {christmasPackages[selectedPackage]?.name} package features</li>
+                        )}
                       </ul>
                     </div>
                   )}
@@ -346,7 +429,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                     <div className="instructions-text">
                       {submissionMethod === 'whatsapp' 
                         ? `1. Open WhatsApp\n2. Start chat with ${displayWhatsappNumber}\n3. Copy and send the prepared message`
-                        : `1. Open your email\n2. Send to ${emailAddress}\n3. Use subject: "${isChristmasMode ? 'Christmas Project Request' : 'New Project Request'}"`}
+                        : `1. Open your email\n2. Send to ${emailAddress}\n3. Use subject: "🎄 Christmas Design Package Request"`}
                     </div>
                   </div>
                   
@@ -551,6 +634,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                     ></textarea>
                     <small className="form-hint">
                       Be as detailed as possible. Include any references, examples, or specific requirements.
+                      {isChristmasMode && " Your selected package details are already included above."}
                     </small>
                   </div>
 
@@ -619,7 +703,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                         <li>Click "{formData.preferredContact === 'whatsapp' ? 'Send via WhatsApp' : 'Send via Email'}"</li>
                         <li>{formData.preferredContact === 'whatsapp' ? 'WhatsApp will open with your project details' : 'Your email client will open with your project details'}</li>
                         <li>Review and send the message to us</li>
-                        <li>We'll contact you within 24 hours!</li>
+                        <li>We'll contact you within 24 hours (Christmas projects: within 4 hours)</li>
                       </ol>
                     </div>
                   </div>
@@ -635,7 +719,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                 
                 <div className="quick-actions">
                   <a 
-                    href={`https://wa.me/${whatsappNumber}?text=Hi%20Fast%20Multimedia!%20I%20want%20to%20discuss%20a%20project.`}
+                    href={`https://wa.me/${whatsappNumber}?text=Hi%20Fast%20Multimedia!%20I%20want%20to%20discuss%20a%20Christmas%20project.`}
                     className="btn btn-whatsapp"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -644,7 +728,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                   </a>
                   
                   <a 
-                    href={`mailto:${emailAddress}?subject=Project%20Inquiry`}
+                    href={`mailto:${emailAddress}?subject=Christmas%20Project%20Inquiry`}
                     className="btn btn-email"
                   >
                     <i className="fas fa-envelope"></i> Send Email
@@ -663,8 +747,8 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                   <div className="info-item">
                     <i className="fas fa-clock"></i>
                     <div>
-                      <strong>Response Time</strong>
-                      <span>Within 24 hours</span>
+                      <strong>Christmas Response</strong>
+                      <span>Within 4 hours</span>
                     </div>
                   </div>
                 </div>
@@ -681,6 +765,12 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                       </li>
                     ))}
                   </ul>
+                  {selectedPackage && (
+                    <div className="selected-package-info">
+                      <h4>Selected Package:</h4>
+                      <p><strong>{christmasPackages[selectedPackage]?.name}</strong> - {christmasPackages[selectedPackage]?.price}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -693,10 +783,10 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
         <div className="container">
           <div className="section-header animate-on-scroll">
             <h2 className="section-title">
-              {isChristmasMode ? '🎅 Project FAQ' : 'Project FAQ'}
+              {isChristmasMode ? '🎅 Christmas Project FAQ' : 'Project FAQ'}
             </h2>
             <p className="section-subtitle">
-              Common questions about starting a project with us
+              Common questions about starting a Christmas project with us
             </p>
           </div>
 
@@ -731,7 +821,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
             <p>Kpong, Tema Akosombo Road</p>
             <div className="contact-buttons">
               <a 
-                href={`https://wa.me/${whatsappNumber}`}
+                href={`https://wa.me/${whatsappNumber}?text=Hi%20Fast%20Multimedia!%20I%20saw%20your%20Christmas%20design%20packages.`}
                 className="btn btn-small btn-whatsapp"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -739,7 +829,7 @@ ${isChristmasMode ? '🎄 Christmas Special Mode Activated 🎁' : ''}`;
                 <i className="fab fa-whatsapp"></i> WhatsApp Us
               </a>
               <a 
-                href={`mailto:${emailAddress}`}
+                href={`mailto:${emailAddress}?subject=Christmas%20Design%20Inquiry`}
                 className="btn btn-small btn-email"
               >
                 <i className="fas fa-envelope"></i> Email Us

@@ -1136,3 +1136,264 @@ body {
   box-shadow: none !important;
   transform: none !important;
 }
+
+/* Christmas Mode Styles for Contact Page */
+.contact-page.christmas-mode {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e9 100%);
+}
+
+.christmas-hero {
+  background: linear-gradient(135deg, var(--christmas-dark) 0%, var(--christmas-green) 100%) !important;
+  color: white;
+}
+
+.christmas-badge {
+  background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold)) !important;
+  color: white !important;
+  padding: 15px 30px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 20px;
+  font-weight: 700;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.selected-package-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 25px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.selected-package-card {
+  background: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: var(--shadow-heavy);
+  border: 3px solid var(--christmas-gold);
+}
+
+.selected-package-card .package-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.selected-package-card .package-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--christmas-green);
+}
+
+.selected-package-card .package-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.selected-package-card .package-features li {
+  padding: 8px 0;
+  color: #555;
+}
+
+.selected-package-card .package-features li i {
+  color: var(--christmas-green);
+  margin-right: 10px;
+}
+
+.christmas-form {
+  border: 3px solid var(--christmas-green) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.christmas-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(45deg, var(--christmas-red), var(--christmas-gold));
+  opacity: 0.1;
+  border-radius: 50%;
+  transform: translate(50px, -50px);
+}
+
+.christmas-timeline {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.timeline-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.timeline-item i {
+  font-size: 24px;
+  color: var(--christmas-gold);
+  margin-bottom: 8px;
+}
+
+.timeline-item span {
+  font-size: 14px;
+  color: var(--christmas-green);
+  font-weight: 600;
+}
+
+.btn-christmas {
+  background: linear-gradient(45deg, var(--christmas-red), var(--christmas-green)) !important;
+  color: white !important;
+  border: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-christmas::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: 0.5s;
+}
+
+.btn-christmas:hover::before {
+  left: 100%;
+}
+
+.christmas-bonus {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(196, 30, 58, 0.1));
+  padding: 20px;
+  border-radius: var(--border-radius);
+  margin: 20px 0;
+  border-left: 4px solid var(--christmas-gold);
+}
+
+.christmas-bonus h4 {
+  color: var(--christmas-green);
+  margin-bottom: 10px;
+}
+
+.christmas-bonus ul {
+  list-style: none;
+  padding: 0;
+}
+
+.christmas-bonus li {
+  padding: 5px 0;
+  color: #555;
+}
+
+.christmas-bonus li i {
+  color: var(--christmas-green);
+  margin-right: 10px;
+}
+
+.christmas-features-card {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+  color: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: var(--shadow-heavy);
+}
+
+.christmas-features-card h3 {
+  color: white;
+  margin-bottom: 15px;
+}
+
+.christmas-features-card .features-list {
+  list-style: none;
+  padding: 0;
+}
+
+.christmas-features-card .features-list li {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.christmas-features-card .features-list li:last-child {
+  border-bottom: none;
+}
+
+.christmas-features-card .features-list li i {
+  color: var(--christmas-gold);
+}
+
+.selected-package-info {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.selected-package-info h4 {
+  color: var(--christmas-gold);
+  margin-bottom: 5px;
+}
+
+.christmas-faq {
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f7f0 100%);
+}
+
+.christmas-faq .section-title {
+  background: linear-gradient(45deg, var(--christmas-red), var(--christmas-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.christmas-map {
+  background: linear-gradient(135deg, var(--christmas-dark) 0%, var(--christmas-green) 100%);
+  color: white;
+}
+
+.christmas-map i {
+  color: var(--christmas-gold);
+}
+
+/* Snowfall in Contact Page */
+.contact-page .snowfall {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.contact-page .snowflake {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
