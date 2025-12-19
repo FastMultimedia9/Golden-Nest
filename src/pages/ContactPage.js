@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './ContactPage.css';
 
 const ContactPage = () => {
@@ -13,7 +13,6 @@ const ContactPage = () => {
     timeline: '',
     message: '',
     preferredContact: 'whatsapp',
-    includeSocialPack: true,
     agreeToTerms: false
   });
 
@@ -23,10 +22,12 @@ const ContactPage = () => {
   const [submissionMethod, setSubmissionMethod] = useState('');
   const [activeFAQ, setActiveFAQ] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState('');
+  const [selectedService, setSelectedService] = useState(null);
+  const [serviceAdded, setServiceAdded] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
   
-  // Your contact information
   const whatsappNumber = '233505159131';
   const displayWhatsappNumber = '+233505159131';
   const emailAddress = 'fasttech227@gmail.com';
@@ -50,28 +51,79 @@ const ContactPage = () => {
     }
   };
   
-  // Auto-fill form based on URL parameters
+  // Check URL parameters and localStorage for service selection
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
+    const serviceName = queryParams.get('service');
+    const category = queryParams.get('category');
+    const price = queryParams.get('price');
+    
+    // Check localStorage for service data
+    const storedService = localStorage.getItem('selectedService');
+    
+    if (serviceName || storedService) {
+      let serviceData;
+      
+      if (serviceName) {
+        // From URL parameters
+        serviceData = {
+          name: decodeURIComponent(serviceName),
+          category: category,
+          price: price
+        };
+      } else if (storedService) {
+        // From localStorage
+        serviceData = JSON.parse(storedService);
+        const dataAge = Date.now() - serviceData.timestamp;
+        
+        // Only use if data is less than 5 minutes old
+        if (dataAge < 5 * 60 * 1000) {
+          // Clear localStorage after use
+          localStorage.removeItem('selectedService');
+        } else {
+          serviceData = null;
+          localStorage.removeItem('selectedService');
+        }
+      }
+      
+      if (serviceData) {
+        setSelectedService(serviceData);
+        setServiceAdded(true);
+        
+        // Auto-fill form with service information
+        const serviceMessage = `I'm interested in: ${serviceData.name}\n\nService Details:\n• Category: ${serviceData.category || 'Not specified'}\n• Price: ${serviceData.price || 'To be quoted'}\n\n`;
+        
+        setFormData(prev => ({
+          ...prev,
+          projectType: serviceData.category || serviceData.name,
+          message: serviceMessage + (prev.message || 'Please provide more details about my project requirements...')
+        }));
+        
+        // Show service added notification
+        setTimeout(() => {
+          setServiceAdded(false);
+        }, 3000);
+      }
+    }
+    
+    // Existing Christmas mode logic
     const packageType = queryParams.get('package');
     const projectType = queryParams.get('project') || '';
     const packageName = queryParams.get('type') || '';
     
-    // Enable Christmas mode for any Christmas-related project
     const christmasKeywords = ['christmas', 'holiday', 'festive', 'xmas'];
     const shouldEnableChristmasMode = christmasKeywords.some(keyword => 
-      projectType.toLowerCase().includes(keyword) || packageName.toLowerCase().includes(keyword)
+      (projectType && projectType.toLowerCase().includes(keyword)) || 
+      (packageName && packageName.toLowerCase().includes(keyword))
     );
     
     if (shouldEnableChristmasMode) {
       setIsChristmasMode(true);
       
-      // Set selected package if provided
       if (packageType && christmasPackages[packageType]) {
         setSelectedPackage(packageType);
         const pkg = christmasPackages[packageType];
         
-        // Auto-fill message with package details
         const packageMessage = `I'm interested in the ${pkg.name} Christmas Package (${pkg.price}).\n\nPackage includes:\n${pkg.features.map(f => `• ${f}`).join('\n')}\n\n`;
         
         setFormData(prev => ({
@@ -88,7 +140,6 @@ const ContactPage = () => {
       }
     }
     
-    // Fill project type from URL
     if (projectType && projectType !== 'undefined') {
       setFormData(prev => ({
         ...prev,
@@ -125,8 +176,31 @@ const ContactPage = () => {
     }));
   };
 
-  // Format message for WhatsApp/Email with package info
+  const clearSelectedService = () => {
+    setSelectedService(null);
+    setFormData(prev => ({
+      ...prev,
+      projectType: '',
+      message: prev.message.replace(/I'm interested in:.*?\n\nService Details:.*?\n\n/s, '')
+    }));
+  };
+
+  const addAnotherService = () => {
+    navigate('/services');
+  };
+
+  // Format message for WhatsApp/Email with service info
   const formatMessage = () => {
+    let serviceInfo = '';
+    
+    if (selectedService) {
+      serviceInfo = `\n🎯 *REQUESTED SERVICE:* ${selectedService.name}\n`;
+      serviceInfo += `📊 *Category:* ${selectedService.category || 'Not specified'}\n`;
+      if (selectedService.price) {
+        serviceInfo += `💰 *Price Info:* ${selectedService.price}\n`;
+      }
+    }
+    
     const packageInfo = selectedPackage ? 
       `\n🎁 *SELECTED CHRISTMAS PACKAGE:* ${christmasPackages[selectedPackage]?.name} (${christmasPackages[selectedPackage]?.price})` : '';
     
@@ -136,14 +210,14 @@ const ContactPage = () => {
     const christmasBonus = isChristmasMode ? 
       '\n🎅 *CHRISTMAS SPECIAL:* 25% holiday discount + free social media pack included!' : '';
     
-    return `📋 *NEW CHRISTMAS PROJECT REQUEST* 📋
+    return `📋 *NEW PROJECT REQUEST* 📋
 
 👤 *Client Information:*
 • Name: ${formData.name}
 • Email: ${formData.email}
 • Phone: ${formData.phone}
 • Company: ${formData.company || 'Not provided'}
-${packageInfo}${packageFeatures}
+${serviceInfo}${packageInfo}${packageFeatures}
 
 🎯 *Project Details:*
 • Project Type: ${formData.projectType}
@@ -155,8 +229,7 @@ ${christmasBonus}
 📝 *Project Description:*
 ${formData.message}
 
-📧 *This message was sent via Fast Multimedia Christmas Design Page*
-🎄 *Christmas Special Offer Activated* 🎁`;
+📧 *This message was sent via Fast Multimedia Services Page*`;
   };
 
   // Send via WhatsApp
@@ -169,7 +242,7 @@ ${formData.message}
 
   // Send via Email
   const sendViaEmail = () => {
-    const subject = '🎄 Christmas Design Package Request - Fast Multimedia';
+    const subject = `Project Request - ${selectedService ? selectedService.name : 'Fast Multimedia'}`;
     const body = formatMessage();
     const mailtoUrl = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
@@ -226,6 +299,12 @@ ${formData.message}
     'Business Cards & Stationery',
     'Product Label Design',
     'Digital Advertising',
+    'Computer Repair & Maintenance',
+    'Windows Installation & Setup',
+    'Software Installation & Support',
+    'New Computer Setup',
+    'Networking Solutions',
+    'Computer System Management',
     'Other'
   ];
 
@@ -247,35 +326,48 @@ ${formData.message}
     'Not sure yet'
   ];
 
-  const christmasFeatures = [
-    '25% holiday discount on all services',
-    'Free festive social media pack',
-    'Priority holiday scheduling',
-    'Extended support through New Year',
-    'Free Christmas branding consultation'
-  ];
-
   const faqs = [
     {
       question: 'How soon will you contact me after I submit my project request?',
       answer: 'We respond to all project requests within 24 hours. For Christmas projects, we provide priority response within 2-4 hours during business hours (9 AM - 6 PM GMT).'
     },
     {
-      question: 'What information should I include in my Christmas project description?',
-      answer: 'For Christmas projects, include: Your holiday campaign goals, target audience, specific Christmas themes or colors, examples of festive designs you like, timeline expectations (important for holiday deadlines), and any special requirements for Christmas promotions.'
+      question: 'What information should I include in my project description?',
+      answer: 'Include: Your project goals, target audience, specific requirements, examples of designs you like, timeline expectations, and any special requirements. The more details you provide, the better we can serve you.'
     },
     {
-      question: 'How does the 25% Christmas discount work?',
-      answer: 'The 25% discount is automatically applied to all Christmas projects. When you select a Christmas package, the discounted price is shown. After you submit your request, we\'ll send you a detailed quote with the discount already applied. Valid for projects starting before December 20th.'
+      question: 'Can I request multiple services?',
+      answer: 'Yes! You can add multiple services to your request. Either use the "Add Another Service" button or mention all services you need in the project description.'
     },
     {
-      question: 'Can I customize my Christmas package?',
-      answer: 'Absolutely! All our Christmas packages are customizable. After you select a package, we can adjust it to fit your specific needs. Just mention your requirements in the project description, and we\'ll create a custom quote for you.'
+      question: 'How does the pricing work for tech support services?',
+      answer: 'Tech support services are billed at ₵50/hour for most services. Some services like Windows Installation have fixed pricing. We\'ll provide a detailed quote after discussing your specific needs.'
     }
   ];
 
   return (
     <div className={`contact-page ${isChristmasMode ? 'christmas-mode' : ''}`}>
+      {/* Service Added Notification */}
+      {serviceAdded && selectedService && (
+        <div className="service-added-notification">
+          <div className="notification-content">
+            <i className="fas fa-check-circle"></i>
+            <div className="notification-text">
+              <strong>{selectedService.name}</strong> has been added to your request!
+              {selectedService.price && (
+                <span className="notification-price">Price: {selectedService.price}</span>
+              )}
+            </div>
+            <button 
+              className="notification-close"
+              onClick={() => setServiceAdded(false)}
+            >
+              <i className="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Christmas Snowfall for Christmas Mode */}
       {isChristmasMode && (
         <div className="snowfall">
@@ -311,13 +403,54 @@ ${formData.message}
               </div>
             )}
             <h1 className="contact-title">
-              {isChristmasMode ? 'Start Your Christmas Project' : 'Start Your Project'}
+              {selectedService ? `Request: ${selectedService.name}` : 'Start Your Project'}
             </h1>
             <p className="contact-subtitle">
-              {isChristmasMode 
-                ? 'Get 25% off Christmas projects! Fill the form and send your project request via WhatsApp or Email.'
+              {selectedService 
+                ? `Your selected service has been added to the form below. Complete your details and send your request.`
                 : 'Ready to start your project? Fill the form and send your request via WhatsApp or Email.'}
             </p>
+            
+            {/* Selected Service Info */}
+            {selectedService && (
+              <div className="selected-service-card">
+                <div className="service-card-header">
+                  <h3><i className="fas fa-check-circle"></i> Selected Service</h3>
+                  <div className="service-card-actions">
+                    <button 
+                      className="btn-service-remove"
+                      onClick={clearSelectedService}
+                    >
+                      <i className="fas fa-times"></i> Remove
+                    </button>
+                    <button 
+                      className="btn-service-add"
+                      onClick={addAnotherService}
+                    >
+                      <i className="fas fa-plus"></i> Add Another
+                    </button>
+                  </div>
+                </div>
+                <div className="service-card-content">
+                  <div className="service-info">
+                    <div className="service-name">
+                      <i className="fas fa-star"></i>
+                      <strong>{selectedService.name}</strong>
+                    </div>
+                    <div className="service-category">
+                      <i className="fas fa-tag"></i>
+                      <span>{selectedService.category || 'General Service'}</span>
+                    </div>
+                    {selectedService.price && (
+                      <div className="service-price">
+                        <i className="fas fa-money-bill-wave"></i>
+                        <span>{selectedService.price}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             
             {isChristmasMode && selectedPackage && (
               <div className="selected-package-card">
@@ -338,25 +471,6 @@ ${formData.message}
                 </div>
               </div>
             )}
-            
-            {isChristmasMode && (
-              <div className="christmas-offer-card">
-                <div className="offer-icon">
-                  <i className="fas fa-gift"></i>
-                </div>
-                <div className="offer-content">
-                  <h3>🎅 Christmas Special Offer</h3>
-                  <p>Limited time: 25% discount + free social media pack on all Christmas projects!</p>
-                  <div className="offer-features">
-                    {christmasFeatures.slice(0, 3).map((feature, index) => (
-                      <span key={index} className="feature-tag">
-                        <i className="fas fa-check"></i> {feature}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>
@@ -368,28 +482,26 @@ ${formData.message}
             <div className={`form-container ${isChristmasMode ? 'christmas-form' : ''}`}>
               <div className="form-header animate-on-scroll">
                 <h2 className="section-title">
-                  {isChristmasMode ? '🎄 Christmas Project Request Form' : 'Project Request Form'}
+                  {selectedService ? `Request ${selectedService.name}` : 'Project Request Form'}
                 </h2>
                 <p className="section-subtitle">
-                  {isChristmasMode 
-                    ? 'Your Christmas package details are pre-filled. Complete the form and send it to us!'
+                  {selectedService 
+                    ? 'Complete your details below and send your service request'
                     : 'Fill out your project details and choose how to send it to us'}
                 </p>
                 
-                {isChristmasMode && (
-                  <div className="christmas-timeline">
-                    <div className="timeline-item">
-                      <i className="fas fa-bell"></i>
-                      <span>Priority Response</span>
-                    </div>
-                    <div className="timeline-item">
-                      <i className="fas fa-percentage"></i>
-                      <span>25% Discount Applied</span>
-                    </div>
-                    <div className="timeline-item">
-                      <i className="fas fa-gift"></i>
-                      <span>Free Christmas Bonus</span>
-                    </div>
+                {!selectedService && (
+                  <div className="service-selection-hint">
+                    <i className="fas fa-lightbulb"></i>
+                    <span>
+                      Want to select a specific service?{' '}
+                      <button 
+                        className="btn-service-browse"
+                        onClick={addAnotherService}
+                      >
+                        Browse Services
+                      </button>
+                    </span>
                   </div>
                 )}
               </div>
@@ -404,21 +516,19 @@ ${formData.message}
                   </h3>
                   <p className="success-text">
                     {submissionMethod === 'whatsapp' 
-                      ? 'Your Christmas project request has been prepared! WhatsApp should open with your message ready to send. Please review and send it to us.'
-                      : 'Your Christmas project request has been prepared! Your email client should open with your message ready to send. Please review and send it to us.'}
+                      ? 'Your project request has been prepared! WhatsApp should open with your message ready to send. Please review and send it to us.'
+                      : 'Your project request has been prepared! Your email client should open with your message ready to send. Please review and send it to us.'}
                   </p>
                   
-                  {isChristmasMode && (
-                    <div className="christmas-bonus">
-                      <h4>Your Christmas Package Includes:</h4>
-                      <ul>
-                        <li><i className="fas fa-check"></i> 25% holiday discount automatically applied</li>
-                        <li><i className="fas fa-check"></i> Free social media pack worth $500</li>
-                        <li><i className="fas fa-check"></i> Priority holiday scheduling</li>
-                        {selectedPackage && (
-                          <li><i className="fas fa-check"></i> {christmasPackages[selectedPackage]?.name} package features</li>
+                  {selectedService && (
+                    <div className="selected-service-summary">
+                      <h4>Requested Service:</h4>
+                      <div className="summary-item">
+                        <strong>{selectedService.name}</strong>
+                        {selectedService.price && (
+                          <span className="summary-price">{selectedService.price}</span>
                         )}
-                      </ul>
+                      </div>
                     </div>
                   )}
                   
@@ -429,16 +539,24 @@ ${formData.message}
                     <div className="instructions-text">
                       {submissionMethod === 'whatsapp' 
                         ? `1. Open WhatsApp\n2. Start chat with ${displayWhatsappNumber}\n3. Copy and send the prepared message`
-                        : `1. Open your email\n2. Send to ${emailAddress}\n3. Use subject: "🎄 Christmas Design Package Request"`}
+                        : `1. Open your email\n2. Send to ${emailAddress}\n3. Use subject: "Project Request - ${selectedService ? selectedService.name : 'Fast Multimedia'}"`}
                     </div>
                   </div>
                   
-                  <button 
-                    onClick={() => setIsSubmitted(false)}
-                    className="btn btn-secondary"
-                  >
-                    <i className="fas fa-edit"></i> Edit Request
-                  </button>
+                  <div className="success-actions">
+                    <button 
+                      onClick={() => setIsSubmitted(false)}
+                      className="btn btn-secondary"
+                    >
+                      <i className="fas fa-edit"></i> Edit Request
+                    </button>
+                    <button 
+                      onClick={addAnotherService}
+                      className="btn btn-primary"
+                    >
+                      <i className="fas fa-plus"></i> Add Another Service
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="contact-form animate-on-scroll">
@@ -628,31 +746,15 @@ ${formData.message}
                       className="form-textarea"
                       required
                       rows="6"
-                      placeholder={isChristmasMode 
-                        ? "Describe your Christmas project in detail: goals, requirements, target audience, colors, examples, etc..."
+                      placeholder={selectedService 
+                        ? "Add any additional details about your service request, specific requirements, timeline expectations, etc..."
                         : "Describe your project in detail: goals, requirements, target audience, colors, examples, etc..."}
                     ></textarea>
                     <small className="form-hint">
                       Be as detailed as possible. Include any references, examples, or specific requirements.
-                      {isChristmasMode && " Your selected package details are already included above."}
+                      {selectedService && " Your selected service information is already included."}
                     </small>
                   </div>
-
-                  {isChristmasMode && (
-                    <div className="christmas-newsletter">
-                      <label className="checkbox-label">
-                        <input 
-                          type="checkbox" 
-                          name="includeSocialPack"
-                          checked={formData.includeSocialPack}
-                          onChange={handleChange}
-                        />
-                        <span>
-                          <i className="fas fa-gift"></i> Yes, include the free Christmas social media pack with my project (Value: $500)
-                        </span>
-                      </label>
-                    </div>
-                  )}
 
                   <div className="form-agreement">
                     <label className="checkbox-label">
@@ -719,7 +821,7 @@ ${formData.message}
                 
                 <div className="quick-actions">
                   <a 
-                    href={`https://wa.me/${whatsappNumber}?text=Hi%20Fast%20Multimedia!%20I%20want%20to%20discuss%20a%20Christmas%20project.`}
+                    href={`https://wa.me/${whatsappNumber}?text=Hi%20Fast%20Multimedia!%20I%20want%20to%20discuss%20a%20project.`}
                     className="btn btn-whatsapp"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -728,7 +830,7 @@ ${formData.message}
                   </a>
                   
                   <a 
-                    href={`mailto:${emailAddress}?subject=Christmas%20Project%20Inquiry`}
+                    href={`mailto:${emailAddress}?subject=Project%20Inquiry`}
                     className="btn btn-email"
                   >
                     <i className="fas fa-envelope"></i> Send Email
@@ -747,32 +849,41 @@ ${formData.message}
                   <div className="info-item">
                     <i className="fas fa-clock"></i>
                     <div>
-                      <strong>Christmas Response</strong>
-                      <span>Within 4 hours</span>
+                      <strong>Response Time</strong>
+                      <span>Within 24 hours</span>
                     </div>
                   </div>
                 </div>
               </div>
               
-              {isChristmasMode && (
-                <div className="christmas-features-card">
-                  <h3><i className="fas fa-star"></i> Christmas Special</h3>
-                  <ul className="features-list">
-                    {christmasFeatures.map((feature, index) => (
-                      <li key={index}>
-                        <i className="fas fa-check-circle"></i>
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {selectedPackage && (
-                    <div className="selected-package-info">
-                      <h4>Selected Package:</h4>
-                      <p><strong>{christmasPackages[selectedPackage]?.name}</strong> - {christmasPackages[selectedPackage]?.price}</p>
-                    </div>
-                  )}
+              {/* Browse Services Card */}
+              <div className="browse-services-card">
+                <h3><i className="fas fa-search"></i> Browse Services</h3>
+                <p>Not sure what you need? Browse our services:</p>
+                <div className="service-categories">
+                  <button 
+                    className="service-category-btn"
+                    onClick={() => navigate('/services#design-services')}
+                  >
+                    <i className="fas fa-palette"></i>
+                    <span>Graphic Design</span>
+                  </button>
+                  <button 
+                    className="service-category-btn"
+                    onClick={() => navigate('/services#tech-services')}
+                  >
+                    <i className="fas fa-tools"></i>
+                    <span>Tech Support</span>
+                  </button>
+                  <button 
+                    className="service-category-btn"
+                    onClick={() => navigate('/services#pricing-section')}
+                  >
+                    <i className="fas fa-box"></i>
+                    <span>Packages</span>
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -783,10 +894,10 @@ ${formData.message}
         <div className="container">
           <div className="section-header animate-on-scroll">
             <h2 className="section-title">
-              {isChristmasMode ? '🎅 Christmas Project FAQ' : 'Project FAQ'}
+              Frequently Asked Questions
             </h2>
             <p className="section-subtitle">
-              Common questions about starting a Christmas project with us
+              Common questions about our services and process
             </p>
           </div>
 
@@ -808,33 +919,6 @@ ${formData.message}
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Map Section */}
-      <section className="map-section">
-        <div className="map-container">
-          <div className={`map-placeholder ${isChristmasMode ? 'christmas-map' : ''}`}>
-            <i className="fas fa-map-marked-alt"></i>
-            <h3>Fast Multimedia Studio</h3>
-            <p>Kpong, Tema Akosombo Road</p>
-            <div className="contact-buttons">
-              <a 
-                href={`https://wa.me/${whatsappNumber}?text=Hi%20Fast%20Multimedia!%20I%20saw%20your%20Christmas%20design%20packages.`}
-                className="btn btn-small btn-whatsapp"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <i className="fab fa-whatsapp"></i> WhatsApp Us
-              </a>
-              <a 
-                href={`mailto:${emailAddress}?subject=Christmas%20Design%20Inquiry`}
-                className="btn btn-small btn-email"
-              >
-                <i className="fas fa-envelope"></i> Email Us
-              </a>
-            </div>
           </div>
         </div>
       </section>
