@@ -8,6 +8,7 @@ const NewPostPage = () => {
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [postData, setPostData] = useState({
     title: '',
     excerpt: '',
@@ -19,7 +20,6 @@ const NewPostPage = () => {
     featured: false
   });
 
-  // Add formatting buttons functionality
   const [showFormatHelp, setShowFormatHelp] = useState(false);
 
   const formatText = (format) => {
@@ -60,7 +60,6 @@ const NewPostPage = () => {
     const newText = text.substring(0, start) + formattedText + text.substring(end);
     setPostData({...postData, content: newText});
     
-    // Focus back on textarea
     setTimeout(() => {
       textarea.focus();
       textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
@@ -70,7 +69,6 @@ const NewPostPage = () => {
   useEffect(() => {
     checkAuth();
     
-    // Cleanup function
     return () => {
       setSubmitError('');
     };
@@ -97,7 +95,7 @@ const NewPostPage = () => {
       console.log('✅ User authenticated:', user.email);
       setCurrentUser(user);
       
-      // Check if user is admin in users table
+      // Check if user exists in users table
       try {
         const { data: userData, error } = await supabase
           .from('users')
@@ -106,28 +104,62 @@ const NewPostPage = () => {
           .single();
         
         if (error) {
-          console.error('Error checking admin status:', error);
-          setSubmitError('Error verifying admin privileges');
-          navigate('/');
+          console.error('Error checking user in database:', error);
+          
+          // User doesn't exist in users table, create them
+          console.log('👤 User not found in users table, creating profile...');
+          await createUserProfile(user);
+          
+          setUserRole('user');
+          setSubmitError('User profile created. You may need to refresh.');
           return;
         }
         
         console.log('User role:', userData?.role);
+        setUserRole(userData?.role || 'user');
         
         if (userData?.role !== 'admin') {
           setSubmitError('Access denied. Admin privileges required.');
-          navigate('/');
+          setTimeout(() => navigate('/'), 2000);
           return;
         }
       } catch (error) {
         console.error('Auth check error:', error);
         setSubmitError('Error verifying user permissions');
-        navigate('/');
+        setTimeout(() => navigate('/'), 2000);
         return;
       }
     } catch (error) {
       console.error('Authentication error:', error);
       navigate('/admin/login');
+    }
+  };
+
+  const createUserProfile = async (user) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .insert([
+          {
+            id: user.id,
+            email: user.email,
+            username: user.email?.split('@')[0] || 'user',
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            role: 'user',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ]);
+      
+      if (error) {
+        console.error('Error creating user profile:', error);
+        throw error;
+      }
+      
+      console.log('✅ User profile created successfully');
+    } catch (error) {
+      console.error('Failed to create user profile:', error);
+      throw error;
     }
   };
 
@@ -137,7 +169,6 @@ const NewPostPage = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-    // Clear any previous errors when user starts typing
     if (submitError) setSubmitError('');
   };
 
@@ -164,13 +195,24 @@ const NewPostPage = () => {
         throw new Error('Your session has expired. Please login again.');
       }
 
-      // Prepare post data according to your database schema
+      // Ensure user exists in users table
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id, role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (!userData) {
+        throw new Error('User profile not found. Please contact administrator.');
+      }
+
+      // Prepare post data
       const postToSubmit = {
         title: postData.title.trim(),
-        excerpt: postData.excerpt.trim(),
+        excerpt: postData.excerpt.trim() || (postData.content.trim().substring(0, 150) + '...'),
         content: postData.content.trim(),
         category: postData.category,
-        image_url: postData.image_url.trim(),
+        image_url: postData.image_url.trim() || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000)}?w=800&auto=format&fit=crop`,
         theme: postData.theme,
         views: 0,
         comments_count: 0,
@@ -197,13 +239,15 @@ const NewPostPage = () => {
       if (error) {
         console.error('❌ Supabase insert error:', error);
         
-        // Provide more specific error messages
+        // Provide specific error messages
         if (error.message.includes('violates foreign key constraint')) {
-          throw new Error('User not found in database. Please ensure your account is properly set up.');
+          throw new Error('User not found in database. Please ensure your account exists in users table.');
         } else if (error.message.includes('permission denied')) {
-          throw new Error('Permission denied. You may not have write access to the posts table.');
+          throw new Error('Permission denied. Check your Supabase RLS policies.');
         } else if (error.message.includes('network')) {
-          throw new Error('Network error. Please check your internet connection and try again.');
+          throw new Error('Network error. Please check your internet connection.');
+        } else if (error.code === '23505') {
+          throw new Error('Duplicate post. A post with similar title might already exist.');
         } else {
           throw new Error(`Database error: ${error.message}`);
         }
@@ -212,7 +256,7 @@ const NewPostPage = () => {
       console.log('✅ Post created successfully:', data);
       
       // Show success message
-      alert('Post created successfully!');
+      alert('Post created successfully! Redirecting to admin panel...');
       
       // Clear form
       setPostData({
@@ -226,19 +270,15 @@ const NewPostPage = () => {
         featured: false
       });
       
-      // Navigate to admin panel after a brief delay
-      setTimeout(() => {
-        navigate('/admin');
-      }, 1500);
+      // Navigate to admin panel
+      navigate('/admin');
       
     } catch (error) {
       console.error('❌ Error creating post:', error);
       setSubmitError(error.message || 'Failed to create post. Please try again.');
       
-      // Log more details for debugging
-      if (error.message) {
-        console.error('Error details:', error.message);
-      }
+      // Show error in alert for immediate feedback
+      alert(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -254,11 +294,28 @@ const NewPostPage = () => {
     }
   };
 
-  if (!currentUser) {
+  // Simple loading screen
+  if (!currentUser || !userRole) {
     return (
       <div className="admin-panel-loading">
         <div className="loading-spinner"></div>
         <p>Checking authentication...</p>
+      </div>
+    );
+  }
+
+  // Check if user is admin
+  if (userRole !== 'admin') {
+    return (
+      <div className="access-denied">
+        <div className="access-denied-content">
+          <i className="fas fa-exclamation-triangle"></i>
+          <h2>Access Denied</h2>
+          <p>Admin privileges required to create posts.</p>
+          <button onClick={() => navigate('/')} className="btn-primary">
+            Back to Home
+          </button>
+        </div>
       </div>
     );
   }
@@ -299,8 +356,6 @@ const NewPostPage = () => {
                 className="form-input"
                 disabled={loading}
                 autoComplete="title"
-                aria-label="Post title"
-                aria-required="true"
               />
               <small className="char-count">{postData.title.length}/200 characters</small>
             </div>
@@ -319,8 +374,6 @@ const NewPostPage = () => {
                 maxLength="300"
                 className="form-input"
                 disabled={loading}
-                autoComplete="off"
-                aria-label="Post excerpt"
               />
               <small className="char-count">{postData.excerpt.length}/300 characters</small>
             </div>
@@ -339,7 +392,6 @@ const NewPostPage = () => {
                     title="Heading 1"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Add heading 1"
                   >
                     <i className="fas fa-heading"></i> H1
                   </button>
@@ -349,7 +401,6 @@ const NewPostPage = () => {
                     title="Heading 2"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Add heading 2"
                   >
                     <i className="fas fa-heading"></i> H2
                   </button>
@@ -359,7 +410,6 @@ const NewPostPage = () => {
                     title="Bold"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Bold text"
                   >
                     <i className="fas fa-bold"></i>
                   </button>
@@ -369,7 +419,6 @@ const NewPostPage = () => {
                     title="Italic"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Italic text"
                   >
                     <i className="fas fa-italic"></i>
                   </button>
@@ -379,7 +428,6 @@ const NewPostPage = () => {
                     title="List"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Add list"
                   >
                     <i className="fas fa-list"></i>
                   </button>
@@ -389,7 +437,6 @@ const NewPostPage = () => {
                     title="Link"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Add link"
                   >
                     <i className="fas fa-link"></i>
                   </button>
@@ -399,7 +446,6 @@ const NewPostPage = () => {
                     title="Image"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Add image"
                   >
                     <i className="fas fa-image"></i>
                   </button>
@@ -409,7 +455,6 @@ const NewPostPage = () => {
                     title="Formatting Help"
                     className="format-btn"
                     disabled={loading}
-                    aria-label="Show formatting help"
                   >
                     <i className="fas fa-question-circle"></i>
                   </button>
@@ -423,13 +468,10 @@ const NewPostPage = () => {
                   value={postData.content}
                   onChange={handleInputChange}
                   placeholder="Write your post content here... You can use Markdown formatting"
-                  rows="20"
+                  rows="15"
                   required
                   className="form-input content-input"
                   disabled={loading}
-                  autoComplete="off"
-                  aria-label="Post content"
-                  aria-required="true"
                 />
               </div>
               
@@ -465,13 +507,13 @@ const NewPostPage = () => {
                 onChange={handleInputChange}
                 className="form-select"
                 disabled={loading}
-                autoComplete="category"
-                aria-label="Post category"
               >
+                <option value="general">General</option>
                 <option value="design">Design</option>
                 <option value="development">Development</option>
                 <option value="business">Business</option>
-                <option value="general">General</option>
+                <option value="technology">Technology</option>
+                <option value="lifestyle">Lifestyle</option>
               </select>
             </div>
 
@@ -486,8 +528,6 @@ const NewPostPage = () => {
                 onChange={handleInputChange}
                 className="form-select"
                 disabled={loading}
-                autoComplete="off"
-                aria-label="Post theme"
               >
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
@@ -506,11 +546,9 @@ const NewPostPage = () => {
                 name="image_url"
                 value={postData.image_url}
                 onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://images.unsplash.com/photo-..."
                 className="form-input"
                 disabled={loading}
-                autoComplete="photo"
-                aria-label="Featured image URL"
               />
               {postData.image_url && (
                 <div className="image-preview">
@@ -528,7 +566,9 @@ const NewPostPage = () => {
                   </div>
                 </div>
               )}
-              <small className="image-help">Enter a direct image URL (jpg, png, gif)</small>
+              <small className="image-help">
+                Leave empty for random image or use Unsplash URL
+              </small>
             </div>
           </div>
 
@@ -543,7 +583,6 @@ const NewPostPage = () => {
                   onChange={handleInputChange}
                   className="checkbox-input"
                   disabled={loading}
-                  autoComplete="off"
                 />
                 <label htmlFor="post-published" className="checkbox-label">
                   <span className="checkbox-custom"></span>
@@ -561,7 +600,6 @@ const NewPostPage = () => {
                   onChange={handleInputChange}
                   className="checkbox-input"
                   disabled={loading}
-                  autoComplete="off"
                 />
                 <label htmlFor="post-featured" className="checkbox-label">
                   <span className="checkbox-custom"></span>
@@ -578,7 +616,6 @@ const NewPostPage = () => {
               className="btn-cancel"
               onClick={handleCancel}
               disabled={loading}
-              aria-label="Cancel post creation"
             >
               <i className="fas fa-times"></i> Cancel
             </button>
@@ -586,7 +623,6 @@ const NewPostPage = () => {
               type="submit"
               className="btn-submit"
               disabled={loading || !postData.title || !postData.content}
-              aria-label="Create post"
             >
               {loading ? (
                 <>

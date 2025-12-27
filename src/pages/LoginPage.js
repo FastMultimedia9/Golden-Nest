@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authAPI } from '../supabase';
 import './LoginPage.css';
 
@@ -13,20 +13,20 @@ const LoginPage = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  
   const navigate = useNavigate();
-
-  // Check if already logged in - FIXED VERSION
+  const location = useLocation();
+  
+  // Check if already logged in
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await authAPI.getCurrentUser();
-        if (user) {
-          const userWithProfile = await authAPI.getCurrentUserWithProfile();
-          if (userWithProfile?.profile?.role === 'admin') {
-            navigate('/admin');
-          } else {
-            navigate('/user/dashboard'); // Changed from '/blog' to '/user/dashboard'
-          }
+        const loggedIn = await authAPI.isLoggedIn();
+        
+        if (loggedIn) {
+          const from = location.state?.from || '/blog';
+          console.log('📍 User already logged in, redirecting to:', from);
+          navigate(from, { replace: true });
         }
       } catch (error) {
         console.error('Auth check error:', error);
@@ -34,7 +34,18 @@ const LoginPage = () => {
     };
     
     checkAuth();
-  }, [navigate]);
+  }, [navigate, location]);
+
+  // Pre-fill email if remembered
+  useEffect(() => {
+    const remembered = localStorage.getItem('blog_remember_me');
+    const rememberedEmail = localStorage.getItem('blog_user_email');
+    
+    if (remembered === 'true' && rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -54,24 +65,30 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
+      console.log('🔐 Attempting login...');
       const result = await authAPI.adminLogin(email, password);
       
       if (result.success) {
         if (rememberMe) {
-          localStorage.setItem('admin_remember', 'true');
+          localStorage.setItem('blog_remember_me', 'true');
+          localStorage.setItem('blog_user_email', email);
+        } else {
+          localStorage.removeItem('blog_remember_me');
+          localStorage.removeItem('blog_user_email');
         }
+        
+        console.log('✅ Login successful, redirecting...');
         
         // Show success message
         setError('success:Login successful! Redirecting...');
         
         // Redirect based on user role
         setTimeout(() => {
-          if (result.isAdmin) {
-            navigate('/admin');
-          } else {
-            navigate('/user/dashboard'); // Changed from '/blog' to '/user/dashboard'
-          }
-        }, 500);
+          const redirectPath = result.isAdmin ? '/admin' : '/blog';
+          const from = location.state?.from || redirectPath;
+          console.log(`🎯 Final redirect to: ${from}`);
+          navigate(from, { replace: true });
+        }, 1000);
       } else {
         setError(result.error || 'Invalid email or password');
       }
@@ -122,28 +139,32 @@ const LoginPage = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleGuestBrowse = () => {
+    navigate('/blog');
+  };
+
   return (
     <div className="login-page">
       <div className="login-container">
         <div className="login-left">
           <div className="login-brand">
             <div className="login-logo">
-              <i className="fas fa-cogs"></i>
+              <i className="fas fa-blog"></i>
             </div>
-            <h1>Blog Dashboard</h1>
+            <h1>Blog Platform</h1>
             <p className="login-tagline">
-              Secure login powered by Supabase authentication
+              Access your blog dashboard
             </p>
           </div>
           
           <div className="login-features">
-            <h3><i className="fas fa-check-circle"></i> Features</h3>
+            <h3><i className="fas fa-check-circle"></i> What you can do:</h3>
             <ul>
-              <li><i className="fas fa-blog"></i> Create and manage blog posts</li>
-              <li><i className="fas fa-comments"></i> Comment on articles</li>
-              <li><i className="fas fa-chart-line"></i> Track post analytics</li>
-              <li><i className="fas fa-users"></i> User role management</li>
-              <li><i className="fas fa-bell"></i> Real-time updates</li>
+              <li><i className="fas fa-edit"></i> Write and publish blog posts</li>
+              <li><i className="fas fa-comments"></i> Engage with readers</li>
+              <li><i className="fas fa-chart-line"></i> Track post performance</li>
+              <li><i className="fas fa-images"></i> Add images to articles</li>
+              <li><i className="fas fa-share-alt"></i> Share your content</li>
             </ul>
           </div>
         </div>
@@ -221,8 +242,8 @@ const LoginPage = () => {
             ) : (
               <>
                 <div className="login-header">
-                  <h2>Sign In</h2>
-                  <p>Enter your credentials to access your account</p>
+                  <h2>Welcome Back</h2>
+                  <p>Sign in to access your blog</p>
                 </div>
                 
                 <form onSubmit={handleLogin} className="login-form">
@@ -247,6 +268,7 @@ const LoginPage = () => {
                         className="login-input"
                         required
                         disabled={isLoading}
+                        autoComplete="username"
                       />
                     </div>
                   </div>
@@ -265,6 +287,7 @@ const LoginPage = () => {
                         className="login-input"
                         required
                         disabled={isLoading}
+                        autoComplete="current-password"
                       />
                       <button 
                         type="button"
@@ -323,21 +346,35 @@ const LoginPage = () => {
                       </button>
                     </p>
                   </div>
-                  {!showResetForm && (
+                  
+                  <div className="login-footer-actions">
+                    {!showResetForm && (
+                      <button 
+                        onClick={() => setShowResetForm(true)}
+                        className="forgot-password"
+                      >
+                        <i className="fas fa-question-circle"></i> Forgot Password?
+                      </button>
+                    )}
                     <button 
-                      onClick={() => setShowResetForm(true)}
-                      className="forgot-password"
+                      type="button"
+                      onClick={handleGuestBrowse}
+                      className="guest-browse-btn"
                     >
-                      <i className="fas fa-question-circle"></i> Forgot Password?
+                      <i className="fas fa-eye"></i> Browse as Guest
                     </button>
-                  )}
+                  </div>
                 </form>
               </>
             )}
             
             <div className="login-footer">
               <div className="footer-links">
-                {/* Empty as requested */}
+                <a href="/privacy-policy">Privacy Policy</a>
+                <span>•</span>
+                <a href="/terms">Terms of Service</a>
+                <span>•</span>
+                <a href="/contact">Contact</a>
               </div>
             </div>
           </div>

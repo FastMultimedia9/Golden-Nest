@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
 import { blogAPI } from '../supabase';
@@ -58,58 +58,75 @@ const ArticlePage = () => {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
+    
     const loadData = async () => {
       setIsLoading(true);
       
       try {
-        // Get post from Supabase
-        const supabasePost = await blogAPI.getPost(id);
+        // Load user data first (local storage, fast)
+        const savedName = localStorage.getItem('blog_user_name');
+        const savedEmail = localStorage.getItem('blog_user_email');
+        if (savedName && isMounted) setUserName(savedName);
+        if (savedEmail && isMounted) setUserEmail(savedEmail);
         
-        if (supabasePost) {
-          console.log('Post loaded from Supabase:', supabasePost);
-          setPost(supabasePost);
+        // Check if article is saved
+        const saved = JSON.parse(localStorage.getItem('blog_saved') || '[]');
+        if (isMounted) setIsSaved(saved.includes(id.toString()));
+        
+        // Run all API calls in parallel
+        const [postData, allPosts, postComments] = await Promise.allSettled([
+          blogAPI.getPost(id),
+          blogAPI.getPosts(),
+          blogAPI.getComments(id)
+        ]);
+        
+        if (!isMounted) return;
+        
+        // Process post data
+        if (postData.status === 'fulfilled' && postData.value) {
+          const post = postData.value;
+          setPost(post);
           
-          // Track view
-          const views = await blogAPI.trackView(id);
-          setViewCount(views || supabasePost.views || 0);
+          // Track view - don't wait for this
+          blogAPI.trackView(id).then(views => {
+            if (isMounted) setViewCount(views || post.views || 0);
+          }).catch(() => {
+            if (isMounted) setViewCount(post.views || 0);
+          });
           
-          // Load comments from Supabase
-          const postComments = await blogAPI.getComments(id);
-          console.log('Comments loaded:', postComments);
-          setComments(postComments || []);
-          
-          // Get related posts
-          const allPosts = await blogAPI.getPosts();
-          const related = allPosts
-            .filter(p => p.category === supabasePost.category && p.id !== supabasePost.id)
-            .slice(0, 3);
-          setRelatedPosts(related);
-          
-          // Load user data
-          const savedName = localStorage.getItem('blog_user_name');
-          const savedEmail = localStorage.getItem('blog_user_email');
-          if (savedName) setUserName(savedName);
-          if (savedEmail) setUserEmail(savedEmail);
-          
-          // Check if article is saved
-          const saved = JSON.parse(localStorage.getItem('blog_saved') || '[]');
-          setIsSaved(saved.includes(id.toString()));
-          
+          // Process related posts
+          if (allPosts.status === 'fulfilled') {
+            const related = allPosts.value
+              .filter(p => p.category === post.category && p.id !== post.id)
+              .slice(0, 3);
+            if (isMounted) setRelatedPosts(related);
+          }
         } else {
           throw new Error('Post not found');
         }
+        
+        // Process comments
+        if (postComments.status === 'fulfilled') {
+          if (isMounted) setComments(postComments.value || []);
+        }
+        
       } catch (error) {
         console.error('Error loading data:', error);
-        navigate('/blog');
+        if (isMounted) navigate('/blog');
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
     
     loadData();
+    
+    return () => {
+      isMounted = false;
+    };
   }, [id, navigate]);
 
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     if (!newComment.trim()) {
@@ -149,7 +166,7 @@ const ArticlePage = () => {
           setComments(updatedComments);
           
           // Update post to get new comment count
-          const updatedPost = await blogAPI.getPost(post.id);
+          const updatedPost = await blogAPI.getPost(post.id, true); // Force refresh
           setPost(updatedPost);
           
           // Show success message
@@ -162,9 +179,9 @@ const ArticlePage = () => {
         alert('Error posting comment. Please try again.');
       }
     }
-  };
+  }, [newComment, userName, userEmail, post]);
 
-  const handleLikeComment = async (commentId) => {
+  const handleLikeComment = useCallback(async (commentId) => {
     try {
       await blogAPI.likeComment(commentId);
       
@@ -174,14 +191,14 @@ const ArticlePage = () => {
     } catch (error) {
       console.error('Error liking comment:', error);
     }
-  };
+  }, [post]);
 
-  const handleSaveArticle = () => {
+  const handleSaveArticle = useCallback(() => {
     if (post) {
       const saved = JSON.parse(localStorage.getItem('blog_saved') || '[]');
       
       if (isSaved) {
-        const newSaved = saved.filter(id => id !== post.id.toString());
+        const newSaved = saved.filter(savedId => savedId !== post.id.toString());
         localStorage.setItem('blog_saved', JSON.stringify(newSaved));
         setIsSaved(false);
         alert('Article removed from saved articles');
@@ -192,9 +209,9 @@ const ArticlePage = () => {
         alert('Article saved to your reading list!');
       }
     }
-  };
+  }, [post, isSaved]);
 
-  const handleReplySubmit = async (commentId) => {
+  const handleReplySubmit = useCallback(async (commentId) => {
     if (!replyText.trim()) {
       alert('Please enter a reply');
       return;
@@ -229,9 +246,9 @@ const ArticlePage = () => {
         alert('Failed to post reply. Please try again.');
       }
     }
-  };
+  }, [replyText, userName, userEmail, comments, post]);
 
-  const handleShare = (platform) => {
+  const handleShare = useCallback((platform) => {
     const url = window.location.href;
     const title = post?.title || 'Check out this article!';
     
@@ -248,17 +265,17 @@ const ArticlePage = () => {
     } else if (shareUrls[platform]) {
       window.open(shareUrls[platform], '_blank', 'width=600,height=400');
     }
-  };
+  }, [post]);
 
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
     window.print();
-  };
+  }, []);
 
   // Function to get category display name
-  const getCategoryDisplayName = (category) => {
+  const getCategoryDisplayName = useCallback((category) => {
     if (!category) return 'General';
     return category.charAt(0).toUpperCase() + category.slice(1);
-  };
+  }, []);
 
   if (isLoading) {
     return (
@@ -298,7 +315,12 @@ const ArticlePage = () => {
             
             <div className="article-meta">
               <div className="author-info">
-                <img src={post.author_avatar} alt={post.author} className="author-avatar" />
+                <img 
+                  src={post.author_avatar} 
+                  alt={post.author} 
+                  className="author-avatar" 
+                  loading="lazy"
+                />
                 <div>
                   <h4>{post.author}</h4>
                   <p>{post.user_role === 'admin' ? 'Administrator' : 'Regular User'}</p>
@@ -320,7 +342,11 @@ const ArticlePage = () => {
         <article className="article-main">
           {/* Featured Image */}
           <div className="article-featured-image">
-            <img src={post.image_url} alt={post.title} />
+            <img 
+              src={post.image_url} 
+              alt={post.title} 
+              loading="lazy"
+            />
           </div>
 
           {/* Article Actions */}
@@ -394,7 +420,11 @@ const ArticlePage = () => {
           {/* Author Bio */}
           <div className="author-bio">
             <div className="author-header">
-              <img src={post.author_avatar} alt={post.author} />
+              <img 
+                src={post.author_avatar} 
+                alt={post.author} 
+                loading="lazy"
+              />
               <div>
                 <h3>About {post.author}</h3>
                 <p>{post.user_role === 'admin' ? 'Administrator' : 'Regular User'}</p>
@@ -459,7 +489,11 @@ const ArticlePage = () => {
                 comments.map(comment => (
                   <div key={comment.id} className="comment">
                     <div className="comment-header">
-                      <img src={comment.avatar_url} alt={comment.author_name} />
+                      <img 
+                        src={comment.avatar_url} 
+                        alt={comment.author_name} 
+                        loading="lazy"
+                      />
                       <div>
                         <h4>{comment.author_name}</h4>
                         <span className="comment-time">
@@ -569,7 +603,11 @@ const ArticlePage = () => {
                     window.scrollTo(0, 0);
                   }}
                 >
-                  <img src={relatedPost.image_url} alt={relatedPost.title} />
+                  <img 
+                    src={relatedPost.image_url} 
+                    alt={relatedPost.title} 
+                    loading="lazy"
+                  />
                   <div>
                     <h4>{relatedPost.title}</h4>
                     <div className="related-meta">
