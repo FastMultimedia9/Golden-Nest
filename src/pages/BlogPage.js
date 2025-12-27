@@ -296,147 +296,14 @@ const BlogPage = () => {
 
   return (
     <div className="blog-page">
-      {/* Hero Section */}
-      <div className="blog-hero">
+      {/* Simple Page Title */}
+      <div className="blog-simple-header">
         <div className="blog-container">
-          <div className="blog-header-row">
-            <div>
-              <h1 className="blog-title">Blog Insights</h1>
-              <p className="blog-subtitle">Discover the latest articles, trends, and expert insights</p>
-            </div>
-            
-            {/* Live refresh indicator */}
-            <div className="blog-live-indicator">
-              <div className={`blog-live-dot ${autoRefreshEnabled ? 'live' : 'paused'}`}></div>
-              <span className="blog-live-text">
-                {autoRefreshEnabled ? 'LIVE' : 'PAUSED'}
-              </span>
-              <span className="blog-last-refresh">
-                Last: {formatTimeSinceRefresh()}
-              </span>
-              <span className="blog-refresh-count">
-                Updates: {refreshCount}
-              </span>
-            </div>
-          </div>
-          
-          {/* Error Message */}
-          {error && (
-            <div className="blog-error-message">
-              <i className="fas fa-exclamation-triangle"></i>
-              <span>{error}</span>
-              <button onClick={handleHardRefresh} className="blog-retry-btn">
-                <i className="fas fa-redo"></i> Retry
-              </button>
-            </div>
-          )}
-          
-          {/* User status and controls */}
-          <div className="blog-controls-bar">
-            {currentUser && (
-              <div className="blog-user-status">
-                <span className="blog-user-badge">
-                  <i className="fas fa-user-circle"></i> 
-                  {currentUser.email?.split('@')[0] || 'User'}
-                </span>
-                <button 
-                  className="blog-create-post-btn"
-                  onClick={() => navigate('/login')}
-                >
-                  <i className="fas fa-plus"></i> Create Post
-                </button>
-              </div>
-            )}
-            
-            <div className="blog-refresh-controls">
-              <button 
-                onClick={toggleAutoRefresh}
-                className={`blog-auto-refresh-btn ${autoRefreshEnabled ? 'active' : ''}`}
-                title={autoRefreshEnabled ? 'Pause auto-refresh' : 'Enable auto-refresh'}
-              >
-                <i className={`fas fa-${autoRefreshEnabled ? 'pause' : 'play'}`}></i>
-                {autoRefreshEnabled ? ' Pause Updates' : ' Live Updates'}
-              </button>
-              
-              <button 
-                onClick={handleHardRefresh}
-                className="blog-refresh-now-btn"
-                title="Refresh now"
-              >
-                <i className="fas fa-sync-alt"></i> Refresh Now
-              </button>
-              
-              <button 
-                onClick={() => {
-                  clearCache();
-                  handleHardRefresh();
-                }}
-                className="blog-clear-cache-btn"
-                title="Clear all cache and refresh"
-              >
-                <i className="fas fa-broom"></i> Clear Cache
-              </button>
-            </div>
-          </div>
-          
-          {/* Stats Summary */}
-          <div className="blog-stats-summary">
-            <div className="blog-stat-item">
-              <i className="fas fa-newspaper"></i>
-              <span className="blog-stat-count">{blogPosts.length}</span>
-              <span className="blog-stat-label">Total Articles</span>
-            </div>
-            <div className="blog-stat-item">
-              <i className="fas fa-eye"></i>
-              <span className="blog-stat-count">
-                {formatNumber(blogPosts.reduce((sum, post) => sum + (post.views || 0), 0))}
-              </span>
-              <span className="blog-stat-label">Total Views</span>
-            </div>
-            <div className="blog-stat-item">
-              <i className="fas fa-comments"></i>
-              <span className="blog-stat-count">
-                {formatNumber(blogPosts.reduce((sum, post) => sum + (post.comments_count || post.comments || 0), 0))}
-              </span>
-              <span className="blog-stat-label">Total Comments</span>
-            </div>
-            <div className="blog-stat-item">
-              <i className="fas fa-clock"></i>
-              <span className="blog-stat-count">{formatTimeSinceRefresh()}</span>
-              <span className="blog-stat-label">Last Update</span>
-            </div>
-          </div>
-          
-          {/* Search */}
-          <form onSubmit={handleSearch} className="blog-search-form">
-            <div className="blog-search-wrapper">
-              <i className="fas fa-search blog-search-icon"></i>
-              <input
-                type="text"
-                placeholder="Search articles, topics, or keywords..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="blog-search-input"
-              />
-              <button type="submit" className="blog-search-button">
-                Search
-              </button>
-              {(searchQuery || activeCategory !== 'all') && (
-                <button 
-                  type="button" 
-                  onClick={resetFilters}
-                  className="blog-clear-button"
-                  title="Clear filters"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              )}
-            </div>
-          </form>
+          <h1 className="blog-page-title">Blog</h1>
         </div>
       </div>
       
-      {/* Categories */}
+      {/* Categories Navigation */}
       <div className="blog-categories-nav">
         <div className="blog-container">
           <div className="blog-categories-scroll">
@@ -456,7 +323,7 @@ const BlogPage = () => {
         </div>
       </div>
       
-      {/* Blog Posts */}
+      {/* Blog Posts Grid */}
       <div className="blog-container">
         {filteredPosts.length > 0 ? (
           <>
@@ -534,45 +401,12 @@ const BlogPage = () => {
               ))}
             </div>
             
-            {/* Status info */}
-            <div className="blog-status-info">
-              <div className="blog-status-content">
-                <i className="fas fa-info-circle"></i>
-                <p>
-                  Showing <strong>{filteredPosts.length}</strong> of <strong>{blogPosts.length}</strong> articles • 
-                  <span className="blog-database-status">
-                    {autoRefreshEnabled ? ' Live Updates' : ' Manual Refresh'}
-                  </span>
-                  {currentUser ? ' • Logged In' : ' • Guest Mode'} • Last updated: {formatTimeSinceRefresh()}
-                </p>
-              </div>
-              
-              <div className="blog-action-buttons">
-                <button 
-                  onClick={toggleAutoRefresh}
-                  className={`blog-auto-toggle-btn ${autoRefreshEnabled ? 'active' : ''}`}
-                >
-                  <i className={`fas fa-${autoRefreshEnabled ? 'pause-circle' : 'play-circle'}`}></i>
-                  {autoRefreshEnabled ? ' Pause Live' : ' Enable Live'}
-                </button>
-                
-                <button 
-                  onClick={handleHardRefresh}
-                  className="blog-refresh-now-action-btn"
-                >
-                  <i className="fas fa-sync-alt"></i> Refresh Now
-                </button>
-                
-                <button 
-                  onClick={() => {
-                    clearCache();
-                    handleHardRefresh();
-                  }}
-                  className="blog-clear-cache-action-btn"
-                >
-                  <i className="fas fa-broom"></i> Clear Cache
-                </button>
-              </div>
+            {/* Minimal Status */}
+            <div className="blog-minimal-status">
+              <p>
+                Showing {filteredPosts.length} of {blogPosts.length} articles
+                {autoRefreshEnabled && ' • Live Updates'}
+              </p>
             </div>
           </>
         ) : (
@@ -595,30 +429,10 @@ const BlogPage = () => {
               <button onClick={() => navigate('/login')} className="blog-create-post-action-btn">
                 <i className="fas fa-pen-fancy"></i> Start Writing
               </button>
-              <button onClick={handleHardRefresh} className="blog-refresh-data-btn">
-                <i className="fas fa-sync-alt"></i> Refresh Data
-              </button>
-              <button 
-                onClick={() => {
-                  clearCache();
-                  handleHardRefresh();
-                }}
-                className="blog-clear-cache-action-btn"
-              >
-                <i className="fas fa-broom"></i> Clear Cache
-              </button>
             </div>
           </div>
         )}
       </div>
-      
-      {/* Live refresh indicator (floating) */}
-      {autoRefreshEnabled && (
-        <div className="blog-live-floating-indicator">
-          <div className="blog-live-pulse"></div>
-          <span>LIVE UPDATES • Next refresh in: {formatTimeSinceRefresh().replace(' ago', '')}</span>
-        </div>
-      )}
     </div>
   );
 };
