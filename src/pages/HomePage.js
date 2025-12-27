@@ -218,7 +218,7 @@ const HomePage = () => {
       <section id="home" className="hero-section">
         <div className="hero-content animate-on-scroll">
           <div className="hero-badge">
-            <span className="badge-text">🎉 New Client Offer!</span>
+           
             <div className="badge-dot"></div>
           </div>
           <h1 className="hero-title">
