@@ -1397,3 +1397,198 @@ body.modal-open {
     max-height: 85vh;
   }
 }
+
+/* New Year Popup Styles */
+.new-year-popup-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.new-year-popup-modal .modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+}
+
+.new-year-popup {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10000;
+  border: 2px solid #ffd700;
+  box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+  animation: popupSlideIn 0.5s ease-out;
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.new-year-content {
+  text-align: center;
+}
+
+.new-year-header {
+  margin-bottom: 25px;
+}
+
+.new-year-title {
+  color: #ffd700;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.new-year-subtitle {
+  color: #e0e0e0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.new-year-flyer {
+  margin: 25px 0;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 3px solid #ffd700;
+}
+
+.flyer-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.flyer-image:hover {
+  transform: scale(1.02);
+}
+
+.new-year-message {
+  background: rgba(255, 215, 0, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 25px 0;
+  border-left: 4px solid #ffd700;
+}
+
+.new-year-message p {
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.new-year-offer {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+.offer-badge {
+  display: inline-block;
+  background: #1a1a2e;
+  color: #ffd700;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.new-year-offer h3 {
+  color: #1a1a2e;
+  margin: 10px 0;
+  font-size: 1.3rem;
+}
+
+.new-year-offer p {
+  color: #1a1a2e;
+  margin: 0;
+  font-weight: bold;
+}
+
+.new-year-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.new-year-popup .modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  border: none;
+  color: #ffd700;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10001;
+}
+
+.new-year-popup .modal-close:hover {
+  background: rgba(255, 215, 0, 0.2);
+  transform: rotate(90deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .new-year-popup {
+    padding: 20px;
+    width: 95%;
+  }
+  
+  .new-year-title {
+    font-size: 1.8rem;
+  }
+  
+  .new-year-actions {
+    flex-direction: column;
+  }
+  
+  .new-year-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-year-popup {
+    padding: 15px;
+  }
+  
+  .new-year-title {
+    font-size: 1.5rem;
+  }
+  
+  .new-year-subtitle {
+    font-size: 1rem;
+  }
+}

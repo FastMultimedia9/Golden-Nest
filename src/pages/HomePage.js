@@ -9,7 +9,11 @@ const HomePage = () => {
   const [showPackageModal, setShowPackageModal] = useState(false);
   const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('basic');
+  const [showNewYearPopup, setShowNewYearPopup] = useState(false);
   const navigate = useNavigate();
+  
+  // New Year flyer image from public folder
+  const newYearFlyerUrl = "/new-year.jpg"; // Assuming your image is called new-year.jpg in public folder
   
   // Professional hero images
   const heroImages = [
@@ -49,6 +53,32 @@ const HomePage = () => {
 
     return () => clearInterval(interval);
   }, [heroImages.length]);
+
+  useEffect(() => {
+    // Check if New Year popup should be shown
+    const hasSeenPopup = localStorage.getItem('newYearPopupClosed');
+    
+    // Always show popup for testing - you can remove this or conditionally show it
+    // For production, you might want to show it only on New Year's Day
+    // Example: const currentDate = new Date();
+    // if (currentDate.getMonth() === 0 && currentDate.getDate() === 1 && !hasSeenPopup)
+    
+    if (!hasSeenPopup) {
+      // Add a small delay so it doesn't pop up immediately
+      const timer = setTimeout(() => {
+        setShowNewYearPopup(true);
+        document.body.style.overflow = 'hidden';
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const closeNewYearPopup = () => {
+    setShowNewYearPopup(false);
+    document.body.style.overflow = 'auto';
+    localStorage.setItem('newYearPopupClosed', 'true');
+  };
 
   const goToImage = (index) => {
     setCurrentImageIndex(index);
@@ -214,11 +244,62 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
+      {/* New Year Popup Modal */}
+      {showNewYearPopup && (
+        <div className="new-year-popup-modal">
+          <div className="modal-overlay" onClick={closeNewYearPopup}></div>
+          <div className="modal-content new-year-popup">
+            <button className="modal-close" onClick={closeNewYearPopup}>
+              <i className="fas fa-times"></i>
+            </button>
+            
+            <div className="new-year-content">
+              <div className="new-year-header">
+                <h2 className="new-year-title">🎉 Happy New Year! 🎉</h2>
+                <p className="new-year-subtitle">Wishing you a year filled with success and creativity!</p>
+              </div>
+              
+              <div className="new-year-flyer">
+                <img 
+                  src={newYearFlyerUrl} 
+                  alt="New Year Flyer" 
+                  className="flyer-image"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1601381718415-a05fb0a261f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+                  }}
+                />
+              </div>
+              
+              <div className="new-year-message">
+                <p>Start the new year with amazing designs! Special New Year offers available.</p>
+                <div className="new-year-offer">
+                  <span className="offer-badge">Limited Time Offer</span>
+                  <h3>Get 20% off on all design packages!</h3>
+                  <p>Use code: <strong>NEWYEAR2024</strong></p>
+                </div>
+              </div>
+              
+              <div className="new-year-actions">
+                <button className="btn btn-primary" onClick={() => {
+                  closeNewYearPopup();
+                  openPackageModal();
+                }}>
+                  <i className="fas fa-gift"></i> View Special Offers
+                </button>
+                <button className="btn btn-outline" onClick={closeNewYearPopup}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section id="home" className="hero-section">
         <div className="hero-content animate-on-scroll">
           <div className="hero-badge">
-           
             <div className="badge-dot"></div>
           </div>
           <h1 className="hero-title">
@@ -434,8 +515,6 @@ const HomePage = () => {
             </ul>
           </div>
         </div>
-        
-       
       </section>
 
       {/* Portfolio Preview */}
