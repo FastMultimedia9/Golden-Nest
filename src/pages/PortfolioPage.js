@@ -141,22 +141,22 @@ const PortfolioPage = () => {
         mockups: []
       },
       {
-        id: 7,
-        title: 'Book Publishing Series',
-        category: 'print',
-        description: 'Complete book cover design series for bestselling author trilogy',
-        detailedDescription: 'Designed a cohesive series of book covers that work individually and as a set. The designs capture the essence of each book while maintaining series consistency.',
-        tags: ['Book Design', 'Typography', 'Series Design', 'Print Production'],
-        image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        client: 'BookHouse Publishing',
-        year: '2023',
-        duration: '3 weeks',
-        role: 'Book Designer',
-        deliverables: ['Cover Designs', 'Interior Layout', 'Print Files', 'Marketing Materials'],
-        results: ['Book series sold 50k copies', 'Cover featured in design annual', 'Author satisfaction: 100%'],
-        color: '#795548',
-        mockups: []
-      },
+    id: 7,
+    title: 'Ani\'s Serabs - Business Identity',
+    category: 'branding',
+    description: 'Clean, modern business card design for Ani\'s Serabs, featuring balanced typography and essential contact details for a professional first impression.',
+    detailedDescription: 'Designed today, this business card establishes a clear and professional identity for Ani\'s Serabs. The layout prioritizes clarity with a clean, two-line business name ("Ani\'s Serabs") set in a modern, approachable typeface. All essential contact information—including phone number (0249737261) and location (Agomanya Roman Junction)—is presented with clear hierarchy for immediate readability.\n\nThe card efficiently incorporates branding details with a discreet "Design By Fast Multimedia" credit and website, maintaining focus on the client\'s information. The overall design achieves a balance between professionalism and accessibility, ensuring the card is both memorable and functional for networking and customer connections.',
+    tags: ['Business Card', 'Print Design', 'Brand Identity', 'Typography', 'Stationery'],
+    image: 'anis-serabs.jpg', // Assuming image is in public folder
+    client: 'Ani\'s Serabs',
+    year: '2024',
+    duration: '1 day',
+    role: 'Graphic Designer',
+    deliverables: ['Business Card Design', 'Print-Ready Files'],
+    results: ['Professional identity established', 'Ready for immediate print and distribution', 'Client-approved final design'],
+    color: '#1565C0', // A professional blue tone
+    mockups: []
+},
       {
         id: 8,
         title: 'Corporate Rebranding',
