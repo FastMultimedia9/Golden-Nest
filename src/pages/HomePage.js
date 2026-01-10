@@ -12,10 +12,10 @@ const HomePage = () => {
   
   // Professional hero images for Graphic Design
   const heroImages = [
-    "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1565688534245-05d6b5be184a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+    "https://www.freepik.com/free-photo/creative-manager-assisting-male-editor_417582919.htm#fromView=search&page=1&position=29&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+",
+    "https://www.freepik.com/free-photo/close-up-retouching-app-computer-empty-studio-nobody-photography-office-with-professional-editing-equipment-technology-pictures-photograph-retouch-work_22613678.htm#fromView=search&page=4&position=5&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+",
+    "https://www.freepik.com/free-photo/edit-software-templates-design-graphics-concept_17105433.htm#fromView=search&page=5&position=25&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+",
+    "https://www.freepik.com/free-photo/black-videographer-smiling-camera-editing-video-project-post-production-software-working-creative-studio-office_16099354.htm#fromView=search&page=5&position=48&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+"
   ];
 
   // Tech Support hero images
