@@ -10,7 +10,7 @@ const HomePage = () => {
   const [activeServiceCategory, setActiveServiceCategory] = useState('design'); // 'design' or 'tech'
   const navigate = useNavigate();
   
-  // Professional hero images
+  // Professional hero images for Graphic Design
   const heroImages = [
     "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
@@ -22,8 +22,8 @@ const HomePage = () => {
   const techHeroImages = [
     "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+    "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
   ];
 
   // Get active hero images based on category
@@ -99,7 +99,111 @@ const HomePage = () => {
     closePackageModal();
   };
 
-  // Design Packages
+  // Design Services from your services page
+  const designServices = [
+    {
+      id: 'brand-identity',
+      name: 'Brand Identity Design',
+      price: '₵699',
+      description: 'Complete brand identity packages including logo design, color palette, typography, and brand guidelines.',
+      features: ['Logo Design', 'Brand Guidelines', 'Business Cards', 'Stationery Design'],
+      icon: 'fas fa-palette'
+    },
+    {
+      id: 'ui-ux',
+      name: 'UI/UX Design',
+      price: '₵899',
+      description: 'User-centered design for websites and applications focusing on usability and engagement.',
+      features: ['Wireframing', 'Prototyping', 'User Testing', 'Responsive Design'],
+      icon: 'fas fa-mobile-alt'
+    },
+    {
+      id: 'print-packaging',
+      name: 'Print & Packaging',
+      price: '₵549',
+      description: 'Professional print materials and packaging designs that stand out on shelves.',
+      features: ['Brochures & Flyers', 'Product Packaging', 'Business Cards', 'Posters & Banners'],
+      icon: 'fas fa-print'
+    },
+    {
+      id: 'social-media',
+      name: 'Social Media Graphics',
+      price: '₵399',
+      description: 'Eye-catching social media content that drives engagement and conversions.',
+      features: ['Social Media Posts', 'Ad Creatives', 'Profile Branding', 'Content Templates'],
+      icon: 'fas fa-share-alt'
+    },
+    {
+      id: 'website-design',
+      name: 'Website Design & Development',
+      price: '₵1,299',
+      description: 'Modern, responsive websites that convert visitors into customers.',
+      features: ['Website Design', 'E-commerce Solutions', 'CMS Integration', 'SEO Optimization'],
+      icon: 'fas fa-code'
+    },
+    {
+      id: 'motion-graphics',
+      name: 'Motion Graphics',
+      price: '₵799',
+      description: 'Animated videos and graphics for social media, presentations, and marketing.',
+      features: ['Animated Logos', 'Explainer Videos', 'Social Media Ads', 'Presentation Graphics'],
+      icon: 'fas fa-film'
+    }
+  ];
+
+  // Tech Support Services from your services page
+  const techServices = [
+    {
+      id: 'computer-repair',
+      name: 'Computer Repair & Maintenance',
+      price: '₵50/hour',
+      description: 'Professional repair services for all computer makes and models.',
+      features: ['Hardware Diagnosis', 'Component Replacement', 'System Cleaning', 'Performance Tuning'],
+      icon: 'fas fa-tools'
+    },
+    {
+      id: 'windows-setup',
+      name: 'Windows Installation & Setup',
+      price: '₵150',
+      description: 'Complete Windows OS installation, configuration, and optimization.',
+      features: ['Windows 10/11 Installation', 'Driver Updates', 'System Optimization', 'Data Migration'],
+      icon: 'fab fa-windows'
+    },
+    {
+      id: 'software-support',
+      name: 'Software Installation & Support',
+      price: '₵100',
+      description: 'Installation and configuration of all types of software applications.',
+      features: ['Office Suite Setup', 'Creative Software', 'Antivirus Installation', 'Troubleshooting'],
+      icon: 'fas fa-download'
+    },
+    {
+      id: 'new-computer-setup',
+      name: 'New Computer Setup',
+      price: '₵200',
+      description: 'Complete setup and configuration of new computer systems.',
+      features: ['Initial Setup', 'Software Installation', 'Data Transfer', 'System Optimization'],
+      icon: 'fas fa-laptop'
+    },
+    {
+      id: 'networking',
+      name: 'Networking Solutions',
+      price: '₵250',
+      description: 'Setup and management of wired and wireless networks for businesses and homes.',
+      features: ['Wi-Fi Setup', 'Network Security', 'Router Configuration', 'Troubleshooting'],
+      icon: 'fas fa-wifi'
+    },
+    {
+      id: 'system-management',
+      name: 'Computer System Management',
+      price: '₵300/month',
+      description: 'Ongoing maintenance and management of computer systems for optimal performance.',
+      features: ['System Monitoring', 'Regular Updates', 'Backup Solutions', 'Security Management'],
+      icon: 'fas fa-server'
+    }
+  ];
+
+  // Design Packages from your services page
   const designPackages = [
     {
       id: 'basic',
@@ -144,52 +248,6 @@ const HomePage = () => {
         'Social Media Integration'
       ],
       description: 'Professional website design and development'
-    }
-  ];
-
-  // Tech Support Services
-  const techServices = [
-    {
-      id: 'computer-repair',
-      name: 'Computer Repair & Maintenance',
-      price: '₵50/hour',
-      features: ['Hardware Diagnosis', 'Component Replacement', 'System Cleaning', 'Performance Tuning'],
-      icon: 'fas fa-desktop'
-    },
-    {
-      id: 'windows-setup',
-      name: 'Windows Installation & Setup',
-      price: '₵150',
-      features: ['Windows 10/11 Installation', 'Driver Updates', 'System Optimization', 'Data Migration'],
-      icon: 'fab fa-windows'
-    },
-    {
-      id: 'software-support',
-      name: 'Software Installation & Support',
-      price: '₵100',
-      features: ['Office Suite Setup', 'Creative Software', 'Antivirus Installation', 'Troubleshooting'],
-      icon: 'fas fa-download'
-    },
-    {
-      id: 'new-computer-setup',
-      name: 'New Computer Setup',
-      price: '₵200',
-      features: ['Initial Setup', 'Software Installation', 'Data Transfer', 'System Optimization'],
-      icon: 'fas fa-laptop'
-    },
-    {
-      id: 'networking',
-      name: 'Networking Solutions',
-      price: '₵250',
-      features: ['Wi-Fi Setup', 'Network Security', 'Router Configuration', 'Troubleshooting'],
-      icon: 'fas fa-wifi'
-    },
-    {
-      id: 'system-management',
-      name: 'Computer System Management',
-      price: '₵300/month',
-      features: ['System Monitoring', 'Regular Updates', 'Backup Solutions', 'Security Management'],
-      icon: 'fas fa-server'
     }
   ];
 
@@ -268,7 +326,7 @@ const HomePage = () => {
           <div className="hero-badge">
             <div className="badge-dot"></div>
             <span className="badge-text">
-              {activeServiceCategory === 'design' ? 'Creative Design' : 'Tech Support'}
+              {activeServiceCategory === 'design' ? 'Creative Design' : 'Professional Tech Support'}
             </span>
           </div>
           <h1 className="hero-title">
@@ -302,9 +360,14 @@ const HomePage = () => {
                 </button>
               </>
             ) : (
-              <button className="btn btn-primary" onClick={() => navigate('/services')}>
-                <i className="fas fa-tools"></i> View Tech Services
-              </button>
+              <>
+                <button className="btn btn-primary" onClick={() => navigate('/services')}>
+                  <i className="fas fa-tools"></i> View All Tech Services
+                </button>
+                <button className="btn btn-secondary" onClick={() => navigate('/contact')}>
+                  <i className="fas fa-headset"></i> Request Support
+                </button>
+              </>
             )}
           </div>
           
@@ -314,7 +377,7 @@ const HomePage = () => {
                 {activeServiceCategory === 'design' ? '150+' : '500+'}
               </h3>
               <p className="stat-label">
-                {activeServiceCategory === 'design' ? 'Projects Completed' : 'Projects Completed'}
+                Projects Completed
               </p>
             </div>
             <div className="stat-item">
@@ -329,12 +392,10 @@ const HomePage = () => {
                 {activeServiceCategory === 'design' ? 'Average Delivery' : 'Tech Support'}
               </p>
             </div>
-            {activeServiceCategory === 'design' && (
-              <div className="stat-item">
-                <h3 className="stat-number">50+</h3>
-                <p className="stat-label">Happy Clients</p>
-              </div>
-            )}
+            <div className="stat-item">
+              <h3 className="stat-number">50+</h3>
+              <p className="stat-label">Happy Clients</p>
+            </div>
           </div>
         </div>
         
@@ -384,128 +445,89 @@ const HomePage = () => {
           </h2>
           <p className="section-subtitle">
             {activeServiceCategory === 'design' 
-              ? 'Comprehensive design solutions tailored to your business needs'
+              ? 'Creative design solutions that make your brand stand out'
               : 'Reliable tech solutions to keep your systems running efficiently'
             }
           </p>
+          <div className="selection-hint">
+            <i className="fas fa-mouse-pointer"></i>
+            <span>Click any service to automatically add it to your contact request</span>
+          </div>
         </div>
         
         {activeServiceCategory === 'design' ? (
           <div className="services-grid">
-            <div className="service-card animate-on-scroll">
-              <div className="service-header">
-                <div className="service-icon">
-                  <i className="fas fa-paint-brush"></i>
-                </div>
-                <div className="service-profile">
-                  <div className="profile-icons">
-                    <i className="fas fa-star"></i>
-                    <i className="fas fa-brush"></i>
-                    <i className="fas fa-font"></i>
-                    <i className="fas fa-palette"></i>
-                  </div>
-                </div>
-              </div>
-              <h3 className="service-title">Brand Identity</h3>
-              <p className="service-description">
-                Create a memorable brand identity that communicates your values and resonates with your audience.
-              </p>
-              <ul className="service-features">
-                <li>Logo Design</li>
-                <li>Color Palette</li>
-                <li>Typography System</li>
-                <li>Brand Guidelines</li>
-              </ul>
-            </div>
-            
-            <div className="service-card animate-on-scroll">
-              <div className="service-header">
-                <div className="service-icon">
-                  <i className="fas fa-bullhorn"></i>
-                </div>
-                <div className="service-profile">
-                  <div className="profile-icons">
-                    <i className="fas fa-share-alt"></i>
-                    <i className="fas fa-envelope"></i>
-                    <i className="fas fa-ad"></i>
-                    <i className="fas fa-chart-line"></i>
-                  </div>
-                </div>
-              </div>
-              <h3 className="service-title">Digital Marketing</h3>
-              <p className="service-description">
-                Engaging digital marketing materials that drive results and connect with your target audience.
-              </p>
-              <ul className="service-features">
-                <li>Social Media Graphics</li>
-                <li>Email Campaigns</li>
-                <li>Web Banners</li>
-                <li>Ad Designs</li>
-              </ul>
-            </div>
-            
-            <div className="service-card animate-on-scroll">
-              <div className="service-header">
-                <div className="service-icon">
-                  <i className="fas fa-box"></i>
-                </div>
-                <div className="service-profile">
-                  <div className="profile-icons">
-                    <i className="fas fa-tag"></i>
-                    <i className="fas fa-shipping-fast"></i>
-                    <i className="fas fa-gift"></i>
-                    <i className="fas fa-qrcode"></i>
-                  </div>
-                </div>
-              </div>
-              <h3 className="service-title">Product Packaging</h3>
-              <p className="service-description">
-                Eye-catching product packaging designs that enhance unboxing experience and brand recognition.
-              </p>
-              <ul className="service-features">
-                <li>Box Design</li>
-                <li>Product Labels</li>
-                <li>Packaging System</li>
-                <li>Retail Ready</li>
-              </ul>
-            </div>
-          </div>
-        ) : (
-          <div className="tech-services-grid">
-            {techServices.map((service, index) => (
-              <div key={service.id} className="tech-service-card animate-on-scroll">
-                <div className="tech-service-header">
-                  <div className="tech-service-icon">
+            {designServices.map((service, index) => (
+              <div 
+                key={service.id} 
+                className="service-card animate-on-scroll"
+                onClick={() => navigate(`/contact?service=${service.id}&type=${encodeURIComponent(service.name)}`)}
+              >
+                <div className="service-header">
+                  <div className="service-icon">
                     <i className={service.icon}></i>
                   </div>
-                  <div className="tech-service-price">
-                    {service.price}
-                  </div>
+                  <div className="service-price-badge">{service.price}</div>
                 </div>
-                <h3 className="tech-service-title">{service.name}</h3>
-                <ul className="tech-service-features">
+                <h3 className="service-title">{service.name}</h3>
+                <p className="service-description">{service.description}</p>
+                <ul className="service-features">
                   {service.features.map((feature, idx) => (
                     <li key={idx}><i className="fas fa-check"></i> {feature}</li>
                   ))}
                 </ul>
-                <button 
-                  className="btn btn-outline"
-                  onClick={() => navigate(`/contact?service=${service.id}&type=${encodeURIComponent(service.name)}`)}
-                >
-                  <i className="fas fa-wrench"></i> Request Service
-                </button>
+                <div className="service-action">
+                  <button className="btn-service-select">
+                    <i className="fas fa-plus-circle"></i>
+                    <span>Select Service</span>
+                  </button>
+                  <div className="service-arrow">
+                    <i className="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="services-grid">
+            {techServices.map((service, index) => (
+              <div 
+                key={service.id} 
+                className="service-card animate-on-scroll"
+                onClick={() => navigate(`/contact?service=${service.id}&type=${encodeURIComponent(service.name)}`)}
+              >
+                <div className="service-header">
+                  <div className="service-icon">
+                    <i className={service.icon}></i>
+                  </div>
+                  <div className="service-price-badge">{service.price}</div>
+                </div>
+                <h3 className="service-title">{service.name}</h3>
+                <p className="service-description">{service.description}</p>
+                <ul className="service-features">
+                  {service.features.map((feature, idx) => (
+                    <li key={idx}><i className="fas fa-check"></i> {feature}</li>
+                  ))}
+                </ul>
+                <div className="service-action">
+                  <button className="btn-service-select">
+                    <i className="fas fa-plus-circle"></i>
+                    <span>Select Service</span>
+                  </button>
+                  <div className="service-arrow">
+                    <i className="fas fa-arrow-right"></i>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         )}
         
-        {activeServiceCategory === 'tech' && (
-          <div className="section-cta animate-on-scroll">
-            <button className="btn btn-primary" onClick={() => navigate('/services')}>
-              <i className="fas fa-list-alt"></i> View All Tech Services
-            </button>
-          </div>
-        )}
+        <div className="section-cta animate-on-scroll">
+          <button className="btn btn-primary" onClick={() => navigate('/services')}>
+            <i className="fas fa-list-alt"></i> View All Services
+          </button>
+        </div>
       </section>
 
       {/* Only show portfolio for design category */}
@@ -573,6 +595,10 @@ const HomePage = () => {
                 <div className="modal-header">
                   <h2 className="modal-title">Design Packages</h2>
                   <p className="modal-subtitle">Get more value with our bundled packages</p>
+                  <div className="selection-hint">
+                    <i className="fas fa-mouse-pointer"></i>
+                    <span>Click any package to automatically add it to your contact request</span>
+                  </div>
                 </div>
                 
                 <div className="packages-grid">
@@ -619,13 +645,168 @@ const HomePage = () => {
                   <button className="btn btn-primary" onClick={handlePackageOrder}>
                     <i className="fas fa-shopping-cart"></i> Get Started
                   </button>
-                  <p className="modal-note">Click any package to automatically add it to your contact request</p>
+                  <p className="modal-note">Selected package will be added to your contact request</p>
                 </div>
               </div>
             </div>
           )}
         </>
       )}
+
+      {/* For Tech category, show tech packages/bundles */}
+      {activeServiceCategory === 'tech' && (
+        <section className="tech-packages section">
+          <div className="section-header animate-on-scroll">
+            <h2 className="section-title">Tech Support Plans</h2>
+            <p className="section-subtitle">
+              Choose the right support plan for your needs
+            </p>
+          </div>
+          
+          <div className="packages-grid">
+            <div className="tech-package-card animate-on-scroll">
+              <div className="package-header">
+                <h3 className="package-name">Basic Support</h3>
+                <div className="package-price">
+                  <span className="current-price">₵50/hour</span>
+                </div>
+              </div>
+              <p className="package-description">Pay-as-you-go tech support for immediate issues</p>
+              <ul className="package-features">
+                <li><i className="fas fa-check"></i> Computer Diagnosis</li>
+                <li><i className="fas fa-check"></i> Software Installation</li>
+                <li><i className="fas fa-check"></i> Virus Removal</li>
+                <li><i className="fas fa-check"></i> Basic Troubleshooting</li>
+              </ul>
+              <button 
+                className="btn btn-primary"
+                onClick={() => navigate('/contact?service=computer-repair&type=Basic%20Support')}
+              >
+                <i className="fas fa-wrench"></i> Request Service
+              </button>
+            </div>
+            
+            <div className="tech-package-card animate-on-scroll popular">
+              <div className="popular-badge">Most Popular</div>
+              <div className="package-header">
+                <h3 className="package-name">System Setup Package</h3>
+                <div className="package-price">
+                  <span className="current-price">₵450</span>
+                </div>
+              </div>
+              <p className="package-description">Complete computer setup and optimization</p>
+              <ul className="package-features">
+                <li><i className="fas fa-check"></i> New Computer Setup (₵200)</li>
+                <li><i className="fas fa-check"></i> Windows Installation (₵150)</li>
+                <li><i className="fas fa-check"></i> Software Installation (₵100)</li>
+                <li><i className="fas fa-check"></i> Data Migration Service</li>
+              </ul>
+              <button 
+                className="btn btn-primary"
+                onClick={() => navigate('/contact?service=system-setup-package&type=System%20Setup%20Package')}
+              >
+                <i className="fas fa-laptop"></i> Get Package
+              </button>
+            </div>
+            
+            <div className="tech-package-card animate-on-scroll">
+              <div className="package-header">
+                <h3 className="package-name">Monthly Management</h3>
+                <div className="package-price">
+                  <span className="current-price">₵300/month</span>
+                </div>
+              </div>
+              <p className="package-description">Ongoing system maintenance and support</p>
+              <ul className="package-features">
+                <li><i className="fas fa-check"></i> System Monitoring</li>
+                <li><i className="fas fa-check"></i> Regular Updates</li>
+                <li><i className="fas fa-check"></i> Backup Solutions</li>
+                <li><i className="fas fa-check"></i> Security Management</li>
+              </ul>
+              <button 
+                className="btn btn-primary"
+                onClick={() => navigate('/contact?service=system-management&type=Monthly%20Management')}
+              >
+                <i className="fas fa-server"></i> Subscribe Now
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Why Choose Us Section */}
+      <section className="why-choose-section section">
+        <div className="container">
+          <div className="section-header animate-on-scroll">
+            <h2 className="section-title">Why Choose Fast Multimedia</h2>
+            <p className="section-subtitle">
+              We combine creative design expertise with technical excellence
+            </p>
+          </div>
+          
+          <div className="features-grid">
+            <div className="feature-card animate-on-scroll">
+              <div className="feature-icon">
+                <i className="fas fa-bolt"></i>
+              </div>
+              <h3 className="feature-title">Fast Turnaround</h3>
+              <p className="feature-description">
+                We deliver projects on time without compromising on quality.
+              </p>
+            </div>
+            
+            <div className="feature-card animate-on-scroll">
+              <div className="feature-icon">
+                <i className="fas fa-headset"></i>
+              </div>
+              <h3 className="feature-title">24/7 Support</h3>
+              <p className="feature-description">
+                Round-the-clock technical support for all your needs.
+              </p>
+            </div>
+            
+            <div className="feature-card animate-on-scroll">
+              <div className="feature-icon">
+                <i className="fas fa-shield-alt"></i>
+              </div>
+              <h3 className="feature-title">Quality Guarantee</h3>
+              <p className="feature-description">
+                We stand behind our work with a satisfaction guarantee.
+              </p>
+            </div>
+            
+            <div className="feature-card animate-on-scroll">
+              <div className="feature-icon">
+                <i className="fas fa-users"></i>
+              </div>
+              <h3 className="feature-title">Expert Team</h3>
+              <p className="feature-description">
+                Skilled professionals in both design and technology.
+              </p>
+            </div>
+            
+            <div className="feature-card animate-on-scroll">
+              <div className="feature-icon">
+                <i className="fas fa-tools"></i>
+              </div>
+              <h3 className="feature-title">Modern Tools</h3>
+              <p className="feature-description">
+                Using the latest software and technology for best results.
+              </p>
+            </div>
+            
+            <div className="feature-card animate-on-scroll">
+              <div className="feature-icon">
+                <i className="fas fa-handshake"></i>
+              </div>
+              <h3 className="feature-title">Personalized Service</h3>
+              <p className="feature-description">
+                Tailored solutions to meet your specific business needs.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="cta-section">
@@ -653,6 +834,11 @@ const HomePage = () => {
               {activeServiceCategory === 'design' && (
                 <button className="btn btn-outline-light" onClick={() => navigate('/portfolio')}>
                   <i className="fas fa-images"></i> View Work
+                </button>
+              )}
+              {activeServiceCategory === 'tech' && (
+                <button className="btn btn-outline-light" onClick={() => navigate('/services')}>
+                  <i className="fas fa-tools"></i> View All Services
                 </button>
               )}
             </div>
