@@ -230,7 +230,7 @@ const PortfolioPage = () => {
       tags: ['Flyer Design', 'Mobile Money', 'Promotional Print', 'Service Advertisement', 'Typography'],
       image: 'mr-wise-momo-flyer.jpg',
       client: 'Mr. Wise Mobile Money Services',
-      year: '2024',
+      year: '2026',
       duration: '2 days',
       role: 'Print & Marketing Designer',
       deliverables: ['Promotional Flyer', 'Print-Ready File', 'Digital Version'],

@@ -27,6 +27,78 @@ const HomePage = () => {
     "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
   ];
 
+  // Featured Portfolio Projects from your portfolio
+  const featuredPortfolioProjects = [
+    {
+      id: 'featured-1',
+      title: 'St. Martin Hospital 80th Anniversary',
+      category: 'Brand Identity',
+      description: 'Award-winning logo design for 80th anniversary celebration, blending heritage with future vision.',
+      image: '80th.jpg',
+      tags: ['Logo Design', 'Anniversary', 'Healthcare'],
+      details: [
+        'Winning design from open competition',
+        '80TH centered between HERITAGE and FUTURE',
+        'Clean sans-serif typography',
+        'Symbolic representation of legacy and progress',
+        'Selected by hospital administration'
+      ],
+      client: 'St. Martin De Porres Catholic Hospital',
+      year: '2025'
+    },
+    {
+      id: 'featured-2',
+      title: 'Mr. Wise Clothing Brand',
+      category: 'Brand Identity',
+      description: 'Sophisticated fashion brand identity with "Exclusively Different" positioning.',
+      image: 'mr-wise.jpg',
+      tags: ['Fashion Branding', 'Luxury', 'Logo Design'],
+      details: [
+        'Premium clothing brand identity',
+        'Tagline: "Exclusively Different"',
+        'Clean, confident typography',
+        'Sophisticated fashion positioning',
+        'Complete brand guidelines'
+      ],
+      client: 'Mr. Wise Clothing',
+      year: '2025'
+    },
+    {
+      id: 'featured-3',
+      title: 'Abidan Royal Mango Ice-Cream',
+      category: 'Packaging Design',
+      description: 'Product label design for mango ice-cream with clear ingredient listing.',
+      image: 'mango-label.jpg',
+      tags: ['Food Label', 'Product Packaging', 'Compliance'],
+      details: [
+        'Clear ingredient listing',
+        'Regulatory compliance',
+        'Manufacturer information display',
+        'Contact and location details',
+        'Professional retail appearance'
+      ],
+      client: 'Abidan Royal Enterprise',
+      year: '2024'
+    },
+    {
+      id: 'featured-4',
+      title: 'Mr. Wise Mobile Money Services',
+      category: 'Print Design',
+      description: 'Promotional flyer for mobile money services with comprehensive service listing.',
+      image: 'mr-wise-momo-flyer.jpg',
+      tags: ['Flyer Design', 'Mobile Money', 'Service Advertisement'],
+      details: [
+        'Complete service listing',
+        'Clear contact information',
+        'Bulleted service organization',
+        '"WE DEY FOR YOU ALL DAY" tagline',
+        'Practical point-of-sale design'
+      ],
+      client: 'Mr. Wise Mobile Money Services',
+      year: '2024'
+    }
+  ];
+
   // Get active hero images based on category
   const getActiveHeroImages = () => {
     return activeServiceCategory === 'design' ? heroImages : techHeroImages;
@@ -68,8 +140,8 @@ const HomePage = () => {
     setCurrentImageIndex(index);
   };
 
-  const openQuickView = (projectId) => {
-    setQuickViewProject(projectId);
+  const openQuickView = (project) => {
+    setQuickViewProject(project);
     setShowQuickView(true);
     document.body.style.overflow = 'hidden';
   };
@@ -305,55 +377,6 @@ const HomePage = () => {
         'Social Media Integration'
       ],
       description: 'Professional website design and development'
-    }
-  ];
-
-  // Portfolio Projects
-  const portfolioProjects = [
-    {
-      id: 'project1',
-      title: "Modern Tech Branding",
-      category: "Brand Identity",
-      description: "Complete branding for tech startup including modern logo, color palette, and comprehensive brand guidelines.",
-      image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      tags: ["Logo Design", "Brand Guide", "Typography"],
-      details: [
-        "Modern logo with clean typography",
-        "Professional color palette",
-        "Typography system",
-        "Brand guidelines",
-        "Social media templates"
-      ]
-    },
-    {
-      id: 'project2',
-      title: "E-commerce Packaging",
-      category: "Product Packaging",
-      description: "Modern packaging designs for e-commerce product line including custom boxes and labels.",
-      image: "https://images.unsplash.com/photo-1565688534245-05d6b5be184a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      tags: ["Product Box", "Labels", "Unboxing"],
-      details: [
-        "Custom box designs",
-        "Product labels",
-        "Unboxing experience",
-        "Brand consistency",
-        "Packaging system"
-      ]
-    },
-    {
-      id: 'project3',
-      title: "Digital Marketing Campaign",
-      category: "Marketing Design",
-      description: "Complete digital marketing campaign with social media graphics and advertising designs.",
-      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      tags: ["Social Media", "Email", "Digital Ads"],
-      details: [
-        "Social media graphics",
-        "Email campaign design",
-        "Digital banner ads",
-        "Marketing strategy",
-        "Campaign assets"
-      ]
     }
   ];
 
@@ -727,17 +750,17 @@ const HomePage = () => {
       {/* Only show portfolio for design category */}
       {activeServiceCategory === 'design' && (
         <>
-          {/* Portfolio Preview */}
+          {/* Featured Portfolio Preview */}
           <section className="portfolio-preview section">
             <div className="section-header animate-on-scroll">
               <h2 className="section-title">Featured Work</h2>
               <p className="section-subtitle">
-                Explore our portfolio of successful design projects across various industries
+                Explore our portfolio of successful design projects for real clients
               </p>
             </div>
             
             <div className="portfolio-grid">
-              {portfolioProjects.map((project) => (
+              {featuredPortfolioProjects.map((project) => (
                 <div key={project.id} className="portfolio-item animate-on-scroll">
                   <div className="portfolio-image">
                     <img src={project.image} alt={project.title} />
@@ -747,11 +770,11 @@ const HomePage = () => {
                         <p>{project.description.substring(0, 80)}...</p>
                         <div className="portfolio-actions">
                           <button className="btn btn-small quick-view-btn" 
-                            onClick={() => openQuickView(project.id)}>
+                            onClick={() => openQuickView(project)}>
                             <i className="fas fa-eye"></i> Quick View
                           </button>
                           <button className="btn btn-small btn-outline-light" onClick={() => navigate('/portfolio')}>
-                            <i className="fas fa-external-link-alt"></i> Case Study
+                            <i className="fas fa-external-link-alt"></i> Full Details
                           </button>
                         </div>
                       </div>
@@ -759,7 +782,10 @@ const HomePage = () => {
                   </div>
                   <div className="portfolio-info">
                     <h3 className="portfolio-title">{project.title}</h3>
-                    <p className="portfolio-category">{project.category}</p>
+                    <div className="portfolio-meta">
+                      <span className="portfolio-client">{project.client}</span>
+                      <span className="portfolio-category">{project.category}</span>
+                    </div>
                     <div className="portfolio-tags">
                       {project.tags.map((tag, index) => (
                         <span key={index} className="portfolio-tag">{tag}</span>
@@ -942,7 +968,7 @@ const HomePage = () => {
               </button>
               {activeServiceCategory === 'design' && (
                 <button className="btn btn-outline-light" onClick={() => navigate('/portfolio')}>
-                  <i className="fas fa-images"></i> View Work
+                  <i className="fas fa-images"></i> View More Work
                 </button>
               )}
               {activeServiceCategory === 'tech' && (
@@ -967,7 +993,7 @@ const HomePage = () => {
       </section>
 
       {/* Quick View Modal (only for design) */}
-      {showQuickView && activeServiceCategory === 'design' && (
+      {showQuickView && activeServiceCategory === 'design' && quickViewProject && (
         <div className="portfolio-quickview-modal">
           <div className="quickview-overlay" onClick={closeQuickView}></div>
           <div className="quickview-content">
@@ -975,39 +1001,36 @@ const HomePage = () => {
               <i className="fas fa-times"></i>
             </button>
             
-            {portfolioProjects.map((project) => (
-              quickViewProject === project.id && (
-                <div key={project.id} className="quickview-project">
-                  <div className="quickview-image">
-                    <img src={project.image} alt={project.title} />
-                  </div>
-                  <div className="quickview-info">
-                    <h3>{project.title}</h3>
-                    <div className="quickview-meta">
-                      <span className="quickview-category">{project.category}</span>
-                      <span className="quickview-date">Recent Project</span>
-                    </div>
-                    <p className="quickview-description">{project.description}</p>
-                    <div className="quickview-features">
-                      <h4>Project Highlights:</h4>
-                      <ul>
-                        {project.details.map((detail, index) => (
-                          <li key={index}>{detail}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="quickview-actions">
-                      <button className="btn btn-primary" onClick={openPackageModal}>
-                        <i className="fas fa-pencil-alt"></i> Start Similar Project
-                      </button>
-                      <button className="btn btn-outline" onClick={closeQuickView}>
-                        <i className="fas fa-times"></i> Close
-                      </button>
-                    </div>
-                  </div>
+            <div className="quickview-project">
+              <div className="quickview-image">
+                <img src={quickViewProject.image} alt={quickViewProject.title} />
+              </div>
+              <div className="quickview-info">
+                <h3>{quickViewProject.title}</h3>
+                <div className="quickview-meta">
+                  <span className="quickview-client">{quickViewProject.client}</span>
+                  <span className="quickview-category">{quickViewProject.category}</span>
+                  <span className="quickview-year">{quickViewProject.year}</span>
                 </div>
-              )
-            ))}
+                <p className="quickview-description">{quickViewProject.description}</p>
+                <div className="quickview-features">
+                  <h4>Project Highlights:</h4>
+                  <ul>
+                    {quickViewProject.details.map((detail, index) => (
+                      <li key={index}><i className="fas fa-check"></i> {detail}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="quickview-actions">
+                  <button className="btn btn-primary" onClick={openPackageModal}>
+                    <i className="fas fa-pencil-alt"></i> Start Similar Project
+                  </button>
+                  <button className="btn btn-outline" onClick={closeQuickView}>
+                    <i className="fas fa-times"></i> Close
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
