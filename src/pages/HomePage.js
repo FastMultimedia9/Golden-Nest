@@ -7,14 +7,8 @@ const HomePage = () => {
   const [showQuickView, setShowQuickView] = useState(false);
   const [quickViewProject, setQuickViewProject] = useState(null);
   const [showPackageModal, setShowPackageModal] = useState(false);
-  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState('basic');
-  const [showNewYearPopup, setShowNewYearPopup] = useState(false);
   const [activeServiceCategory, setActiveServiceCategory] = useState('design'); // 'design' or 'tech'
   const navigate = useNavigate();
-  
-  // New Year flyer image from public folder
-  const newYearFlyerUrl = "/new-year.jpg";
   
   // Professional hero images
   const heroImages = [
@@ -69,26 +63,6 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, [activeServiceCategory]);
 
-  useEffect(() => {
-    // Check if New Year popup should be shown
-    const hasSeenPopup = localStorage.getItem('newYearPopupClosed');
-    
-    if (!hasSeenPopup) {
-      const timer = setTimeout(() => {
-        setShowNewYearPopup(true);
-        document.body.style.overflow = 'hidden';
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  const closeNewYearPopup = () => {
-    setShowNewYearPopup(false);
-    document.body.style.overflow = 'auto';
-    localStorage.setItem('newYearPopupClosed', 'true');
-  };
-
   const goToImage = (index) => {
     setCurrentImageIndex(index);
   };
@@ -112,16 +86,6 @@ const HomePage = () => {
 
   const closePackageModal = () => {
     setShowPackageModal(false);
-    document.body.style.overflow = 'auto';
-  };
-
-  const openPortfolioModal = () => {
-    setShowPortfolioModal(true);
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closePortfolioModal = () => {
-    setShowPortfolioModal(false);
     document.body.style.overflow = 'auto';
   };
 
@@ -278,60 +242,10 @@ const HomePage = () => {
     }
   ];
 
+  const [selectedPackage, setSelectedPackage] = useState('basic');
+
   return (
     <div className="homepage">
-      {/* New Year Popup Modal */}
-      {showNewYearPopup && (
-        <div className="new-year-popup-modal">
-          <div className="modal-overlay" onClick={closeNewYearPopup}></div>
-          <div className="modal-content new-year-popup">
-            <button className="modal-close" onClick={closeNewYearPopup}>
-              <i className="fas fa-times"></i>
-            </button>
-            
-            <div className="new-year-content">
-              <div className="new-year-header">
-                <h2 className="new-year-title">🎉 Happy New Year! 🎉</h2>
-                <p className="new-year-subtitle">Wishing you a year filled with success and creativity!</p>
-              </div>
-              
-              <div className="new-year-flyer">
-                <img 
-                  src={newYearFlyerUrl} 
-                  alt="New Year Flyer" 
-                  className="flyer-image"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://images.unsplash.com/photo-1601381718415-a05fb0a261f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
-                  }}
-                />
-              </div>
-              
-              <div className="new-year-message">
-                <p>Start the new year with amazing designs! Special New Year offers available.</p>
-                <div className="new-year-offer">
-                  <span className="offer-badge">Limited Time Offer</span>
-                  <h3>Get 20% off on all design packages!</h3>
-                  <p>Use code: <strong>NEWYEAR2026</strong></p>
-                </div>
-              </div>
-              
-              <div className="new-year-actions">
-                <button className="btn btn-primary" onClick={() => {
-                  closeNewYearPopup();
-                  openPackageModal();
-                }}>
-                  <i className="fas fa-gift"></i> View Special Offers
-                </button>
-                <button className="btn btn-outline" onClick={closeNewYearPopup}>
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Service Category Selector */}
       <div className="service-category-selector">
         <button 
@@ -383,7 +297,7 @@ const HomePage = () => {
                 <button className="btn btn-primary" onClick={openPackageModal}>
                   <i className="fas fa-palette"></i> View Design Packages
                 </button>
-                <button className="btn btn-secondary" onClick={openPortfolioModal}>
+                <button className="btn btn-secondary" onClick={() => navigate('/portfolio')}>
                   <i className="fas fa-eye"></i> View Portfolio
                 </button>
               </>
@@ -620,7 +534,7 @@ const HomePage = () => {
                             onClick={() => openQuickView(project.id)}>
                             <i className="fas fa-eye"></i> Quick View
                           </button>
-                          <button className="btn btn-small btn-outline-light" onClick={openPortfolioModal}>
+                          <button className="btn btn-small btn-outline-light" onClick={() => navigate('/portfolio')}>
                             <i className="fas fa-external-link-alt"></i> Case Study
                           </button>
                         </div>
@@ -641,7 +555,7 @@ const HomePage = () => {
             </div>
             
             <div className="section-cta animate-on-scroll">
-              <button className="btn btn-primary" onClick={openPortfolioModal}>
+              <button className="btn btn-primary" onClick={() => navigate('/portfolio')}>
                 <i className="fas fa-images"></i> View Full Portfolio
               </button>
             </div>
@@ -737,7 +651,7 @@ const HomePage = () => {
                 <i className="fas fa-calendar"></i> {activeServiceCategory === 'design' ? 'Book Consultation' : 'Schedule Service'}
               </button>
               {activeServiceCategory === 'design' && (
-                <button className="btn btn-outline-light" onClick={openPortfolioModal}>
+                <button className="btn btn-outline-light" onClick={() => navigate('/portfolio')}>
                   <i className="fas fa-images"></i> View Work
                 </button>
               )}
@@ -756,64 +670,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* Portfolio Modal (only for design) */}
-      {showPortfolioModal && activeServiceCategory === 'design' && (
-        <div className="portfolio-modal-overlay">
-          <div className="modal-overlay" onClick={closePortfolioModal}></div>
-          <div className="modal-content portfolio-modal">
-            <button className="modal-close" onClick={closePortfolioModal}>
-              <i className="fas fa-times"></i>
-            </button>
-            
-            <div className="modal-header">
-              <h2 className="modal-title">Portfolio Gallery</h2>
-              <p className="modal-subtitle">Explore our completed design projects</p>
-            </div>
-            
-            <div className="portfolio-gallery">
-              {portfolioProjects.map((project) => (
-                <div key={project.id} className="gallery-item">
-                  <div className="gallery-image">
-                    <img src={project.image} alt={project.title} />
-                    <div className="gallery-overlay">
-                      <div className="overlay-content">
-                        <h4>{project.title}</h4>
-                        <p>{project.category}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="gallery-info">
-                    <h3>{project.title}</h3>
-                    <p className="gallery-category">{project.category}</p>
-                    <p className="gallery-description">{project.description}</p>
-                    <div className="gallery-tags">
-                      {project.tags.map((tag, index) => (
-                        <span key={index} className="gallery-tag">{tag}</span>
-                      ))}
-                    </div>
-                    <button 
-                      className="btn btn-small"
-                      onClick={() => {
-                        closePortfolioModal();
-                        openQuickView(project.id);
-                      }}
-                    >
-                      <i className="fas fa-eye"></i> View Details
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="modal-footer">
-              <button className="btn btn-primary" onClick={openPackageModal}>
-                <i className="fas fa-pencil-alt"></i> Start Your Project
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Quick View Modal (only for design) */}
       {showQuickView && activeServiceCategory === 'design' && (
