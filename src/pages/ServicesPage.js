@@ -26,7 +26,7 @@ const ServicesPage = () => {
   }, []);
 
   const handleServiceClick = (serviceName, category, price = null) => {
-    // Store service data in localStorage to persist between pages
+    // Store service data in localStorage (more reliable than URL params)
     const serviceData = {
       name: serviceName,
       category: category,
@@ -34,18 +34,21 @@ const ServicesPage = () => {
       timestamp: Date.now()
     };
     
+    // Clear any previous data first
+    localStorage.removeItem('selectedService');
+    
+    // Set new service data with fresh timestamp
     localStorage.setItem('selectedService', JSON.stringify(serviceData));
     
-    // Navigate to contact page with service data as URL parameters
-    const params = new URLSearchParams({
-      service: encodeURIComponent(serviceName),
-      category: category,
-      ...(price && { price: price })
-    });
-    
-    navigate(`/contact?${params.toString()}`);
+    // Navigate to contact page
+    navigate('/contact');
     
     // Show notification
+    showServiceNotification(serviceName);
+  };
+
+  // Helper function for notifications
+  const showServiceNotification = (serviceName) => {
     const notification = document.createElement('div');
     notification.className = 'service-notification';
     notification.innerHTML = `

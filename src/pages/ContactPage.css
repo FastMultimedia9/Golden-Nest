@@ -1,4 +1,4 @@
-/* Contact Page Styles */
+/* Contact Page Styles - Only for ContactPage component */
 .contact-page {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   color: #333;
@@ -7,7 +7,7 @@
 }
 
 /* Service Added Notification */
-.service-added-notification {
+.contact-page .service-added-notification {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -22,25 +22,25 @@
   border-left: 5px solid #2e7d32;
 }
 
-.notification-content {
+.contact-page .notification-content {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.notification-content i {
+.contact-page .notification-content i {
   font-size: 24px;
   color: #c8e6c9;
 }
 
-.notification-text {
+.contact-page .notification-text {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.notification-price {
+.contact-page .notification-price {
   background: rgba(255, 255, 255, 0.2);
   padding: 2px 8px;
   border-radius: 4px;
@@ -48,7 +48,7 @@
   margin-top: 4px;
 }
 
-.notification-close {
+.contact-page .notification-close {
   background: none;
   border: none;
   color: white;
@@ -59,24 +59,24 @@
   transition: opacity 0.2s;
 }
 
-.notification-close:hover {
+.contact-page .notification-close:hover {
   opacity: 1;
 }
 
 /* Container */
-.container {
+.contact-page .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
 /* Sections */
-.section {
+.contact-page .section {
   padding: 60px 0;
 }
 
 /* Hero Section */
-.contact-hero {
+.contact-page .contact-hero {
   padding: 80px 0 60px;
   background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
   color: white;
@@ -84,7 +84,7 @@
   overflow: hidden;
 }
 
-.contact-hero::before {
+.contact-page .contact-hero::before {
   content: '';
   position: absolute;
   top: 0;
@@ -94,11 +94,11 @@
   background: linear-gradient(90deg, #4CAF50, #2196F3);
 }
 
-.christmas-hero {
+.contact-page .christmas-hero {
   background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #388e3c 100%);
 }
 
-.christmas-badge {
+.contact-page .christmas-badge {
   background: linear-gradient(135deg, #d32f2f, #f44336);
   color: white;
   padding: 12px 24px;
@@ -112,7 +112,7 @@
   animation: pulse 2s infinite;
 }
 
-.selected-package-badge {
+.contact-page .selected-package-badge {
   background: rgba(255, 255, 255, 0.2);
   padding: 6px 12px;
   border-radius: 20px;
@@ -122,7 +122,7 @@
   font-size: 0.9em;
 }
 
-.contact-title {
+.contact-page .contact-title {
   font-size: 3.5rem;
   font-weight: 800;
   margin-bottom: 16px;
@@ -132,7 +132,7 @@
   background-clip: text;
 }
 
-.contact-subtitle {
+.contact-page .contact-subtitle {
   font-size: 1.2rem;
   opacity: 0.9;
   max-width: 600px;
@@ -141,7 +141,7 @@
 }
 
 /* Selected Service Card */
-.selected-service-card {
+.contact-page .selected-service-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -151,14 +151,14 @@
   animation: fadeInUp 0.5s ease-out;
 }
 
-.service-card-header {
+.contact-page .service-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.service-card-header h3 {
+.contact-page .service-card-header h3 {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -166,16 +166,17 @@
   margin: 0;
 }
 
-.service-card-header i {
+.contact-page .service-card-header i {
   color: #4CAF50;
 }
 
-.service-card-actions {
+.contact-page .service-card-actions {
   display: flex;
   gap: 12px;
 }
 
-.btn-service-remove, .btn-service-add {
+.contact-page .btn-service-remove,
+.contact-page .btn-service-add {
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
@@ -188,54 +189,54 @@
   font-size: 0.9em;
 }
 
-.btn-service-remove {
+.contact-page .btn-service-remove {
   background: rgba(244, 67, 54, 0.2);
   color: #ffcdd2;
   border: 1px solid rgba(244, 67, 54, 0.3);
 }
 
-.btn-service-remove:hover {
+.contact-page .btn-service-remove:hover {
   background: rgba(244, 67, 54, 0.3);
   transform: translateY(-2px);
 }
 
-.btn-service-add {
+.contact-page .btn-service-add {
   background: rgba(76, 175, 80, 0.2);
   color: #c8e6c9;
   border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
-.btn-service-add:hover {
+.contact-page .btn-service-add:hover {
   background: rgba(76, 175, 80, 0.3);
   transform: translateY(-2px);
 }
 
-.service-card-content {
+.contact-page .service-card-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
 }
 
-.service-info div {
+.contact-page .service-info div {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
 }
 
-.service-info i {
+.contact-page .service-info i {
   width: 20px;
   text-align: center;
   opacity: 0.8;
 }
 
-.service-price {
+.contact-page .service-price {
   color: #FFD700;
   font-weight: bold;
 }
 
 /* Selected Package Card */
-.selected-package-card {
+.contact-page .selected-package-card {
   background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 235, 59, 0.1));
   border: 2px dashed #FFC107;
   border-radius: 15px;
@@ -244,14 +245,14 @@
   animation: fadeInUp 0.5s ease-out 0.2s both;
 }
 
-.package-header {
+.contact-page .package-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.package-header h3 {
+.contact-page .package-header h3 {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -259,7 +260,7 @@
   color: #FFA000;
 }
 
-.package-price {
+.contact-page .package-price {
   background: #FFA000;
   color: white;
   padding: 8px 16px;
@@ -268,19 +269,19 @@
   font-size: 1.2em;
 }
 
-.package-features h4 {
+.contact-page .package-features h4 {
   color: #FFA000;
   margin-bottom: 12px;
   font-size: 1.1em;
 }
 
-.package-features ul {
+.contact-page .package-features ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.package-features li {
+.contact-page .package-features li {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -288,23 +289,23 @@
   color: #666;
 }
 
-.package-features i {
+.contact-page .package-features i {
   color: #4CAF50;
 }
 
 /* Contact Form Section */
-.contact-form-section {
+.contact-page .contact-form-section {
   padding: 40px 0;
 }
 
-.contact-form-wrapper {
+.contact-page .contact-form-wrapper {
   display: grid;
   grid-template-columns: 1fr 350px;
   gap: 40px;
   align-items: start;
 }
 
-.form-container {
+.contact-page .form-container {
   background: white;
   border-radius: 20px;
   padding: 40px;
@@ -312,34 +313,34 @@
   border: 1px solid #e0e0e0;
 }
 
-.christmas-form {
+.contact-page .christmas-form {
   border: 2px solid #2e7d32;
   background: linear-gradient(135deg, #ffffff, #f1f8e9);
 }
 
-.form-header {
+.contact-page .form-header {
   margin-bottom: 32px;
 }
 
-.section-title {
+.contact-page .section-title {
   font-size: 2.2rem;
   font-weight: 700;
   color: #1a237e;
   margin-bottom: 12px;
 }
 
-.christmas-form .section-title {
+.contact-page .christmas-form .section-title {
   color: #1b5e20;
 }
 
-.section-subtitle {
+.contact-page .section-subtitle {
   color: #666;
   font-size: 1.1rem;
   margin-bottom: 20px;
   line-height: 1.6;
 }
 
-.service-selection-hint {
+.contact-page .service-selection-hint {
   background: #e3f2fd;
   padding: 12px 20px;
   border-radius: 10px;
@@ -349,12 +350,12 @@
   gap: 12px;
 }
 
-.service-selection-hint i {
+.contact-page .service-selection-hint i {
   color: #2196F3;
   font-size: 1.2em;
 }
 
-.btn-service-browse {
+.contact-page .btn-service-browse {
   background: none;
   border: none;
   color: #2196F3;
@@ -365,12 +366,12 @@
   margin-left: 4px;
 }
 
-.btn-service-browse:hover {
+.contact-page .btn-service-browse:hover {
   color: #0d47a1;
 }
 
 /* Success Message */
-.success-message {
+.contact-page .success-message {
   background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
   border-radius: 15px;
   padding: 40px;
@@ -378,27 +379,27 @@
   border: 2px solid #4CAF50;
 }
 
-.success-icon {
+.contact-page .success-icon {
   font-size: 64px;
   color: #4CAF50;
   margin-bottom: 24px;
   animation: bounce 1s ease infinite;
 }
 
-.success-title {
+.contact-page .success-title {
   font-size: 1.8rem;
   color: #1b5e20;
   margin-bottom: 16px;
 }
 
-.success-text {
+.contact-page .success-text {
   color: #666;
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 24px;
 }
 
-.selected-service-summary {
+.contact-page .selected-service-summary {
   background: white;
   padding: 20px;
   border-radius: 10px;
@@ -406,7 +407,7 @@
   border-left: 4px solid #4CAF50;
 }
 
-.summary-item {
+.contact-page .summary-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -416,7 +417,7 @@
   margin-top: 8px;
 }
 
-.summary-price {
+.contact-page .summary-price {
   background: #4CAF50;
   color: white;
   padding: 4px 12px;
@@ -424,7 +425,7 @@
   font-weight: bold;
 }
 
-.backup-instructions {
+.contact-page .backup-instructions {
   background: #fff3cd;
   border: 1px solid #ffeaa7;
   border-radius: 10px;
@@ -433,14 +434,14 @@
   text-align: left;
 }
 
-.instructions-text {
+.contact-page .instructions-text {
   white-space: pre-line;
   margin-top: 12px;
   color: #666;
   line-height: 1.8;
 }
 
-.success-actions {
+.contact-page .success-actions {
   display: flex;
   gap: 16px;
   justify-content: center;
@@ -448,19 +449,19 @@
 }
 
 /* Form Styles */
-.contact-form {
+.contact-page .contact-form {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.form-section-header {
+.contact-page .form-section-header {
   padding-bottom: 12px;
   margin-bottom: 20px;
   border-bottom: 2px solid #e0e0e0;
 }
 
-.form-section-header h3 {
+.contact-page .form-section-header h3 {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -469,34 +470,36 @@
   margin: 0;
 }
 
-.form-row {
+.contact-page .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
 
-.form-group {
+.contact-page .form-group {
   margin-bottom: 16px;
 }
 
-.form-label {
+.contact-page .form-label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
   color: #333;
 }
 
-.form-label::after {
+.contact-page .form-label::after {
   content: ' *';
   color: #f44336;
   opacity: 0.7;
 }
 
-.form-label:has(+ select option[value=""])::after {
+.contact-page .form-label:has(+ select option[value=""])::after {
   content: '';
 }
 
-.form-input, .form-select, .form-textarea {
+.contact-page .form-input,
+.contact-page .form-select,
+.contact-page .form-textarea {
   width: 100%;
   padding: 14px 16px;
   border: 2px solid #e0e0e0;
@@ -506,13 +509,15 @@
   background: white;
 }
 
-.form-input:focus, .form-select:focus, .form-textarea:focus {
+.contact-page .form-input:focus,
+.contact-page .form-select:focus,
+.contact-page .form-textarea:focus {
   outline: none;
   border-color: #2196F3;
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
-.form-hint {
+.contact-page .form-hint {
   display: block;
   margin-top: 6px;
   color: #666;
@@ -520,14 +525,14 @@
 }
 
 /* Contact Method Selector */
-.contact-method-selector {
+.contact-page .contact-method-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-top: 8px;
 }
 
-.method-option {
+.contact-page .method-option {
   border: 2px solid #e0e0e0;
   border-radius: 10px;
   padding: 16px;
@@ -536,60 +541,60 @@
   position: relative;
 }
 
-.method-option input {
+.contact-page .method-option input {
   position: absolute;
   opacity: 0;
 }
 
-.method-option.selected {
+.contact-page .method-option.selected {
   border-color: #4CAF50;
   background: #e8f5e9;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
 }
 
-.option-content {
+.contact-page .option-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-.option-content i {
+.contact-page .option-content i {
   font-size: 24px;
   margin-bottom: 4px;
 }
 
-.method-option:first-child .option-content i {
+.contact-page .method-option:first-child .option-content i {
   color: #25D366;
 }
 
-.method-option:last-child .option-content i {
+.contact-page .method-option:last-child .option-content i {
   color: #EA4335;
 }
 
-.method-option span {
+.contact-page .method-option span {
   font-weight: 600;
   font-size: 1.1em;
 }
 
-.method-option small {
+.contact-page .method-option small {
   color: #666;
   font-size: 0.9em;
 }
 
 /* Textarea */
-.form-textarea {
+.contact-page .form-textarea {
   resize: vertical;
   min-height: 150px;
 }
 
 /* Checkbox */
-.form-agreement {
+.contact-page .form-agreement {
   margin: 20px 0;
 }
 
-.checkbox-label {
+.contact-page .checkbox-label {
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -598,30 +603,30 @@
   line-height: 1.5;
 }
 
-.checkbox-label input {
+.contact-page .checkbox-label input {
   margin-top: 4px;
   flex-shrink: 0;
   width: 18px;
   height: 18px;
 }
 
-.checkbox-label span {
+.contact-page .checkbox-label span {
   flex: 1;
 }
 
-.checkbox-label span::after {
+.contact-page .checkbox-label span::after {
   content: ' *';
   color: #f44336;
 }
 
 /* Form Footer */
-.form-footer {
+.contact-page .form-footer {
   margin-top: 30px;
   padding-top: 30px;
   border-top: 2px solid #e0e0e0;
 }
 
-.submit-btn {
+.contact-page .submit-btn {
   width: 100%;
   padding: 18px;
   border: none;
@@ -636,46 +641,46 @@
   gap: 12px;
 }
 
-.submit-btn:hover:not(:disabled) {
+.contact-page .submit-btn:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.submit-btn:disabled {
+.contact-page .submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
-.btn-primary {
+.contact-page .btn-primary {
   background: linear-gradient(135deg, #2196F3, #1976D2);
   color: white;
 }
 
-.btn-primary:hover {
+.contact-page .btn-primary:hover {
   background: linear-gradient(135deg, #1976D2, #0d47a1);
 }
 
-.btn-christmas {
+.contact-page .btn-christmas {
   background: linear-gradient(135deg, #d32f2f, #b71c1c);
   color: white;
 }
 
-.btn-christmas:hover {
+.contact-page .btn-christmas:hover {
   background: linear-gradient(135deg, #b71c1c, #8b0000);
 }
 
-.btn-secondary {
+.contact-page .btn-secondary {
   background: #f5f5f5;
   color: #333;
   border: 2px solid #e0e0e0;
 }
 
-.btn-secondary:hover {
+.contact-page .btn-secondary:hover {
   background: #e0e0e0;
   border-color: #bdbdbd;
 }
 
-.form-instructions {
+.contact-page .form-instructions {
   margin-top: 24px;
   padding: 20px;
   background: #f5f5f5;
@@ -683,30 +688,31 @@
   border-left: 4px solid #2196F3;
 }
 
-.instructions-title {
+.contact-page .instructions-title {
   margin-bottom: 12px;
   color: #1a237e;
 }
 
-.instructions-list {
+.contact-page .instructions-list {
   margin: 0;
   padding-left: 20px;
   color: #666;
 }
 
-.instructions-list li {
+.contact-page .instructions-list li {
   margin-bottom: 8px;
   line-height: 1.5;
 }
 
 /* Quick Contact Sidebar */
-.quick-contact-sidebar {
+.contact-page .quick-contact-sidebar {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.contact-card, .browse-services-card {
+.contact-page .contact-card,
+.contact-page .browse-services-card {
   background: white;
   border-radius: 15px;
   padding: 24px;
@@ -714,7 +720,8 @@
   border: 1px solid #e0e0e0;
 }
 
-.contact-card h3, .browse-services-card h3 {
+.contact-page .contact-card h3,
+.contact-page .browse-services-card h3 {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -723,20 +730,21 @@
   font-size: 1.3rem;
 }
 
-.contact-card p, .browse-services-card p {
+.contact-page .contact-card p,
+.contact-page .browse-services-card p {
   color: #666;
   margin-bottom: 20px;
   line-height: 1.6;
 }
 
-.quick-actions {
+.contact-page .quick-actions {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 24px;
 }
 
-.btn {
+.contact-page .btn {
   padding: 14px;
   border-radius: 10px;
   font-weight: 600;
@@ -751,30 +759,30 @@
   gap: 10px;
 }
 
-.btn:hover {
+.contact-page .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.btn-whatsapp {
+.contact-page .btn-whatsapp {
   background: linear-gradient(135deg, #25D366, #128C7E);
   color: white;
 }
 
-.btn-whatsapp:hover {
+.contact-page .btn-whatsapp:hover {
   background: linear-gradient(135deg, #128C7E, #075E54);
 }
 
-.btn-email {
+.contact-page .btn-email {
   background: linear-gradient(135deg, #EA4335, #D14836);
   color: white;
 }
 
-.btn-email:hover {
+.contact-page .btn-email:hover {
   background: linear-gradient(135deg, #D14836, #A63626);
 }
 
-.contact-info {
+.contact-page .contact-info {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -782,42 +790,46 @@
   border-top: 1px solid #e0e0e0;
 }
 
-.info-item {
+.contact-page .info-item {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.info-item i {
+.contact-page .info-item i {
   color: #2196F3;
   font-size: 1.2em;
   width: 24px;
 }
 
-.info-item div {
+.contact-page .info-item div {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.info-item strong {
+.contact-page .info-item strong {
   font-size: 0.9em;
   color: #333;
 }
 
-.info-item span {
+.contact-page .info-item span {
   color: #666;
   font-size: 0.95em;
 }
 
 /* Browse Services Card */
-.service-categories {
+.contact-page .browse-services-card {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.contact-page .service-categories {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
 }
 
-.service-category-btn {
+.contact-page .service-category-btn {
   padding: 14px;
   background: #f5f5f5;
   border: 2px solid #e0e0e0;
@@ -830,35 +842,35 @@
   text-align: left;
 }
 
-.service-category-btn:hover {
+.contact-page .service-category-btn:hover {
   background: #e3f2fd;
   border-color: #2196F3;
   transform: translateX(5px);
 }
 
-.service-category-btn i {
+.contact-page .service-category-btn i {
   color: #2196F3;
   font-size: 1.2em;
 }
 
-.service-category-btn span {
+.contact-page .service-category-btn span {
   font-weight: 600;
   color: #333;
 }
 
 /* FAQ Section */
-.faq-section {
+.contact-page .faq-section {
   background: #f8f9fa;
 }
 
-.faq-grid {
+.contact-page .faq-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-top: 40px;
 }
 
-.faq-item {
+.contact-page .faq-item {
   background: white;
   border-radius: 15px;
   padding: 24px;
@@ -868,20 +880,20 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.faq-item:hover {
+.contact-page .faq-item:hover {
   border-color: #2196F3;
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
 }
 
-.faq-question {
+.contact-page .faq-question {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
 }
 
-.question-title {
+.contact-page .question-title {
   font-size: 1.1rem;
   font-weight: 600;
   color: #1a237e;
@@ -889,24 +901,24 @@
   flex: 1;
 }
 
-.faq-question i {
+.contact-page .faq-question i {
   color: #2196F3;
   transition: transform 0.3s;
 }
 
-.faq-answer {
+.contact-page .faq-answer {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
   margin-top: 0;
 }
 
-.faq-answer.show {
+.contact-page .faq-answer.show {
   max-height: 200px;
   margin-top: 16px;
 }
 
-.faq-answer p {
+.contact-page .faq-answer p {
   color: #666;
   line-height: 1.6;
   margin: 0;
@@ -915,17 +927,17 @@
 }
 
 /* Christmas Mode */
-.christmas-mode .section-title {
+.contact-page .christmas-mode .section-title {
   color: #1b5e20;
 }
 
-.christmas-mode .faq-item:hover {
+.contact-page .christmas-mode .faq-item:hover {
   border-color: #d32f2f;
   box-shadow: 0 8px 25px rgba(211, 47, 47, 0.15);
 }
 
 /* Snowfall Animation */
-.snowfall {
+.contact-page .snowfall {
   position: fixed;
   top: 0;
   left: 0;
@@ -935,13 +947,14 @@
   z-index: 9999;
 }
 
-.snowflake {
+.contact-page .snowflake {
   position: absolute;
   background: white;
   border-radius: 50%;
   animation: snowfall linear infinite;
 }
 
+/* Animations */
 @keyframes snowfall {
   0% {
     transform: translateY(-100px) rotate(0deg);
@@ -951,7 +964,6 @@
   }
 }
 
-/* Animations */
 @keyframes slideInRight {
   from {
     transform: translateX(100%);
@@ -992,83 +1004,84 @@
   }
 }
 
-.animate-on-scroll {
+.contact-page .animate-on-scroll {
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.animate-on-scroll.animated {
+.contact-page .animate-on-scroll.animated {
   opacity: 1;
   transform: translateY(0);
 }
 
 /* Responsive Design */
 @media (max-width: 992px) {
-  .contact-form-wrapper {
+  .contact-page .contact-form-wrapper {
     grid-template-columns: 1fr;
   }
   
-  .contact-hero {
+  .contact-page .contact-hero {
     padding: 60px 0 40px;
   }
   
-  .contact-title {
+  .contact-page .contact-title {
     font-size: 2.8rem;
   }
 }
 
 @media (max-width: 768px) {
-  .form-row {
+  .contact-page .form-row {
     grid-template-columns: 1fr;
   }
   
-  .contact-method-selector {
+  .contact-page .contact-method-selector {
     grid-template-columns: 1fr;
   }
   
-  .contact-title {
+  .contact-page .contact-title {
     font-size: 2.2rem;
   }
   
-  .section {
+  .contact-page .section {
     padding: 40px 0;
   }
   
-  .form-container {
+  .contact-page .form-container {
     padding: 24px;
   }
   
-  .success-actions {
+  .contact-page .success-actions {
     flex-direction: column;
   }
   
-  .service-card-actions {
+  .contact-page .service-card-actions {
     flex-direction: column;
     width: 100%;
   }
   
-  .btn-service-remove, .btn-service-add {
+  .contact-page .btn-service-remove,
+  .contact-page .btn-service-add {
     width: 100%;
     justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
-  .contact-title {
+  .contact-page .contact-title {
     font-size: 1.8rem;
   }
   
-  .contact-hero {
+  .contact-page .contact-hero {
     padding: 40px 0 30px;
   }
   
-  .selected-service-card,
-  .selected-package-card {
+  .contact-page .selected-service-card,
+  .contact-page .selected-package-card {
     padding: 16px;
   }
   
-  .service-added-notification {
+  .contact-page .service-added-notification {
     left: 20px;
     right: 20px;
     max-width: none;

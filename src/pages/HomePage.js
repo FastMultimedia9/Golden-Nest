@@ -7,23 +7,24 @@ const HomePage = () => {
   const [showQuickView, setShowQuickView] = useState(false);
   const [quickViewProject, setQuickViewProject] = useState(null);
   const [showPackageModal, setShowPackageModal] = useState(false);
-  const [activeServiceCategory, setActiveServiceCategory] = useState('design'); // 'design' or 'tech'
+  const [activeServiceCategory, setActiveServiceCategory] = useState('design');
+  const [selectedPackage, setSelectedPackage] = useState('basic');
   const navigate = useNavigate();
   
   // Professional hero images for Graphic Design
   const heroImages = [
-    "https://www.freepik.com/free-photo/black-videographer-smiling-camera-editing-video-project-post-production-software-working-creative-studio-office_16099354.htm#fromView=search&page=5&position=48&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+",
-    "https://www.freepik.com/free-photo/close-up-retouching-app-computer-empty-studio-nobody-photography-office-with-professional-editing-equipment-technology-pictures-photograph-retouch-work_22613678.htm#fromView=search&page=4&position=5&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+",
-    "https://www.freepik.com/free-photo/edit-software-templates-design-graphics-concept_17105433.htm#fromView=search&page=5&position=25&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+",
-    "https://www.freepik.com/free-photo/black-videographer-smiling-camera-editing-video-project-post-production-software-working-creative-studio-office_16099354.htm#fromView=search&page=5&position=48&uuid=1d3915fe-8daf-4982-92ec-0cecca8640ea&query=graphic+design+"
+    "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1558655146-364adaf1fcc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1542744094-3a31f272c490?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
   ];
 
   // Tech Support hero images
   const techHeroImages = [
-    "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+    "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
+    "https://images.unsplash.com/photo-1545235617-9465d2a55698?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80"
   ];
 
   // Get active hero images based on category
@@ -89,13 +90,65 @@ const HomePage = () => {
     document.body.style.overflow = 'auto';
   };
 
+  // Function to handle service selection
+  const handleServiceSelection = (serviceName, category, price) => {
+    const serviceData = {
+      name: serviceName,
+      category: category,
+      price: price,
+      timestamp: Date.now()
+    };
+    
+    // Store in localStorage
+    localStorage.setItem('selectedService', JSON.stringify(serviceData));
+    
+    // Navigate to contact page
+    navigate('/contact');
+    
+    // Show notification
+    showServiceNotification(serviceName);
+  };
+
+  // Show service notification
+  const showServiceNotification = (serviceName) => {
+    const notification = document.createElement('div');
+    notification.className = 'service-notification';
+    notification.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      <span>${serviceName} added to request form!</span>
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  };
+
   const handlePackageSelect = (packageType) => {
     setSelectedPackage(packageType);
   };
 
   const handlePackageOrder = () => {
     const selectedPackageDetails = designPackages.find(pkg => pkg.id === selectedPackage);
-    navigate(`/contact?package=${selectedPackage}&project=Design%20Package&type=${encodeURIComponent(selectedPackageDetails.name)}`);
+    
+    const packageData = {
+      name: selectedPackageDetails.name,
+      category: 'Design Package',
+      price: selectedPackageDetails.price,
+      timestamp: Date.now()
+    };
+    
+    localStorage.setItem('selectedService', JSON.stringify(packageData));
+    navigate('/contact');
     closePackageModal();
   };
 
@@ -304,8 +357,6 @@ const HomePage = () => {
     }
   ];
 
-  const [selectedPackage, setSelectedPackage] = useState('basic');
-
   return (
     <div className="homepage">
       {/* Service Category Selector */}
@@ -423,6 +474,9 @@ const HomePage = () => {
                       ? `Professional Design ${index + 1}`
                       : `Tech Support ${index + 1}`
                     }
+                    onError={(e) => {
+                      e.target.src = `https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80&text=Design+${index+1}`;
+                    }}
                   />
                 </div>
               ))}
@@ -468,7 +522,7 @@ const HomePage = () => {
                 <div 
                   key={service.id} 
                   className="service-card animate-on-scroll"
-                  onClick={() => navigate(`/contact?service=${service.id}&type=${encodeURIComponent(service.name)}`)}
+                  onClick={() => handleServiceSelection(service.name, 'Graphic Design', service.price)}
                 >
                   <div className="service-header">
                     <div className="service-icon">
@@ -501,7 +555,7 @@ const HomePage = () => {
                 <div 
                   key={service.id} 
                   className="service-card animate-on-scroll"
-                  onClick={() => navigate(`/contact?service=${service.id}&type=${encodeURIComponent(service.name)}`)}
+                  onClick={() => handleServiceSelection(service.name, 'Graphic Design', service.price)}
                 >
                   <div className="service-header">
                     <div className="service-icon">
@@ -531,7 +585,7 @@ const HomePage = () => {
                 <div 
                   key={service.id} 
                   className="service-card animate-on-scroll"
-                  onClick={() => navigate(`/contact?service=${service.id}&type=${encodeURIComponent(service.name)}`)}
+                  onClick={() => handleServiceSelection(service.name, 'Tech Support', service.price)}
                 >
                   <div className="service-header">
                     <div className="service-icon">
@@ -579,7 +633,7 @@ const HomePage = () => {
                 </ul>
                 <button 
                   className="btn btn-outline"
-                  onClick={() => navigate('/contact?service=networking&type=Networking%20Solutions')}
+                  onClick={() => handleServiceSelection('Networking Solutions', 'Tech Support', '₵250')}
                 >
                   <i className="fas fa-wifi"></i> Request Service
                 </button>
@@ -604,7 +658,7 @@ const HomePage = () => {
                 </ul>
                 <button 
                   className="btn btn-outline"
-                  onClick={() => navigate('/contact?service=system-management&type=Computer%20System%20Management')}
+                  onClick={() => handleServiceSelection('Computer System Management', 'Tech Support', '₵300/month')}
                 >
                   <i className="fas fa-server"></i> Subscribe Now
                 </button>
@@ -629,7 +683,7 @@ const HomePage = () => {
                 </ul>
                 <button 
                   className="btn btn-outline"
-                  onClick={() => navigate('/contact?service=virus-removal&type=Virus%20%26%20Malware%20Removal')}
+                  onClick={() => handleServiceSelection('Virus & Malware Removal', 'Tech Support', '₵180')}
                 >
                   <i className="fas fa-shield-alt"></i> Get Protected
                 </button>
@@ -654,7 +708,7 @@ const HomePage = () => {
                 </ul>
                 <button 
                   className="btn btn-outline"
-                  onClick={() => navigate('/contact?service=data-recovery&type=Data%20Recovery')}
+                  onClick={() => handleServiceSelection('Data Recovery', 'Tech Support', '₵220')}
                 >
                   <i className="fas fa-database"></i> Recover Data
                 </button>
