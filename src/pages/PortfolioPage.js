@@ -145,7 +145,7 @@ const PortfolioPage = () => {
     title: 'Ani\'s Serabs - Print Design',
     category: 'branding',
     description: 'Clean, modern business flyer design for Ani\'s Serabs, featuring balanced typography and essential contact details for a professional first impression.',
-    detailedDescription: 'Designed today, this business flyer establishes a clear and professional identity for Ani\'s Serabs. The layout prioritizes clarity with a clean, two-line business name ("Ani\'s Serabs") set in a modern, approachable typeface. All essential contact information—including phone number (0249737261) and location (Agomanya Roman Junction)—is presented with clear hierarchy for immediate readability.\n\nThe card efficiently incorporates branding details with a discreet "Design By Fast Multimedia" credit and website, maintaining focus on the client\'s information. The overall design achieves a balance between professionalism and accessibility, ensuring the card is both memorable and functional for networking and customer connections.',
+    detailedDescription: 'Designed today, this business flyer establishes a clear and professional identity for Ani\'s Serabs. The layout prioritizes clarity with a clean, two-line business name ("Ani\'s Serabs") set in a modern, approachable typeface. All essential contact information—including phone number (0249737261) and location (Agomanya Roman Junction)—is presented with clear hierarchy for immediate readability.\n\nThe flyer efficiently incorporates branding details with a discreet "Design By Fast Multimedia" credit and website, maintaining focus on the client\'s information. The overall design achieves a balance between professionalism and accessibility, ensuring the flyer is both memorable and functional for networking and customer connections.',
     tags: ['Business Card', 'Print Design', 'Brand Identity', 'Typography', 'Stationery'],
     image: 'anis-serabs.jpg', // Assuming image is in public folder
     client: 'Ani\'s Serabs',
@@ -158,22 +158,22 @@ const PortfolioPage = () => {
     mockups: []
 },
       {
-        id: 8,
-        title: 'Corporate Rebranding',
-        category: 'branding',
-        description: 'Complete rebranding for established corporation entering new markets',
-        detailedDescription: 'Led a comprehensive rebranding initiative for GlobalCorp to modernize their identity and appeal to younger demographics while maintaining corporate credibility.',
-        tags: ['Rebranding', 'Corporate Identity', 'Brand Strategy', 'Market Research'],
-        image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        client: 'GlobalCorp International',
-        year: '2023',
-        duration: '16 weeks',
-        role: 'Lead Brand Strategist',
-        deliverables: ['Brand Strategy', 'Identity System', 'Guidelines', 'Implementation Plan'],
-        results: ['Brand perception improved by 40%', 'Stock price increased 15%', 'Industry award winner'],
-        color: '#607D8B',
-        mockups: []
-      }
+    id: 8,
+    title: 'Julie\'s Birthday Celebration Design',
+    category: 'event',
+    description: 'Personalized birthday graphic designed for a special celebration, creating a festive and memorable visual keepsake.',
+    detailedDescription: 'Created a custom birthday design for Julie\'s celebration, blending celebratory elements with personalized flair. The design features a joyful, festive aesthetic that captures the spirit of the occasion while incorporating the client\'s specific preferences.\n\nThe layout balances decorative elements with clear, welcoming text, ensuring the focus remains on celebration and personal connection. Designed to be versatile, it can be used for digital invitations, social media posts, or printed memorabilia, making it a central visual piece for the birthday festivities.',
+    tags: ['Personal Design', 'Event Graphics', 'Birthday', 'Celebration', 'Digital Art'],
+    image: 'julie-birthday.jpg',
+    client: 'Personal Client',
+    year: '2025',
+    duration: '1 day',
+    role: 'Graphic Designer',
+    deliverables: ['Custom Birthday Graphic', 'Digital Files', 'Social Media Version'],
+    results: ['Delivered on time for the celebration', 'Client delighted with personalized touch', 'Graphic used across multiple platforms'],
+    color: '#FF4081', // A festive pink/celebratory color
+    mockups: []
+}
     ];
 
     if (filter === 'all') {
