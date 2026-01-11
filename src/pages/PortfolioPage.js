@@ -10,8 +10,9 @@ const PortfolioPage = () => {
   const [activeView, setActiveView] = useState('grid');
   const navigate = useNavigate();
 
-  // Enhanced projects data with all your case studies
+  // Enhanced projects data with all your case studies INCLUDING NEW IMAGES
   const allProjects = [
+    // ... (Previous projects 1-14 remain the same) ...
     {
       id: 1,
       title: 'Golden Nest Hotel Website',
@@ -51,6 +52,7 @@ const PortfolioPage = () => {
       color: '#2E5A9C',
       mockups: []
     },
+    // ... (Projects 3-14 remain the same) ...
     {
       id: 3,
       title: 'FinTech Mobile Banking App',
@@ -255,9 +257,77 @@ const PortfolioPage = () => {
       color: '#5D4037',
       mockups: []
     },
-    // NEW PROJECTS FROM PROVIDED IMAGES
+    // NEW PROJECTS FROM PROVIDED IMAGES (Updated with correct images)
     {
       id: 15,
+      title: 'Fast Multimedia Promotion Flyer',
+      category: 'print',
+      description: 'Promotional flyer for Fast Multimedia services with contact information',
+      detailedDescription: 'Created a professional promotional flyer for Fast Multimedia to showcase their services and encourage potential clients to contact them. The design features a clean layout with clear call-to-action and contact details.',
+      tags: ['Promotional Flyer', 'Marketing Material', 'Service Advertisement', 'Contact Design', 'Typography'],
+      image: 'Contact Fast Multimedia for yours now.jpg', // Updated image reference
+      client: 'Fast Multimedia',
+      year: '2025',
+      duration: '2 days',
+      role: 'Graphic Designer',
+      deliverables: ['Promotional Flyer', 'Print-Ready Files', 'Digital Version'],
+      results: ['Clear service presentation', 'Effective contact information display', 'Professional marketing material'],
+      color: '#0047AB',
+      mockups: []
+    },
+    {
+      id: 16,
+      title: 'St. Martin Hospital Farmers Day Celebration',
+      category: 'event',
+      description: 'Farmers Day celebration design for St. Martin De Porres Catholic Hospital',
+      detailedDescription: 'Created a celebratory Farmers Day design for St. Martin De Porres Catholic Hospital to honor and appreciate farmers in the community. The design features agricultural elements and a heartfelt message.',
+      tags: ['Event Design', 'Celebration', 'Hospital Event', 'Community Engagement', 'Agricultural'],
+      image: 'get.jpg', // Updated image reference
+      client: 'St. Martin De Porres Catholic Hospital',
+      year: '2025',
+      duration: '3 days',
+      role: 'Event & Healthcare Designer',
+      deliverables: ['Event Graphic', 'Social Media Assets', 'Digital Banner'],
+      results: ['Community engagement', 'Farmers appreciation', 'Hospital community relations'],
+      color: '#228B22',
+      mockups: []
+    },
+    {
+      id: 17,
+      title: 'Fast Multimedia Birthday Greeting Design',
+      category: 'event',
+      description: 'Elegant birthday greeting design with typographic focus',
+      detailedDescription: 'Created a sophisticated birthday greeting design featuring elegant typography and celebratory elements. The design focuses on conveying heartfelt birthday wishes with a modern, clean aesthetic.',
+      tags: ['Birthday Design', 'Greeting Card', 'Typography', 'Celebration', 'Digital Art'],
+      image: 'Happy BirthdayOn your special day, I wish you a year filled with joy, laughter, and unforgettab (1).jpg', // Updated image reference
+      client: 'Fast Multimedia',
+      year: '2025',
+      duration: '1 day',
+      role: 'Digital Designer',
+      deliverables: ['Birthday Greeting', 'Digital Card', 'Social Media Version'],
+      results: ['Elegant birthday presentation', 'Modern design aesthetic', 'Versatile usage'],
+      color: '#FF6B6B',
+      mockups: []
+    },
+    {
+      id: 18,
+      title: 'Fast Multimedia Birthday Celebration',
+      category: 'event',
+      description: 'Celebratory birthday design with grace, favour, and money theme',
+      detailedDescription: 'Designed a birthday celebration graphic with thematic elements of grace, favour, and money. The design creates a joyful and prosperous birthday atmosphere with carefully chosen visual elements.',
+      tags: ['Birthday Celebration', 'Event Design', 'Thematic Design', 'Digital Art', 'Celebration'],
+      image: 'Happy BirthdayOn your special day, I wish you a year filled with joy, laughter, and unforgettab.jpg', // Updated image reference
+      client: 'Fast Multimedia',
+      year: '2025',
+      duration: '2 days',
+      role: 'Digital Designer',
+      deliverables: ['Celebration Graphic', 'Thematic Design', 'Social Media Assets'],
+      results: ['Thematic birthday design', 'Positive birthday message', 'Professional celebration graphic'],
+      color: '#FF9800',
+      mockups: []
+    },
+    {
+      id: 19,
       title: 'Fast Multimedia Corporate Identity',
       category: 'branding',
       description: 'Corporate branding and visual identity system for Fast Multimedia agency',
@@ -273,8 +343,9 @@ const PortfolioPage = () => {
       color: '#0047AB',
       mockups: []
     },
+    // ... (Rest of your projects 20-33 remain the same) ...
     {
-      id: 16,
+      id: 20,
       title: 'Fast Multimedia Birthday Greeting',
       category: 'event',
       description: 'Festive birthday celebration graphic with interactive elements',
@@ -291,7 +362,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 17,
+      id: 21,
       title: 'Soco Wale Restaurant Menu',
       category: 'print',
       description: 'Modern restaurant menu design for Soco Wale food service',
@@ -308,7 +379,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 18,
+      id: 22,
       title: 'Fast Multimedia Event Poster',
       category: 'print',
       description: 'Dynamic event poster for Fast Multimedia promotional activities',
@@ -325,7 +396,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 19,
+      id: 23,
       title: 'HONE7PIT Events Flyer',
       category: 'event',
       description: 'Vibrant event flyer design for HONE7PIT entertainment company',
@@ -342,7 +413,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 20,
+      id: 24,
       title: 'Fun Trip After Work Experience',
       category: 'event',
       description: 'Travel package promotional design for post-work experience trip',
@@ -359,7 +430,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 21,
+      id: 25,
       title: 'VISG PUB New Year\'s Party',
       category: 'event',
       description: 'New Year\'s Eve party promotion design for VISG PUB',
@@ -376,7 +447,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 22,
+      id: 26,
       title: 'Nancy J Closet Business Card',
       category: 'branding',
       description: 'Modern business card design for Nancy J Closet fashion brand',
@@ -393,7 +464,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 23,
+      id: 27,
       title: 'RhaySam\'s IT Solutions Flyer',
       category: 'print',
       description: 'Comprehensive IT services promotional flyer design',
@@ -410,7 +481,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 24,
+      id: 28,
       title: 'KTU Hall Week Launch',
       category: 'event',
       description: 'University hall week launch event design for KTU',
@@ -427,7 +498,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 25,
+      id: 29,
       title: 'Kumvana Hall Week Program',
       category: 'event',
       description: 'Comprehensive hall week program design and schedule',
@@ -444,7 +515,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 26,
+      id: 30,
       title: 'Birthday Celebration Greeting',
       category: 'event',
       description: 'Personalized birthday greeting card design with joyful elements',
@@ -461,7 +532,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 27,
+      id: 31,
       title: 'St. Martin Goes Traditional Event',
       category: 'event',
       description: 'Traditional event promotion design for St. Martin Hospital',
@@ -478,7 +549,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 28,
+      id: 32,
       title: 'Minimalist Birthday Greeting',
       category: 'event',
       description: 'Clean, minimalist birthday greeting design with essential elements',
@@ -495,7 +566,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 29,
+      id: 33,
       title: 'Inspirational Birthday Greeting',
       category: 'event',
       description: 'Motivational birthday greeting with inspirational message',
@@ -512,7 +583,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 30,
+      id: 34,
       title: 'Sewahu Naming Ceremony Invitation',
       category: 'event',
       description: 'Traditional naming ceremony invitation design',
@@ -529,7 +600,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 31,
+      id: 35,
       title: 'St. Martin Hospital Monthly Outline',
       category: 'print',
       description: 'Monthly activity outline design for hospital events and campaigns',
@@ -546,7 +617,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 32,
+      id: 36,
       title: 'Funeral Appreciation Card',
       category: 'print',
       description: 'Appreciation card design for funeral service with spiritual message',
@@ -563,7 +634,7 @@ const PortfolioPage = () => {
       mockups: []
     },
     {
-      id: 33,
+      id: 37,
       title: 'Visual Tribute Memorial Design',
       category: 'print',
       description: 'Visual tribute design celebrating a life well-lived',
@@ -581,7 +652,7 @@ const PortfolioPage = () => {
     }
   ];
 
-  // Categories with updated counts
+  // Categories with updated counts (now 37 projects total)
   const categories = [
     { id: 'all', name: 'All Projects', icon: 'fas fa-th', count: allProjects.length },
     { id: 'web', name: 'Web Design', icon: 'fas fa-desktop', count: allProjects.filter(p => p.category === 'web').length },
