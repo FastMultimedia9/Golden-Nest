@@ -82,7 +82,7 @@ const HomePage = () => {
     {
       id: 'valentine-express',
       name: 'Valentine Express',
-      price: '₵299',
+      price: '₵199',
       description: 'Quick social media graphics for last-minute romance',
       icon: '💝',
       features: ['Instagram Story Set (5 designs)', 'Heart-themed Templates', 'Custom Text', '24-hr Delivery'],
@@ -92,7 +92,7 @@ const HomePage = () => {
     {
       id: 'valentine-premium',
       name: 'Valentine Premium',
-      price: '₵599',
+      price: '₵299',
       description: 'Complete love-themed branding package',
       icon: '❤️',
       features: ['Custom Logo with Heart Motif', 'Matching Social Media Kit', 'Digital Invitation Design', 'Color Palette'],
@@ -103,7 +103,7 @@ const HomePage = () => {
     {
       id: 'valentine-luxe',
       name: 'Valentine Luxe',
-      price: '₵999',
+      price: '₵599',
       description: 'Ultimate romantic experience design',
       icon: '💖',
       features: ['Animated Greeting Card', 'Website Banner Set', 'Print-ready Materials', '3D Heart Illustrations'],
@@ -233,12 +233,43 @@ const HomePage = () => {
   ];
 
   const handleServiceClick = (service) => {
-    localStorage.setItem('selectedService', JSON.stringify(service));
+    const serviceData = {
+      name: service.name,
+      category: service.id === 'branding' ? 'Brand Identity Design' : 
+                service.id === 'uiux' ? 'UI/UX Design' :
+                service.id === 'print' ? 'Print Design' :
+                service.id === 'web' ? 'Web Design' :
+                service.id === 'repair' ? 'Computer Repair & Maintenance' :
+                service.id === 'setup' ? 'Windows Installation & Setup' :
+                service.id === 'software' ? 'Software Installation & Support' :
+                service.id === 'network' ? 'Networking Solutions' : 'General Service',
+      price: service.price,
+      timestamp: Date.now(),
+      type: 'regular'
+    };
+    
+    localStorage.removeItem('selectedService');
+    localStorage.removeItem('selectedValentinePackage');
+    localStorage.setItem('selectedService', JSON.stringify(serviceData));
     navigate('/contact');
   };
 
+  // Add missing handleValentinePackageClick function
   const handleValentinePackageClick = (pkg) => {
-    localStorage.setItem('selectedValentinePackage', JSON.stringify(pkg));
+    const serviceData = {
+      name: pkg.name,
+      category: 'Valentine\'s Day Design',
+      price: pkg.price,
+      features: pkg.features,
+      icon: pkg.icon,
+      color: pkg.color,
+      timestamp: Date.now(),
+      type: 'valentine'
+    };
+    
+    localStorage.removeItem('selectedService');
+    localStorage.removeItem('selectedValentinePackage');
+    localStorage.setItem('selectedValentinePackage', JSON.stringify(serviceData));
     navigate('/contact');
   };
 

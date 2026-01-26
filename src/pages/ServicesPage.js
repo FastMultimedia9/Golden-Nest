@@ -25,27 +25,29 @@ const ServicesPage = () => {
     return () => window.removeEventListener('scroll', animateOnScroll);
   }, []);
 
-  const handleServiceClick = (serviceName, category, price = null) => {
-    // Store service data in localStorage (more reliable than URL params)
-    const serviceData = {
-      name: serviceName,
-      category: category,
-      price: price,
-      timestamp: Date.now()
-    };
-    
-    // Clear any previous data first
-    localStorage.removeItem('selectedService');
-    
-    // Set new service data with fresh timestamp
-    localStorage.setItem('selectedService', JSON.stringify(serviceData));
-    
-    // Navigate to contact page
-    navigate('/contact');
-    
-    // Show notification
-    showServiceNotification(serviceName);
+ const handleServiceClick = (serviceName, category, price = null) => {
+  // Create comprehensive service data
+  const serviceData = {
+    name: serviceName,
+    category: category,
+    price: price,
+    timestamp: Date.now(),
+    type: 'regular'
   };
+  
+  // Clear any previous data first
+  localStorage.removeItem('selectedService');
+  localStorage.removeItem('selectedValentinePackage');
+  
+  // Set new service data
+  localStorage.setItem('selectedService', JSON.stringify(serviceData));
+  
+  // Navigate to contact page
+  navigate('/contact');
+  
+  // Show notification
+  showServiceNotification(serviceName);
+};
 
   // Helper function for notifications
   const showServiceNotification = (serviceName) => {

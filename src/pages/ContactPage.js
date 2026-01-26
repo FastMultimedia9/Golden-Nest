@@ -51,68 +51,123 @@ const ContactPage = () => {
     }
   };
 
+  // Helper function to append service to message
+  const appendServiceToMessage = (serviceData) => {
+    let serviceMessage = `I'm interested in: ${serviceData.name}\n\n`;
+    
+    if (serviceData.type === 'valentine') {
+      serviceMessage += `🎯 Valentine's Day Package Request\n`;
+    } else {
+      serviceMessage += `Service Details:\n`;
+    }
+    
+    if (serviceData.category && serviceData.category !== 'Not specified') {
+      serviceMessage += `• Category: ${serviceData.category}\n`;
+    }
+    
+    if (serviceData.price && serviceData.price !== '') {
+      serviceMessage += `• Price: ${serviceData.price}\n`;
+    }
+    
+    serviceMessage += `\n`;
+    
+    return serviceMessage;
+  };
+
   // Check for service selection from URL or localStorage
   useEffect(() => {
+    console.log('ContactPage: Checking for service data...');
+    console.log('LocalStorage contents:', {
+      selectedService: localStorage.getItem('selectedService'),
+      selectedValentinePackage: localStorage.getItem('selectedValentinePackage')
+    });
+
     const queryParams = new URLSearchParams(location.search);
     const serviceName = queryParams.get('service');
     const category = queryParams.get('category');
     const price = queryParams.get('price');
     const packageType = queryParams.get('package');
     
-    // Check localStorage for service data (sent from Homepage or Services page)
-    const storedService = localStorage.getItem('selectedService');
+    let serviceData = null;
     
-    // Process service selection
-    if (serviceName || storedService) {
-      let serviceData;
-      
-      if (serviceName) {
-        // From URL parameters
-        serviceData = {
-          name: decodeURIComponent(serviceName),
-          category: category || 'General Service',
-          price: price || '',
-          timestamp: Date.now()
-        };
-      } else if (storedService) {
-        // From localStorage
+    // First, check for Valentine's package
+    const storedValentinePackage = localStorage.getItem('selectedValentinePackage');
+    if (storedValentinePackage) {
+      try {
+        serviceData = JSON.parse(storedValentinePackage);
+        serviceData.type = 'valentine';
+        console.log('Found Valentine package:', serviceData);
+        localStorage.removeItem('selectedValentinePackage');
+      } catch (error) {
+        console.error('Error parsing Valentine package:', error);
+        localStorage.removeItem('selectedValentinePackage');
+      }
+    }
+    
+    // Then check for regular service
+    if (!serviceData) {
+      const storedService = localStorage.getItem('selectedService');
+      if (storedService) {
         try {
           serviceData = JSON.parse(storedService);
-          
-          // Validate service data structure
-          if (!serviceData.name) {
-            console.error('Invalid service data structure');
-            localStorage.removeItem('selectedService');
-            return;
-          }
-          
-          // Clear localStorage after use
+          serviceData.type = serviceData.type || 'regular';
+          console.log('Found regular service:', serviceData);
           localStorage.removeItem('selectedService');
         } catch (error) {
           console.error('Error parsing stored service:', error);
           localStorage.removeItem('selectedService');
-          return;
         }
       }
+    }
+    
+    // Process URL parameters as fallback
+    if (!serviceData && serviceName) {
+      serviceData = {
+        name: decodeURIComponent(serviceName),
+        category: category || 'General Service',
+        price: price || '',
+        type: 'url',
+        timestamp: Date.now()
+      };
+      console.log('Found URL service:', serviceData);
+    }
+    
+    // Process the service data
+    if (serviceData && serviceData.name) {
+      setSelectedService(serviceData);
+      setServiceAdded(true);
       
-      if (serviceData && serviceData.name) {
-        setSelectedService(serviceData);
-        setServiceAdded(true);
+      const serviceMessage = appendServiceToMessage(serviceData);
+      
+      // Update form data
+      setFormData(prev => {
+        const currentMessage = prev.message || '';
+        const hasExistingMessage = currentMessage.trim().length > 0;
         
-        // Auto-fill form with service information
-        const serviceMessage = `I'm interested in: ${serviceData.name}\n\nService Details:\n• Category: ${serviceData.category || 'Not specified'}\n• Price: ${serviceData.price ? serviceData.price : 'To be quoted'}\n\n`;
+        // Check if this service is already in the message
+        const serviceAlreadyAdded = currentMessage.includes(serviceData.name);
         
-        setFormData(prev => ({
-          ...prev,
-          projectType: serviceData.category || serviceData.name,
-          message: serviceMessage + (prev.message || 'Please provide more details about my project requirements...')
-        }));
+        if (!serviceAlreadyAdded) {
+          const newMessage = serviceMessage + 
+            (hasExistingMessage ? currentMessage : 'Please provide more details about my project requirements...');
+          
+          console.log('Setting new message with service:', serviceData.name);
+          
+          return {
+            ...prev,
+            projectType: serviceData.category || serviceData.name,
+            message: newMessage
+          };
+        }
         
-        // Show service added notification
-        setTimeout(() => {
-          setServiceAdded(false);
-        }, 3000);
-      }
+        console.log('Service already added to message:', serviceData.name);
+        return prev;
+      });
+      
+      // Show service added notification
+      setTimeout(() => {
+        setServiceAdded(false);
+      }, 3000);
     }
     
     // Check for Christmas mode
@@ -185,12 +240,26 @@ const ContactPage = () => {
   };
 
   const clearSelectedService = () => {
+    if (selectedService) {
+      setFormData(prev => {
+        const messageLines = prev.message.split('\n');
+        // Find and remove lines containing the service name
+        const filteredLines = messageLines.filter(line => 
+          !line.includes(selectedService.name) && 
+          !line.includes('Service Details:') &&
+          !line.includes('Category:') &&
+          !line.includes('Price:') &&
+          !line.includes('I\'m interested in:')
+        );
+        
+        return {
+          ...prev,
+          projectType: '',
+          message: filteredLines.join('\n').trim() || 'Please provide details about your project...'
+        };
+      });
+    }
     setSelectedService(null);
-    setFormData(prev => ({
-      ...prev,
-      projectType: '',
-      message: prev.message.replace(/I'm interested in:.*?\n\nService Details:.*?\n\n/s, '')
-    }));
   };
 
   const addAnotherService = () => {
@@ -206,6 +275,11 @@ const ContactPage = () => {
       serviceInfo += `📊 *Category:* ${selectedService.category || 'Not specified'}\n`;
       if (selectedService.price && selectedService.price !== '') {
         serviceInfo += `💰 *Price Info:* ${selectedService.price}\n`;
+      }
+      
+      // Add Valentine's special note
+      if (selectedService.type === 'valentine') {
+        serviceInfo += `💖 *Valentine's Special:* Limited time offer - Romantic theme included!\n`;
       }
     }
     
@@ -313,6 +387,7 @@ ${formData.message}
     'New Computer Setup',
     'Networking Solutions',
     'Computer System Management',
+    'Valentine\'s Day Design',
     'Other'
   ];
 
@@ -330,12 +405,17 @@ ${formData.message}
     '₵100,000+'
   ];
 
+  // Updated Timeline options starting from minutes/hours
   const timelines = [
-    'Not sure yet',
-    'Urgent (1-2 weeks)',
+    'Select timeline',
+    'Emergency (within 24 hours)',
+    'Urgent (1-3 days)',
+    'Very Soon (1 week)',
+    'Soon (2 weeks)',
     'Standard (3-4 weeks)',
     'Flexible (1-2 months)',
-    'Long-term project'
+    'No Rush (Whenever possible)',
+    'Long-term ongoing project'
   ];
 
   const faqs = [
@@ -460,6 +540,12 @@ ${formData.message}
                       <div className="service-price">
                         <i className="fas fa-money-bill-wave"></i>
                         <span>{selectedService.price}</span>
+                      </div>
+                    )}
+                    {selectedService.type === 'valentine' && (
+                      <div className="service-badge valentine-badge">
+                        <i className="fas fa-heart"></i>
+                        <span>Valentine's Special</span>
                       </div>
                     )}
                   </div>
@@ -705,7 +791,6 @@ ${formData.message}
                         onChange={handleChange}
                         className="form-select"
                       >
-                        <option value="">Select timeline</option>
                         {timelines.map(time => (
                           <option key={time} value={time}>{time}</option>
                         ))}

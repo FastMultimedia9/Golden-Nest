@@ -272,17 +272,7 @@ const Navbar = () => {
               >
                
               </Link>
-              <Link 
-                to="/contact" 
-                className="btn btn-primary"
-                onClick={() => handleNavigation('/contact')}
-              >
-               
-                <svg className="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M4 8H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M8 4L12 8L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
+            
             </div>
           )}
         </div>
